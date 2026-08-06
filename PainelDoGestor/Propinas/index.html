@@ -26,7 +26,6 @@
             --c6: #B91C1C; /* Controlo da Dívida — risco */
             --c7: #047857; /* Recuperação — acção positiva */
             --c8: #6D28D9; /* Perfil de Pagamentos — canais */
-            --c9: #475569; /* Todas Cobranças — registo neutro */
 
             --radius-lg: 18px;
             --radius-md: 12px;
@@ -101,7 +100,6 @@
         .dashboard-section:nth-of-type(6) { animation-delay: 0.27s; }
         .dashboard-section:nth-of-type(7) { animation-delay: 0.32s; }
         .dashboard-section:nth-of-type(8) { animation-delay: 0.37s; }
-        .dashboard-section:nth-of-type(9) { animation-delay: 0.42s; }
 
         @keyframes fadeSlideUp {
             from { opacity: 0; transform: translateY(14px); }
@@ -236,7 +234,6 @@
         .crop-controlo-divida { height: 1200px; } .crop-controlo-divida iframe { height: 1236px !important; }
         .crop-recuperacao-divida { height: 830px; } .crop-recuperacao-divida iframe { height: 966px !important; }
         .crop-perfil-pagamentos { height: 980px; } .crop-perfil-pagamentos iframe { height: 1016px !important; }
-        .crop-todas-cobrancas { height: 680px; } .crop-todas-cobrancas iframe { height: 716px !important; }
 
         /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
@@ -417,27 +414,7 @@
             </article>
         </section>
 
-        <!-- SECÇÃO 9 -->
-        <section class="dashboard-section" style="--accent:#475569">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="3.2" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">09</span>
-                    <h2 class="section-title">Todas Cobranças</h2>
-                </div>
-            </div>
-            <p class="section-description">Listagem completa de todas as cobranças do período, com estado, valores e descontos ou multas aplicadas. Use esta secção para consultar ou verificar uma cobrança específica.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-todas-cobrancas">
-                    <iframe src="https://datastudio.google.com/embed/reporting/5316f6fe-b9ab-41db-a895-47b07faa5e13/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
-        </section>
-
     </main>
 
-    
 </body>
 </html>
