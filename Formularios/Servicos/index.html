@@ -1,0 +1,1341 @@
+<!DOCTYPE html><html lang="pt"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Dados de Pagamento</title>
+    <style>
+        /* Ajuste de Layout: Centramento Absoluto preparado para iFrame com Scroll Seguro */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #323130;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 24px 16px;
+            overflow-y: auto;
+            position: relative; /* Âncora de coordenadas para elementos absolutos */
+        }
+        
+        /* Largura do formulário mantida em 720px */
+        .form-container, .success-panel {
+            width: 100%;
+            max-width: 720px; 
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #edebe9;
+            box-sizing: border-box;
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        /* Painel de sucesso otimizado com alinhamento vertical */
+        .success-panel {
+            display: none;
+            position: absolute;
+            top: 250px; 
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9990; 
+            background-color: #f2fbf4;
+            border: 1px solid #107c41;
+            box-shadow: 0 4px 16px rgba(16, 124, 65, 0.08);
+        }
+
+        /* --- Indicador Circular Animado de Submissão (Submission Loader) --- */
+        .submission-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            z-index: 9995;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto;
+            border-radius: 8px;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #C7D7F5;
+            border-top: 4px solid #1E3A8A;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .submission-text {
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E3A8A;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Modal Customizado de Confirmação Inicial --- */
+        .modal-overlay {
+            position: absolute; 
+            top: 140px; 
+            left: 0; 
+            width: 100%; 
+            height: calc(100% - 140px); 
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            z-index: 9999;
+            pointer-events: auto;
+            padding-top: 20px; 
+            box-sizing: border-box;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 1px solid #edebe9;
+            width: 90%;
+            max-width: 440px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10000;
+            pointer-events: auto; 
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin: 0 0 12px 0;
+        }
+        .modal-text {
+            font-size: 13px;
+            color: #323130;
+            line-height: 1.5;
+            margin: 0 0 24px 0;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            position: relative;
+            z-index: 10001;
+        }
+        
+        .btn-modal-primary {
+            background-color: #1E3A8A;
+            color: #ffffff;
+            border: 1px solid transparent;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10002;
+            width: auto;
+            display: inline-block;
+            box-sizing: border-box;
+            transition: background-color 0.1s ease;
+        }
+        .btn-modal-primary:hover { background-color: #172d6b; }
+        
+        .btn-modal-secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border: 1px solid #8a8886;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10002;
+            width: auto;
+            display: inline-block;
+            box-sizing: border-box;
+            transition: all 0.1s ease;
+        }
+        .btn-modal-secondary:hover { background-color: #f3f2f1; border-color: #323130; }
+        
+        /* Bloco de Título e Subtítulo Principal */
+        .title-block {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #1E3A8A;
+        }
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            font-size: 22px;
+            color: #1E3A8A;
+            margin: 0 0 4px 0;
+            font-weight: 600;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #514f4e;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        /* Categorias Visuais */
+        .form-section {
+            margin-bottom: 24px;
+        }
+        .form-section:last-of-type {
+            margin-bottom: 16px;
+        }
+        .section-header {
+            margin-bottom: 14px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin: 0 0 4px 0;
+        }
+        .section-desc {
+            font-size: 12px;
+            color: #605e5c;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background-color: #edebe9;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+            width: 100%;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #201f1e;
+        }
+        .required::after {
+            content: " *";
+            color: #a80000;
+        }
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .input-icon-img {
+            position: absolute;
+            left: 14px;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            opacity: 0.8;
+            z-index: 2;
+        }
+        
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1px solid #C7D7F5;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #F0F4FF;
+            box-sizing: border-box;
+            color: #323130;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 76px;
+            font-family: inherit;
+            padding-left: 14px;
+        }
+        input[readonly] {
+            background-color: #E2ECFF;
+            border-color: #B9CEF3;
+            color: #323130;
+            cursor: not-allowed;
+            font-weight: 600;
+        }
+        select:focus, input:focus, textarea:focus {
+            border-color: #1E3A8A;
+            outline: none;
+            box-shadow: 0 0 0 1px #1E3A8A;
+            background-color: #ffffff;
+        }
+        select:disabled, input:disabled, textarea:disabled {
+            background-color: #E8EEFB;
+            border-color: #D3E0FA;
+            color: #a19f9d;
+            cursor: not-allowed;
+        }
+
+        input:not([readonly]):not(:disabled) {
+            background-color: #ffffff;
+            border-color: #1E3A8A;
+        }
+
+        .error-message {
+            display: none;
+            color: #DC2626;
+            font-size: 12px;
+            margin-top: 4px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Dropdowns Customizados */
+        .custom-dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+        .custom-dropdown-header {
+            width: 100%;
+            padding: 12px 32px 12px 42px;
+            border: 1px solid #C7D7F5;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #F0F4FF;
+            color: #323130;
+            text-align: left;
+            cursor: pointer;
+            box-sizing: border-box;
+            white-space: normal;
+        }
+        .custom-dropdown-header.has-selection {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .custom-dropdown-header::after {
+            content: "▼";
+            font-size: 10px;
+            position: absolute;
+            right: 14px;
+            top: 16px;
+            color: #605e5c;
+            pointer-events: none;
+        }
+        .custom-dropdown-header.disabled {
+            background-color: #E8EEFB;
+            border-color: #D3E0FA;
+            color: #a19f9d;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .custom-dropdown-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #C7D7F5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+        .custom-dropdown-option {
+            padding: 10px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            color: #323130;
+        }
+        .custom-dropdown-option:hover {
+            background-color: #F0F4FF;
+        }
+        .custom-dropdown-option.no-results {
+            color: #a19f9d;
+            font-style: italic;
+            cursor: default;
+            background-color: transparent !important;
+        }
+        
+        .dropdown-search-box {
+            padding: 6px;
+            border-bottom: 1px solid #edebe9;
+            background-color: #faf9f8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .dropdown-search-box input {
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #C7D7F5;
+            border-radius: 6px;
+            background-color: #ffffff;
+        }
+
+        /* Grid System */
+        .horizontal-row {
+            display: flex; 
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .full-width-row {
+            display: block;
+            margin-top: 12px;
+        }
+        .flex-classe, .flex-turma {
+            flex: 1;
+            min-width: 140px;
+        }
+        .flex-1 {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .action-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-submit {
+            background-color: #1E3A8A;
+            color: #ffffff;
+            border: 1px solid transparent;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.15s ease;
+        }
+        .btn-submit:hover:not(:disabled) { background-color: #162a63; }
+        .btn-submit:active:not(:disabled) { background-color: #0f1e47; }
+        .btn-submit:disabled {
+            background-color: #f3f2f1;
+            color: #a19f9d;
+            border-color: #c8c6c4;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            margin-top: 16px;
+            padding: 10px;
+            font-size: 13px;
+            color: #605e5c;
+            font-style: italic;
+            border-left: 3px solid transparent;
+            display: none;
+            line-height: 1.4;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .success-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .success-title-container h3 {
+            font-size: 18px;
+            color: #107c41;
+            margin: 0 0 4px 0;
+            font-weight: 600;
+        }
+        
+        .payment-details-box {
+            background-color: #ffffff;
+            border: 1px solid #c8c6c4;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .payment-layout-container {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            margin-top: 24px;
+        }
+        .payment-logo-wrapper {
+            flex-shrink: 0;
+        }
+        .payment-logo {
+            display: block;
+            max-width: 110px;
+            height: auto;
+        }
+        .payment-data-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .payment-row {
+            display: flex;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .payment-label {
+            font-weight: 700;
+            color: #201f1e;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .payment-value {
+            color: #323130;
+            font-family: inherit;
+            font-weight: normal; 
+            font-size: 13px;
+        }
+        .payment-value.amount {
+            color: #323130;
+            font-weight: normal;
+        }
+        
+        .success-footer {
+            font-size: 12px;
+            color: #605e5c;
+            line-height: 1.5;
+            border-top: 1px solid #edebe9;
+            padding-top: 14px;
+            margin-bottom: 16px;
+        }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border: 1px solid #8a8886;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #f3f2f1;
+            border-color: #323130;
+        }
+    </style></head><body><div id="formBlock" class="form-container">
+    
+    <div id="submissionLoader" class="submission-overlay">
+        <div class="spinner"></div>
+        <div class="submission-text">A processar o seu pedido...</div>
+    </div>
+
+    <div class="title-block">
+        <div class="title-container">
+            <h2>Gerar Dados de Pagamento</h2>
+            <div class="subtitle">Preencha o formulário para gerar a entidade, referência e valor necessários ao pagamento do serviço que pretende.</div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Identificação do Aluno</h3>
+            <p class="section-desc">Seleccione a classe, turma e o nome do aluno para o qual pretende gerar a referência de pagamento.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-classe">
+                <label class="required">Classe</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/school.png" alt="Class Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="classeDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione a Classe</div>
+                        <div id="classeDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="classeSearchInput" placeholder="Pesquisar classe..." autocomplete="off">
+                            </div>
+                            <div id="classeItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group flex-turma">
+                <label class="required">Turma</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/conference.png" alt="Group Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="turmaDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione a Turma</div>
+                        <div id="turmaDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="turmaSearchInput" placeholder="Pesquisar turma..." autocomplete="off">
+                            </div>
+                            <div id="turmaItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="full-width-row">
+            <div class="form-group">
+                <label class="required">Nome do Aluno</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/student-registration.png" alt="Student Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="alunoDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione o Aluno</div>
+                        <div id="alunoDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="alunoSearchInput" placeholder="Pesquisar aluno..." autocomplete="off">
+                            </div>
+                            <div id="alunoItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Serviços (Emolumentos)</h3>
+            <p class="section-desc">Seleccione a categoria e o serviço que pretende pagar.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label class="required">Categoria</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/toolbox.png" alt="Category Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="categoriaDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Seleccione a categoria</div>
+                        <div id="categoriaDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="categoriaSearchInput" placeholder="Pesquisar categoria..." autocomplete="off">
+                            </div>
+                            <div id="categoriaItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label class="required">Serviço</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/task.png" alt="Service Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="servicoDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Seleccione o serviço</div>
+                        <div id="servicoDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="servicoSearchInput" placeholder="Pesquisar serviço..." autocomplete="off">
+                            </div>
+                            <div id="servicoItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Resumo do Pagamento</h3>
+            <p class="section-desc">Confirme ou indique o valor e a quantidade para o serviço seleccionado.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label class="required" id="lblPrecoField">Preço</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/price-tag.png" alt="Tag Icon">
+                    <input type="text" id="precoInput" readonly disabled placeholder="0,00 Kz">
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label class="required">Quantidade</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/list.png" alt="List Icon">
+                    <input type="number" id="quantidadeInput" readonly disabled value="1" min="1" step="1">
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label>Valor Total a Pagar</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/calculator.png" alt="Calculator Icon">
+                    <input type="text" id="valorTotalInput" readonly placeholder="0,00 Kz">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Contacto para Envio</h3>
+            <p class="section-desc">Introduza o endereço de e-mail para o qual pretende receber os dados de pagamento gerados.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label for="emailInput" class="required">Endereço de E-mail</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/mail.png" alt="Mail Icon">
+                    <input type="email" id="emailInput" disabled placeholder="exemplo@escola.com" title="A carregar...">
+                </div>
+            </div>
+            <div class="form-group flex-1">
+                <label for="emailConfirmInput" class="required">Confirmação de E-mail</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/ok.png" alt="Ok Icon">
+                    <input type="email" id="emailConfirmInput" disabled placeholder="exemplo@escola.com" title="A carregar...">
+                </div>
+                <div id="emailError" class="error-message">O e-mail inserido não coincide com o endereço indicado no campo anterior.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Observações</h3>
+            <p class="section-desc">Campo opcional para indicar qualquer informação adicional relevante para este pedido de pagamento.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="full-width-row">
+            <div class="form-group">
+                <label for="observacoesTextarea">Observações (Opcional)</label>
+                <textarea id="observacoesTextarea" disabled placeholder="Caso necessite, insira aqui alguma informação ou nota adicional relevante para a tesouraria..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-container">
+        <button type="button" id="submitBtn" class="btn-submit" disabled>
+            <span>Gerar Dados de Pagamento</span>
+        </button>
+    </div>
+    
+    <div id="statusLog" class="status-message">A preparar o formulário...</div></div><div id="successPanel" class="success-panel">
+    <div class="success-header">
+        <img class="success-icon" src="https://img.icons8.com/material-rounded/64/22C55E/checked.png" alt="Checked Icon">
+        <div class="success-title-container">
+            <h3>Dados de pagamento gerados com sucesso!</h3>
+        </div>
+    </div>
+
+    <div class="payment-details-box">
+        <p style="margin: 0; font-size: 13px; color: #323130; line-height: 1.4;">Utilize os dados apresentados abaixo para efetuar o pagamento através dos canais ligados a rede Multicaixa, nomeadamente ATM, Multicaixa Express ou Internet Banking.</p>
+        
+        <div class="payment-layout-container">
+            <div class="payment-logo-wrapper">
+                <img class="payment-logo" src="https://github.com/colegiodemo/pagamento-propina-antecipada-escola/blob/main/Multicaixa.png?raw=true" alt="Logótipo Multicaixa">
+            </div>
+            
+            <div class="payment-data-wrapper">
+                <div class="payment-row">
+                    <div class="payment-label">Entidade:</div>
+                    <div id="lblEntidade" class="payment-value">-</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Referência:</div>
+                    <div id="lblReferencia" class="payment-value">-</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Valor:</div>
+                    <div id="lblValor" class="payment-value amount">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lblValidadeNota" style="font-size: 11px; color: #605e5c; margin: -10px 0 20px 4px; font-style: italic; line-height: 1.4;">
+        *Referência de pagamento válida até: -
+    </div>
+
+    <div id="successFooterMessage" class="success-footer">
+        Estes dados foram também enviados para o endereço de e-mail fornecido. Caso não receba a mensagem, verifique a pasta de spam ou contacte a secretaria.
+    </div>
+
+    <div class="action-container" style="margin-top: 0;">
+        <button type="button" id="resetFormBtn" class="btn-secondary">Gerar Nova Referência</button>
+    </div></div><div id="confirmationModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-title">Confirmação</div>
+        <div class="modal-text">Pretende gerar uma referência para o pagamento deste serviço?</div>
+        <div class="modal-actions">
+            <button type="button" id="btnModalBack" class="btn-modal-secondary">Cancelar</button>
+            <button type="button" id="btnModalContinue" class="btn-modal-primary">Sim, continuar</button>
+        </div>
+    </div></div><script>
+    const powerAutomateUrl = "https://default67e1fc55c47043779ddd6922b3f149.70.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/28/workflows/c03c4c7b06ed4c7aa8d77af5e3d62039/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=nbqx893GGxq231YW36a28nwMDGjQ1ThVgWWbTaDe5sA";
+    
+    // UI Modal Elements
+    const confirmationModal = document.getElementById("confirmationModal");
+    const btnModalContinue = document.getElementById("btnModalContinue");
+    const btnModalBack = document.getElementById("btnModalBack");
+
+    // UI Panels Blocks
+    const formBlock = document.getElementById("formBlock");
+    const successPanel = document.getElementById("successPanel");
+    const resetFormBtn = document.getElementById("resetFormBtn");
+    const submissionLoader = document.getElementById("submissionLoader");
+    
+    // UI Result Labels
+    const lblEntidade = document.getElementById("lblEntidade");
+    const lblReferencia = document.getElementById("lblReferencia");
+    const lblValor = document.getElementById("lblValor");
+    const lblValidadeNota = document.getElementById("lblValidadeNota");
+    const successFooterMessage = document.getElementById("successFooterMessage");
+
+    // UI Elements Estáticos Formulário
+    const statusLog = document.getElementById("statusLog");
+    const submitBtn = document.getElementById("submitBtn");
+    const precoInput = document.getElementById("precoInput");
+    const quantidadeInput = document.getElementById("quantidadeInput");
+    const valorTotalInput = document.getElementById("valorTotalInput");
+    const emailInput = document.getElementById("emailInput");
+    const emailConfirmInput = document.getElementById("emailConfirmInput");
+    const emailError = document.getElementById("emailError");
+    const observacoesTextarea = document.getElementById("observacoesTextarea");
+
+    // Dropdowns Alunos
+    const classeDropdownHeader = document.getElementById("classeDropdownHeader");
+    const classeDropdownOptions = document.getElementById("classeDropdownOptions");
+    const classeSearchInput = document.getElementById("classeSearchInput");
+    const classeItemsContainer = document.getElementById("classeItemsContainer");
+
+    const turmaDropdownHeader = document.getElementById("turmaDropdownHeader");
+    const turmaDropdownOptions = document.getElementById("turmaDropdownOptions");
+    const turmaSearchInput = document.getElementById("turmaSearchInput");
+    const turmaItemsContainer = document.getElementById("turmaItemsContainer");
+
+    const alunoDropdownHeader = document.getElementById("alunoDropdownHeader");
+    const alunoDropdownOptions = document.getElementById("alunoDropdownOptions");
+    const alunoSearchInput = document.getElementById("alunoSearchInput");
+    const alunoItemsContainer = document.getElementById("alunoItemsContainer");
+
+    // Dropdowns Serviços
+    const categoriaDropdownHeader = document.getElementById("categoriaDropdownHeader");
+    const categoriaDropdownOptions = document.getElementById("categoriaDropdownOptions");
+    const categoriaSearchInput = document.getElementById("categoriaSearchInput");
+    const categoriaItemsContainer = document.getElementById("categoriaItemsContainer");
+
+    const servicoDropdownHeader = document.getElementById("servicoDropdownHeader");
+    const servicoDropdownOptions = document.getElementById("servicoDropdownOptions");
+    const servicoSearchInput = document.getElementById("servicoSearchInput");
+    const servicoItemsContainer = document.getElementById("servicoItemsContainer");
+
+    // Memory State
+    let globalStudentData = [];
+    let globalServiceData = [];
+    
+    let distinctClassesList = [];
+    let currentTurmasList = [];
+    let currentFilteredStudents = [];
+    
+    let distinctCategoriasList = [];
+    let currentFilteredServices = [];
+    
+    // Selections State
+    let selectedClasseName = "";
+    let selectedTurmaName = "";
+    let selectedStudentName = "";
+    let selectedStudentPayload = null;
+
+    let selectedCategoriaName = "";
+    let selectedServicoName = "";
+    let selectedServicePayload = null;
+
+    // Métodos Utilitários de Formatação de Moeda no Padrão de Angola (25 000,00 Kz)
+    function formatToAngolanCurrency(value) {
+        if (value === 0) return "0,00 Kz";
+        let formatted = value.toFixed(2).replace('.', ',');
+        // Aplica o espaço regulamentar como separador de milhares
+        formatted = formatted.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        return formatted + " Kz";
+    }
+
+    function parseVisualToNumber(str) {
+        if (!str) return 0;
+        // Limpa o prefixo/sufixo monetário e isola a estrutura numérica básica
+        let cleanStr = str.replace("Kz", "").replace(/\s/g, "").replace(',', '.').trim();
+        return Number(cleanStr) || 0;
+    }
+
+    // Fluxo do Modal Inicial
+    function setupInitialGate() {
+        btnModalContinue.addEventListener("click", function(e) {
+            e.stopPropagation();
+            confirmationModal.remove();
+            initFetchAll();
+        });
+
+        btnModalBack.addEventListener("click", function(e) {
+            e.stopPropagation();
+            confirmationModal.remove();
+            history.back();
+        });
+    }
+
+    async function initFetchAll() {
+        setFormDisabledState(true);
+        showStatus("A carregar dados...", "#605e5c", "#f3f2f1");
+        
+        const payload1 = { "Flag": "GetSPOData-Aluno", "Source": "F9A3C7E1D0B4F6A2C8E1D9F7A3B6C4E0F1A9D3C7E5B2F8A0C6D4E1B9F703A5C2" };
+        const payload2 = { "Flag": "GetSPOData-Service", "Source": "F9A3C7E1D0B4F6A2C8E1D9F7A3B6C4E0F1A9D3C7E5B2F8A0C6D4E1B9F703A5C2" };
+
+        try {
+            const [res1, res2] = await Promise.all([
+                fetch(powerAutomateUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload1) }),
+                fetch(powerAutomateUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload2) })
+            ]);
+
+            if (!res1.ok || !res2.ok) throw new Error();
+
+            const data1 = await res1.json();
+            const data2 = await res2.json();
+
+            globalStudentData = Array.isArray(data1) ? data1 : (data1.Estudantes || []);
+            globalServiceData = Array.isArray(data2) ? data2 : (data2.Servicos || []);
+            
+            setFormDisabledState(false);
+            showStatus("Formulário carregado com sucesso. Por favor, preencha os campos obrigatórios.", "#107c41", "#dff6dd");
+            
+            resetTooltips();
+            buildClasseList();
+            buildCategoriaList();
+
+            setTimeout(() => {
+                statusLog.style.opacity = "0";
+                setTimeout(() => { statusLog.style.display = "none"; }, 1000);
+            }, 4000);
+
+        } catch (error) {
+            showStatus("Ocorreu um erro ao estabelecer ligação com o servidor. Verifique a sua ligação...", "#a80000", "#fde7e9");
+            disableAllDropdownHeadersText("Indisponível");
+        }
+    }
+
+    function disableAllDropdownHeadersText(text) {
+        classeDropdownHeader.innerText = text;
+        turmaDropdownHeader.innerText = text;
+        alunoDropdownHeader.innerText = text;
+        categoriaDropdownHeader.innerText = text;
+        servicoDropdownHeader.innerText = text;
+    }
+
+    function setFormDisabledState(disabled) {
+        emailInput.disabled = disabled;
+        emailConfirmInput.disabled = disabled;
+        observacoesTextarea.disabled = disabled;
+        
+        if (disabled) {
+            classeDropdownHeader.classList.add("disabled"); classeDropdownHeader.innerText = "A carregar...";
+            turmaDropdownHeader.classList.add("disabled"); turmaDropdownHeader.innerText = "A carregar...";
+            alunoDropdownHeader.classList.add("disabled"); alunoDropdownHeader.innerText = "A carregar...";
+            categoriaDropdownHeader.classList.add("disabled"); categoriaDropdownHeader.innerText = "A carregar...";
+            servicoDropdownHeader.classList.add("disabled"); servicoDropdownHeader.innerText = "A carregar...";
+            submitBtn.disabled = true;
+        } else {
+            classeDropdownHeader.classList.remove("disabled"); classeDropdownHeader.innerText = "Selecione a Classe";
+            turmaDropdownHeader.innerText = "Selecione a Turma";
+            alunoDropdownHeader.innerText = "Selecione o Aluno";
+            categoriaDropdownHeader.classList.remove("disabled"); categoriaDropdownHeader.innerText = "Seleccione a categoria";
+            servicoDropdownHeader.innerText = "Seleccione o serviço";
+            servicoDropdownHeader.classList.add("disabled");
+        }
+    }
+
+    function resetTooltips() {
+        classeDropdownHeader.setAttribute("title", "Selecione a Classe");
+        turmaDropdownHeader.setAttribute("title", "Selecione a Turma");
+        alunoDropdownHeader.setAttribute("title", "Selecione o Aluno");
+        categoriaDropdownHeader.setAttribute("title", "Seleccione a categoria");
+        servicoDropdownHeader.setAttribute("title", "Seleccione o serviço");
+        emailInput.setAttribute("title", "Insira o email do destinatário");
+        emailConfirmInput.setAttribute("title", "Confirme o email do destinatário");
+        observacoesTextarea.setAttribute("title", "Observações adicionais");
+    }
+
+    function showStatus(text, textColor, bgColor) {
+        statusLog.style.opacity = "1"; statusLog.innerText = text; statusLog.style.color = textColor;
+        statusLog.style.backgroundColor = bgColor; statusLog.style.borderLeftColor = textColor; statusLog.style.display = "block";
+    }
+
+    // --- MANIPULAÇÃO DE DROPDOWNS CUSTOMIZADOS ---
+    function closeAllDropdownsExcept(openBox) {
+        const lists = [classeDropdownOptions, turmaDropdownOptions, alunoDropdownOptions, categoriaDropdownOptions, servicoDropdownOptions];
+        lists.forEach(list => { if(list !== openBox) list.style.display = "none"; });
+    }
+
+    function bindHeaderClick(header, options, input) {
+        header.addEventListener("click", function(e) {
+            e.stopPropagation(); if (this.classList.contains("disabled")) return;
+            closeAllDropdownsExcept(options);
+            if (options.style.display !== "block") {
+                options.style.display = "block"; if(input) input.focus();
+            } else { options.style.display = "none"; }
+        });
+    }
+
+    bindHeaderClick(classeDropdownHeader, classeDropdownOptions, classeSearchInput);
+    bindHeaderClick(turmaDropdownHeader, turmaDropdownOptions, turmaSearchInput);
+    bindHeaderClick(alunoDropdownHeader, alunoDropdownOptions, alunoSearchInput);
+    bindHeaderClick(categoriaDropdownHeader, categoriaDropdownOptions, categoriaSearchInput);
+    bindHeaderClick(servicoDropdownHeader, servicoDropdownOptions, servicoSearchInput);
+
+    document.addEventListener("click", function() { closeAllDropdownsExcept(null); });
+
+    // --- CASCATA: ALUNOS ---
+    function buildClasseList() {
+        distinctClassesList = [...new Set(globalStudentData.map(item => item.Classe))].filter(Boolean);
+        renderClasseOptions(distinctClassesList);
+    }
+    classeSearchInput.addEventListener("input", function() {
+        const filtered = distinctClassesList.filter(c => c.toLowerCase().includes(this.value.toLowerCase().trim()));
+        renderClasseOptions(filtered);
+    });
+    function renderClasseOptions(list) {
+        classeItemsContainer.innerHTML = list.length ? "" : '<div class="custom-dropdown-option no-results">Nenhuma classe encontrada</div>';
+        list.forEach(classe => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = classe;
+            div.addEventListener("click", function() {
+                selectedClasseName = classe; classeDropdownHeader.innerText = classe; classeDropdownHeader.classList.add("has-selection");
+                turmaDropdownHeader.classList.remove("disabled"); turmaDropdownHeader.innerText = "Selecione a Turma"; turmaDropdownHeader.classList.remove("has-selection");
+                alunoDropdownHeader.classList.add("disabled"); alunoDropdownHeader.innerText = "Selecione o Aluno"; alunoDropdownHeader.classList.remove("has-selection");
+                currentTurmasList = [...new Set(globalStudentData.filter(i => i.Classe === classe).map(i => i.Turma))].filter(Boolean);
+                renderTurmaOptions(currentTurmasList);
+                resetSelectionsAndOutputs(); validateForm();
+            });
+            classeItemsContainer.appendChild(div);
+        });
+    }
+
+    turmaSearchInput.addEventListener("input", function() {
+        const filtered = currentTurmasList.filter(t => t.toLowerCase().includes(this.value.toLowerCase().trim()));
+        renderTurmaOptions(filtered);
+    });
+    function renderTurmaOptions(list) {
+        turmaItemsContainer.innerHTML = list.length ? "" : '<div class="custom-dropdown-option no-results">Nenhuma turma encontrada</div>';
+        list.forEach(turma => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = turma;
+            div.addEventListener("click", function() {
+                selectedTurmaName = turma; turmaDropdownHeader.innerText = turma; turmaDropdownHeader.classList.add("has-selection");
+                alunoDropdownHeader.classList.remove("disabled"); alunoDropdownHeader.innerText = "Selecione o Aluno"; alunoDropdownHeader.classList.remove("has-selection");
+                currentFilteredStudents = globalStudentData.filter(item => item.Classe === selectedClasseName && item.Turma === turma && item.NomeDoAluno);
+                renderAlunoOptions(currentFilteredStudents);
+                resetSelectionsAndOutputs(); validateForm();
+            });
+            turmaItemsContainer.appendChild(div);
+        });
+    }
+
+    alunoSearchInput.addEventListener("input", function() {
+        const filtered = currentFilteredStudents.filter(s => s.NomeDoAluno.toLowerCase().includes(this.value.toLowerCase().trim()));
+        renderAlunoOptions(filtered);
+    });
+    function renderAlunoOptions(list) {
+        alunoItemsContainer.innerHTML = list.length ? "" : '<div class="custom-dropdown-option no-results">Nenhum aluno encontrado</div>';
+        list.forEach(student => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = student.NomeDoAluno;
+            div.addEventListener("click", function() {
+                selectedStudentName = student.NomeDoAluno; alunoDropdownHeader.innerText = student.NomeDoAluno; alunoDropdownHeader.classList.add("has-selection");
+                selectedStudentPayload = student;
+                validateForm();
+            });
+            alunoItemsContainer.appendChild(div);
+        });
+    }
+
+    // --- CASCATA: SERVIÇOS ---
+    function buildCategoriaList() {
+        distinctCategoriasList = [...new Set(globalServiceData.map(item => item.Categoria))].filter(Boolean);
+        renderCategoriaOptions(distinctCategoriasList);
+    }
+    categoriaSearchInput.addEventListener("input", function() {
+        const filtered = distinctCategoriasList.filter(c => c.toLowerCase().includes(this.value.toLowerCase().trim()));
+        renderCategoriaOptions(filtered);
+    });
+    function renderCategoriaOptions(list) {
+        categoriaItemsContainer.innerHTML = list.length ? "" : '<div class="custom-dropdown-option no-results">Nenhuma categoria encontrada</div>';
+        list.forEach(cat => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = cat;
+            div.addEventListener("click", function() {
+                selectedCategoriaName = cat; categoriaDropdownHeader.innerText = cat; categoriaDropdownHeader.classList.add("has-selection");
+                servicoDropdownHeader.classList.remove("disabled"); servicoDropdownHeader.innerText = "Seleccione o serviço"; servicoDropdownHeader.classList.remove("has-selection");
+                currentFilteredServices = globalServiceData.filter(i => i.Categoria === cat && i.Serviço);
+                renderServicoOptions(currentFilteredServices);
+                resetOutputsOnly(); validateForm();
+            });
+            categoriaItemsContainer.appendChild(div);
+        });
+    }
+
+    servicoSearchInput.addEventListener("input", function() {
+        const filtered = currentFilteredServices.filter(s => s.Serviço.toLowerCase().includes(this.value.toLowerCase().trim()));
+        renderServicoOptions(filtered);
+    });
+    function renderServicoOptions(list) {
+        servicoItemsContainer.innerHTML = list.length ? "" : '<div class="custom-dropdown-option no-results">Nenhum serviço encontrado</div>';
+        list.forEach(srv => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = srv.Serviço;
+            div.addEventListener("click", function() {
+                selectedServicoName = srv.Serviço; servicoDropdownHeader.innerText = srv.Serviço; servicoDropdownHeader.classList.add("has-selection");
+                selectedServicePayload = srv;
+                applyServiceRules();
+            });
+            servicoItemsContainer.appendChild(div);
+        });
+    }
+
+    // --- REGRAS DO SERVIÇO E CÁLCULO ---
+    function applyServiceRules() {
+        if (!selectedServicePayload) return;
+
+        let basePreco = Number(selectedServicePayload.Preço) || 0;
+        precoInput.value = formatToAngolanCurrency(basePreco);
+
+        // Regra Preço Definido
+        if (selectedServicePayload["Preço Definido"] === true) {
+            precoInput.readOnly = true; precoInput.disabled = true;
+        } else {
+            precoInput.readOnly = false; precoInput.disabled = false;
+        }
+
+        // Regra Quantidade Aplicável
+        if (selectedServicePayload["Qtd Aplicavel"] === true) {
+            quantidadeInput.value = "1"; quantidadeInput.readOnly = true; quantidadeInput.disabled = true;
+        } else {
+            quantidadeInput.value = "1"; quantidadeInput.readOnly = false; quantidadeInput.disabled = false;
+        }
+
+        recalculateTotal();
+        validateForm();
+    }
+
+    function recalculateTotal() {
+        let preco = 0;
+        
+        if (precoInput.readOnly || precoInput.disabled) {
+            preco = selectedServicePayload ? (Number(selectedServicePayload.Preço) || 0) : 0;
+        } else {
+            let val = precoInput.value.trim();
+            // Se o campo estiver temporariamente vazio ou igual ao placeholder dinâmico, assume base zero
+            if (val === "" || val === "0,00 Kz") {
+                preco = 0;
+            } else {
+                preco = parseVisualToNumber(val);
+            }
+        }
+        
+        let qtd = Math.floor(Number(quantidadeInput.value)) || 1;
+        if(qtd < 1) qtd = 1;
+
+        let total = preco * qtd;
+        valorTotalInput.value = formatToAngolanCurrency(total);
+        return { preco, qtd, total };
+    }
+
+    // --- COMPORTAMENTO DO PLACEHOLDER DINÂMICO E EVENTOS DO CAMPO PREÇO ---
+    precoInput.addEventListener("focus", function() {
+        if (this.readOnly || this.disabled) return;
+        // O texto desaparece automaticamente ao clicar se estiver vazio ou com o valor padrão
+        if (this.value.trim() === "0,00 Kz" || this.value.trim() === "") {
+            this.value = "";
+        }
+    });
+
+    precoInput.addEventListener("blur", function() {
+        if (this.readOnly || this.disabled) return;
+        let val = this.value.trim();
+        // Se sair sem introduzir nenhum valor, o padrão regressa
+        if (val === "") {
+            this.value = "0,00 Kz";
+        } else {
+            let num = parseVisualToNumber(val);
+            this.value = formatToAngolanCurrency(num);
+        }
+        recalculateTotal();
+        validateForm();
+    });
+
+    precoInput.addEventListener("input", function() {
+        // Formatação visual em tempo real opcional e higienização mecânica de caracteres não numéricos
+        let clean = this.value.replace(/[^\d,.-]/g, '');
+        if (this.value !== clean && this.value.trim() !== "0,00 Kz") {
+            this.value = clean;
+        }
+        recalculateTotal();
+        validateForm();
+    });
+
+    quantidadeInput.addEventListener("input", function() {
+        recalculateTotal();
+        validateForm();
+    });
+
+    function resetSelectionsAndOutputs() {
+        selectedStudentName = ""; selectedStudentPayload = null;
+        resetOutputsOnly();
+    }
+
+    function resetOutputsOnly() {
+        selectedServicoName = ""; selectedServicePayload = null;
+        precoInput.value = "0,00 Kz"; precoInput.readOnly = true; precoInput.disabled = true;
+        quantidadeInput.value = "1"; quantidadeInput.readOnly = true; quantidadeInput.disabled = true;
+        valorTotalInput.value = "0,00 Kz";
+    }
+
+    // --- VALIDAÇÃO DE EMAIL E FORMULÁRIO ---
+    function checkEmailMatch() {
+        const emailVal = emailInput.value.trim().toLowerCase();
+        const confirmVal = emailConfirmInput.value.trim().toLowerCase();
+        if (confirmVal !== "" && emailVal !== confirmVal) {
+            emailError.style.display = "block"; return false;
+        }
+        emailError.style.display = "none"; return true;
+    }
+
+    emailConfirmInput.addEventListener("blur", checkEmailMatch);
+    emailInput.addEventListener("input", function() {
+        if (emailError.style.display === "block" && emailInput.value.trim().toLowerCase() === emailConfirmInput.value.trim().toLowerCase()) {
+            emailError.style.display = "none";
+        }
+        validateForm();
+    });
+    emailConfirmInput.addEventListener("input", validateForm);
+
+    function validateForm() {
+        let isValid = !!(selectedClasseName && selectedTurmaName && selectedStudentName && selectedCategoriaName && selectedServicoName);
+        const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailVal = emailInput.value.trim().toLowerCase();
+        const confirmVal = emailConfirmInput.value.trim().toLowerCase();
+        
+        if (!emailInput.value || !emailConfirmInput.value || emailVal !== confirmVal || !emailReg.test(emailInput.value)) {
+            isValid = false;
+        }
+        submitBtn.disabled = !isValid;
+    }
+
+    // --- SUBMISSÃO ---
+    submitBtn.addEventListener("click", async function() {
+        if (!checkEmailMatch()) { this.disabled = true; return; }
+
+        this.disabled = true;
+        setFormDisabledState(true);
+        submissionLoader.style.display = "flex";
+        statusLog.style.display = "none";
+
+        const { preco, qtd, total } = recalculateTotal();
+        const targetEmail = emailInput.value.trim();
+
+        // Payload estruturado numérico inalterado (.toFixed(2) com separador de ponto decimal puro)
+        const finalSubmissionBody = {
+            "Flag": "GetPaymentReference",
+            "Servico": "Outros-Servicos",
+            "Classe": String(selectedClasseName),
+            "Turma": String(selectedTurmaName),
+            "NomeDoAluno": String(selectedStudentName),
+            "NumeroAluno": String(selectedStudentPayload && selectedStudentPayload.NumeroAluno !== undefined ? selectedStudentPayload.NumeroAluno : ""),
+            "ID": String(selectedStudentPayload && selectedStudentPayload.ID !== null ? selectedStudentPayload.ID : ""),
+            "Telefone": String(selectedStudentPayload ? selectedStudentPayload.Telefone : ""),
+            "Categoria": String(selectedCategoriaName),
+            "ServicoSelecionado": String(selectedServicoName),
+            "Preco": String(preco.toFixed(2)),
+            "Quantidade": String(qtd),
+            "ValorTotal": String(total.toFixed(2)),
+            "EntidadeMcx": String(selectedServicePayload && selectedServicePayload.EntidadeMcx ? selectedServicePayload.EntidadeMcx : ""),
+            "Banco": String(selectedServicePayload && selectedServicePayload.Banco ? selectedServicePayload.Banco : ""),
+            "Email": String(targetEmail),
+            "Notes": String(observacoesTextarea.value || ""),
+            "Source": "F9A3C7E1D0B4F6A2C8E1D9F7A3B6C4E0F1A9D3C7E5B2F8A0C6D4E1B9F703A5C2"
+        };
+
+        try {
+            const response = await fetch(powerAutomateUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(finalSubmissionBody) });
+            submissionLoader.style.display = "none";
+
+            if (response.ok) {
+                const responseData = await response.json();
+                let rawReturnedAmount = Number(responseData.Valor) || total;
+                
+                lblEntidade.innerText = responseData.Entidade || "-";
+                lblReferencia.innerText = responseData.Referencia || "-";
+                lblValor.innerText = formatToAngolanCurrency(rawReturnedAmount);
+                lblValidadeNota.innerText = `*Referência de pagamento válida até: ${responseData.Validade || "-"}`;
+                
+                successFooterMessage.innerHTML = `Estes dados foram também enviados para <strong>${targetEmail}</strong>. Caso não receba a mensagem, verifique a pasta de spam ou contacte a secretaria.`;
+
+                formBlock.style.opacity = "0";
+                formBlock.style.pointerEvents = "none";
+                successPanel.style.display = "block";
+            } else { throw new Error(); }
+        } catch (err) {
+            submissionLoader.style.display = "none";
+            showStatus("Erro ao enviar pedido. Por favor, tente novamente.", "#a80000", "#fde7e9");
+            setFormDisabledState(false);
+            validateForm();
+        }
+    });
+
+    // Reset / Nova Referência
+    resetFormBtn.addEventListener("click", function() {
+        selectedClasseName = ""; selectedTurmaName = ""; selectedStudentName = ""; selectedStudentPayload = null;
+        selectedCategoriaName = ""; selectedServicoName = ""; selectedServicePayload = null;
+
+        classeDropdownHeader.innerText = "Selecione a Classe"; classeDropdownHeader.classList.remove("has-selection");
+        turmaDropdownHeader.innerText = "Selecione a Turma"; turmaDropdownHeader.classList.remove("has-selection"); turmaDropdownHeader.classList.add("disabled");
+        alunoDropdownHeader.innerText = "Selecione o Aluno"; alunoDropdownHeader.classList.remove("has-selection"); alunoDropdownHeader.classList.add("disabled");
+        
+        categoriaDropdownHeader.innerText = "Seleccione a categoria"; categoriaDropdownHeader.classList.remove("has-selection");
+        servicoDropdownHeader.innerText = "Seleccione o serviço"; servicoDropdownHeader.classList.remove("has-selection"); servicoDropdownHeader.classList.add("disabled");
+
+        resetSelectionsAndOutputs();
+        emailInput.value = ""; emailConfirmInput.value = ""; observacoesTextarea.value = "";
+        emailError.style.display = "none";
+
+        setFormDisabledState(false);
+        statusLog.style.display = "none";
+        statusLog.style.opacity = "1";
+        successPanel.style.display = "none";
+        
+        formBlock.style.opacity = "1";
+        formBlock.style.pointerEvents = "auto";
+        
+        buildClasseList();
+        buildCategoriaList();
+        validateForm();
+    });
+
+    window.addEventListener("DOMContentLoaded", setupInitialGate);
+</script></body></html>
