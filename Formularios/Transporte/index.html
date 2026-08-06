@@ -1,0 +1,1396 @@
+<!DOCTYPE html><html lang="pt"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Dados de Pagamento</title>
+    <style>
+        /* Ajuste de Layout: Centramento Absoluto preparado para iFrame com Scroll Seguro */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: transparent;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #323130;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+            padding: 24px 16px;
+            overflow-y: auto;
+            position: relative; /* Âncora de coordenadas para elementos absolutos (modal, loader e painel de sucesso) */
+        }
+        
+        /* Largura do formulário mantida em 720px */
+        .form-container, .success-panel {
+            width: 100%;
+            max-width: 720px; 
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #edebe9;
+            box-sizing: border-box;
+            margin: 0 auto;
+            position: relative; /* Âncora interna local */
+        }
+        
+        /* Painel de sucesso otimizado com alinhamento vertical na linha dos campos de Desconto/Total */
+        .success-panel {
+            display: none;
+            position: absolute;
+            top: 250px; /* Ajustado cirurgicamente para alinhar com a linha intermédia do formulário */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9990; 
+            background-color: #f2fbf4;
+            border: 1px solid #107c41;
+            box-shadow: 0 4px 16px rgba(16, 124, 65, 0.08);
+        }
+
+        /* --- Indicador Circular Animado de Submissão (Submission Loader) --- */
+        .submission-overlay {
+            display: none; /* Controlado via JS */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent; /* Overlay totalmente transparente conforme pedido */
+            z-index: 9995;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: auto; /* Bloqueia cliques mecânicos no fundo */
+            border-radius: 8px;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #C7D7F5; /* Azul claro de fundo da trilha */
+            border-top: 4px solid #1E3A8A; /* Cor ativa correspondente ao formulário */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        .submission-text {
+            margin-top: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E3A8A;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- Modal Customizado de Confirmação Inicial com Bloqueio e Transparência Total --- */
+        .modal-overlay {
+            position: absolute; 
+            top: 140px; 
+            left: 0; 
+            width: 100%; 
+            height: calc(100% - 140px); 
+            background-color: transparent; /* Alterado para transparente: sem cor nem opacidade */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; 
+            z-index: 9999; /* Prioridade máxima absoluta no topo da página */
+            pointer-events: auto; /* Mantém o bloqueio completo de interacção com os campos de fundo */
+            padding-top: 20px; 
+            box-sizing: border-box;
+        }
+        .modal-box {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            border: 1px solid #edebe9;
+            width: 90%;
+            max-width: 440px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10000; /* Garante que a caixa interna flutua acima do próprio overlay */
+            pointer-events: auto; 
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin: 0 0 12px 0;
+        }
+        .modal-text {
+            font-size: 13px;
+            color: #323130;
+            line-height: 1.5;
+            margin: 0 0 24px 0;
+        }
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            position: relative;
+            z-index: 10001;
+        }
+        
+        /* Proteção explícita para evitar contaminação visual e quebra dos botões do Modal */
+        .btn-modal-primary {
+            background-color: #1E3A8A;
+            color: #ffffff;
+            border: 1px solid transparent;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10002;
+            width: auto;
+            display: inline-block;
+            box-sizing: border-box;
+            transition: background-color 0.1s ease;
+        }
+        .btn-modal-primary:hover { background-color: #172d6b; }
+        
+        .btn-modal-secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border: 1px solid #8a8886;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            position: relative;
+            z-index: 10002;
+            width: auto;
+            display: inline-block;
+            box-sizing: border-box;
+            transition: all 0.1s ease;
+        }
+        .btn-modal-secondary:hover { background-color: #f3f2f1; border-color: #323130; }
+        
+        /* Bloco de Título e Subtítulo Principal Alinhado à Esquerda e Sem Ícone */
+        .title-block {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #1E3A8A;
+        }
+        .title-container {
+            display: flex;
+            flex-direction: column;
+        }
+        h2 {
+            font-size: 22px;
+            color: #1E3A8A;
+            margin: 0 0 4px 0;
+            font-weight: 600;
+        }
+        .subtitle {
+            font-size: 13px;
+            color: #514f4e;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        /* Estrutura de Categorias Visuais */
+        .form-section {
+            margin-bottom: 24px;
+        }
+        .form-section:last-of-type {
+            margin-bottom: 16px;
+        }
+        .section-header {
+            margin-bottom: 14px;
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1E3A8A;
+            margin: 0 0 4px 0;
+        }
+        .section-desc {
+            font-size: 12px;
+            color: #605e5c;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+            white-space: nowrap;
+        }
+        .section-divider {
+            border: 0;
+            height: 1px;
+            background-color: #edebe9;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            position: relative;
+            width: 100%;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 13px;
+            color: #201f1e;
+        }
+        .required::after {
+            content: " *";
+            color: #a80000;
+        }
+        .input-with-icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .input-icon-img {
+            position: absolute;
+            left: 14px;
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+            opacity: 0.8;
+            z-index: 2;
+        }
+        
+        /* Nova estilização harmonizada dos inputs da imagem de referência */
+        select, input, textarea {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border: 1px solid #C7D7F5;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #F0F4FF;
+            box-sizing: border-box;
+            color: #323130;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 76px;
+            font-family: inherit;
+            padding-left: 14px;
+        }
+        input[readonly] {
+            background-color: #E2ECFF;
+            border-color: #B9CEF3;
+            color: #323130;
+            cursor: not-allowed;
+            font-weight: 600;
+        }
+        select:focus, input:focus, textarea:focus {
+            border-color: #1E3A8A;
+            outline: none;
+            box-shadow: 0 0 0 1px #1E3A8A;
+            background-color: #ffffff;
+        }
+        select:disabled, input:disabled, textarea:disabled {
+            background-color: #E8EEFB;
+            border-color: #D3E0FA;
+            color: #a19f9d;
+            cursor: not-allowed;
+        }
+        .field-description {
+            font-size: 11px;
+            color: #605e5c;
+            margin-bottom: 6px;
+            display: block;
+            line-height: 1.3;
+        }
+
+        /* Mensagem de Erro de Validação */
+        .error-message {
+            display: none;
+            color: #DC2626;
+            font-size: 12px;
+            margin-top: 4px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+
+        /* Dropdowns Customizados Pesquisáveis e Reutilizáveis */
+        .custom-dropdown-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .custom-dropdown-header {
+            width: 100%;
+            padding: 12px 32px 12px 42px;
+            border: 1px solid #C7D7F5;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #F0F4FF;
+            color: #323130;
+            text-align: left;
+            cursor: pointer;
+            box-sizing: border-box;
+            white-space: normal;
+        }
+        .custom-dropdown-header.has-selection {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .custom-dropdown-header::after {
+            content: "▼";
+            font-size: 10px;
+            position: absolute;
+            right: 14px;
+            top: 16px;
+            color: #605e5c;
+            pointer-events: none;
+        }
+        .custom-dropdown-header.disabled {
+            background-color: #E8EEFB;
+            border-color: #D3E0FA;
+            color: #a19f9d;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+        .custom-dropdown-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #C7D7F5;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 200px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            border-radius: 8px;
+            margin-top: 4px;
+        }
+        .custom-dropdown-option {
+            padding: 10px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            color: #323130;
+        }
+        .custom-dropdown-option:hover {
+            background-color: #F0F4FF;
+        }
+        .custom-dropdown-option.no-results {
+            color: #a19f9d;
+            font-style: italic;
+            cursor: default;
+            background-color: transparent !important;
+        }
+        
+        /* Caixa de Pesquisa Interna */
+        .dropdown-search-box {
+            padding: 6px;
+            border-bottom: 1px solid #edebe9;
+            background-color: #faf9f8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .dropdown-search-box input {
+            padding: 6px 10px;
+            font-size: 13px;
+            border: 1px solid #C7D7F5;
+            border-radius: 6px;
+            background-color: #ffffff;
+        }
+
+        /* Estrutura Multiselect de Meses */
+        .multiselect-container { position: relative; width: 100%; }
+        .multiselect-header { width: 100%; padding: 12px 32px 12px 42px; border: 1px solid #C7D7F5; border-radius: 8px; font-size: 14px; background-color: #F0F4FF; color: #323130; text-align: left; cursor: pointer; box-sizing: border-box; white-space: normal; }
+        .multiselect-header.has-selection { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .multiselect-header::after { content: "▼"; font-size: 10px; position: absolute; right: 14px; top: 16px; color: #605e5c; pointer-events: none; }
+        .multiselect-header.disabled { background-color: #E8EEFB; border-color: #D3E0FA; color: #a19f9d; cursor: not-allowed; pointer-events: none; }
+        .multiselect-options { display: none; position: absolute; top: 100%; left: 0; width: 100%; background: #ffffff; border: 1px solid #C7D7F5; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; max-height: 200px; overflow-y: auto; box-sizing: border-box; border-radius: 8px; margin-top: 4px; }
+        .multiselect-option { padding: 10px 14px; display: flex; align-items: center; font-size: 14px; cursor: pointer; user-select: none; }
+        .multiselect-option:hover { background-color: #F0F4FF; }
+        .multiselect-option input { width: auto; margin-right: 10px; cursor: pointer; padding: 0; }
+        .multiselect-option.all-option { border-bottom: 1px solid #edebe9; font-weight: 600; color: #1E3A8A; }
+        
+        /* Layout Grid System */
+        .horizontal-row {
+            display: flex; 
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .full-width-row {
+            display: block;
+            margin-top: 12px;
+        }
+        .flex-classe, .flex-turma {
+            flex: 1;
+            min-width: 140px;
+        }
+        .flex-1 {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        /* Otimização Isolada do Botão Submit Baseado na Imagem */
+        .action-container {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .btn-submit {
+            background-color: #1E3A8A;
+            color: #ffffff;
+            border: 1px solid transparent;
+            padding: 14px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.15s ease;
+        }
+        .btn-submit:hover:not(:disabled) { background-color: #162a63; }
+        .btn-submit:active:not(:disabled) { background-color: #0f1e47; }
+        .btn-submit:disabled {
+            background-color: #f3f2f1;
+            color: #a19f9d;
+            border-color: #c8c6c4;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            margin-top: 16px;
+            padding: 10px;
+            font-size: 13px;
+            color: #605e5c;
+            font-style: italic;
+            border-left: 3px solid transparent;
+            display: none;
+            line-height: 1.4;
+            opacity: 1;
+            transition: opacity 1s ease;
+        }
+
+        .success-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .success-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+        .success-title-container h3 {
+            font-size: 18px;
+            color: #107c41;
+            margin: 0 0 4px 0;
+            font-weight: 600;
+        }
+        
+        /* Nova Reorganização do Bloco de Sucesso baseada na Imagem */
+        .payment-details-box {
+            background-color: #ffffff;
+            border: 1px solid #c8c6c4;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .payment-layout-container {
+            display: flex;
+            align-items: center; /* Alinhamento vertical ao centro de forma absoluta */
+            gap: 48px;
+            margin-top: 24px;
+        }
+        .payment-logo-wrapper {
+            flex-shrink: 0;
+        }
+        .payment-logo {
+            display: block;
+            max-width: 110px;
+            height: auto;
+        }
+        .payment-data-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .payment-row {
+            display: flex;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+        .payment-label {
+            font-weight: 700;
+            color: #201f1e;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .payment-value {
+            color: #323130;
+            font-family: inherit;
+            font-weight: normal; 
+            font-size: 13px;
+        }
+        .payment-value.amount {
+            color: #323130;
+            font-weight: normal;
+        }
+        
+        .success-footer {
+            font-size: 12px;
+            color: #605e5c;
+            line-height: 1.5;
+            border-top: 1px solid #edebe9;
+            padding-top: 14px;
+            margin-bottom: 16px;
+        }
+        .btn-secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border: 1px solid #8a8886;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #f3f2f1;
+            border-color: #323130;
+        }
+    </style></head><body><div id="formBlock" class="form-container">
+    
+    <div id="submissionLoader" class="submission-overlay">
+        <div class="spinner"></div>
+        <div class="submission-text">A processar o seu pedido...</div>
+    </div>
+
+    <div class="title-block">
+        <div class="title-container">
+            <h2>Gerar Dados de Pagamento</h2>
+            <div class="subtitle">Preencha o formulário para gerar a entidade, referência e valor necessários ao pagamento antecipado do serviço de transporte escolar.</div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Identificação do Aluno</h3>
+            <p class="section-desc">Seleccione a classe, turma e o nome do aluno para o qual pretende gerar a referência de pagamento.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-classe">
+                <label class="required">Classe</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/school.png" alt="Class Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="classeDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione a Classe</div>
+                        <div id="classeDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="classeSearchInput" placeholder="Pesquisar classe..." autocomplete="off">
+                            </div>
+                            <div id="classeItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group flex-turma">
+                <label class="required">Turma</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/conference.png" alt="Group Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="turmaDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione a Turma</div>
+                        <div id="turmaDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="turmaSearchInput" placeholder="Pesquisar turma..." autocomplete="off">
+                            </div>
+                            <div id="turmaItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="full-width-row">
+            <div class="form-group">
+                <label class="required">Nome do Aluno</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/student-registration.png" alt="Student Icon">
+                    <div class="custom-dropdown-container">
+                        <div id="alunoDropdownHeader" class="custom-dropdown-header disabled" title="A carregar...">Selecione o Aluno</div>
+                        <div id="alunoDropdownOptions" class="custom-dropdown-options">
+                            <div class="dropdown-search-box">
+                                <input type="text" id="alunoSearchInput" placeholder="Pesquisar aluno..." autocomplete="off">
+                            </div>
+                            <div id="alunoItemsContainer"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label for="rotaInput">Rota</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/marker.png" alt="Marker Icon">
+                    <input type="text" id="rotaInput" readonly title="Rota atribuída" placeholder="—" tabindex="-1">
+                </div>
+            </div>
+            <div class="form-group flex-1">
+                <label for="viaturaInput">Viatura</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/bus.png" alt="Bus Icon">
+                    <input type="text" id="viaturaInput" readonly title="Viatura associada" placeholder="—" tabindex="-1">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Detalhes do Pagamento</h3>
+            <p class="section-desc">Indique os meses que pretende pagar e consulte a informação pertinente.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label class="required">Meses a Antecipar</label>
+                <span class="field-description">Seleccione os meses lectivos que pretende pagar.</span>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/calendar-3.png" alt="Calendar Icon">
+                    <div class="multiselect-container" id="monthsContainer">
+                        <div id="monthsDropdownHeader" class="multiselect-header disabled">A carregar...</div>
+                        <div id="monthsDropdownOptions" class="multiselect-options">
+                            <div class="multiselect-option all-option">
+                                <input type="checkbox" id="chkAllMonths"> <label for="chkAllMonths" style="display:inline; font-weight:600; cursor:pointer;">Selecionar Todo o Ano</label>
+                            </div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Janeiro"> Janeiro</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Fevereiro"> Fevereiro</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Março"> Março</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Abril"> Abril</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Maio"> Maio</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Junho"> Junho</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Setembro"> Setembro</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Outubro"> Outubro</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Novembro"> Novembro</div>
+                            <div class="multiselect-option month-item"><input type="checkbox" value="Dezembro"> Dezembro</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label for="precoMensalInput">Valor Mensal</label>
+                <span class="field-description">Mensalidade base associada à classe do aluno.</span>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/price-tag.png" alt="Tag Icon">
+                    <input type="text" id="precoMensalInput" readonly title="Preço base mensal" placeholder="0.00 Kz">
+                </div>
+            </div>
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label for="descontoPercentInput">Desconto Aplicado (%)</label>
+                <div class="input-with-icon">
+                    <input type="text" id="descontoPercentInput" readonly title="Desconto Aplicado" placeholder="—" style="padding-left: 14px; padding-right: 38px;">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/128/1E3A8A/percentage.png" alt="Percentage Icon" style="right: 14px; left: auto;">
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label for="descontoValorInput">Valor do Desconto</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/price-tag.png" alt="Discount Value Icon">
+                    <input type="text" id="descontoValorInput" readonly title="Valor do Desconto" placeholder="—">
+                </div>
+            </div>
+
+            <div class="form-group flex-1">
+                <label for="valorTotalInput">Valor Total a Pagar</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/calculator.png" alt="Calculator Icon">
+                    <input type="text" id="valorTotalInput" readonly title="Valor total calculated" placeholder="0.00 Kz">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Contacto para Envio</h3>
+            <p class="section-desc">Introduza o endereço de e-mail para o qual pretende receber os dados de pagamento gerados.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="horizontal-row">
+            <div class="form-group flex-1">
+                <label for="emailInput" class="required">Endereço de E-mail</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/mail.png" alt="Mail Icon">
+                    <input type="email" id="emailInput" disabled placeholder="exemplo@escola.com" title="A carregar...">
+                </div>
+            </div>
+            <div class="form-group flex-1">
+                <label for="emailConfirmInput" class="required">Confirmação de E-mail</label>
+                <div class="input-with-icon">
+                    <img class="input-icon-img" src="https://img.icons8.com/material-rounded/64/1E3A8A/ok.png" alt="Ok Icon">
+                    <input type="email" id="emailConfirmInput" disabled placeholder="exemplo@escola.com" title="A carregar...">
+                </div>
+                <div id="emailError" class="error-message">O e-mail inserido não coincide com o endereço indicado no campo anterior.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <div class="section-header">
+            <h3 class="section-title">Observações</h3>
+            <p class="section-desc">Campo opcional para indicar qualquer informação adicional relevante para este pedido de pagamento.</p>
+            <hr class="section-divider">
+        </div>
+
+        <div class="full-width-row">
+            <div class="form-group">
+                <label for="observacoesTextarea">Observações (Opcional)</label>
+                <textarea id="observacoesTextarea" disabled placeholder="Caso necessite, insira aqui alguma informação ou nota adicional relevante para a tesouraria..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-container">
+        <button type="button" id="submitBtn" class="btn-submit" disabled>
+            <span>Gerar Dados de Pagamento</span>
+        </button>
+    </div>
+    
+    <div id="statusLog" class="status-message">A preparar o formulário...</div></div><div id="successPanel" class="success-panel">
+    <div class="success-header">
+        <img class="success-icon" src="https://img.icons8.com/material-rounded/64/22C55E/checked.png" alt="Checked Icon">
+        <div class="success-title-container">
+            <h3>Dados de pagamento gerados com sucesso!</h3>
+        </div>
+    </div>
+
+    <div class="payment-details-box">
+        <p style="margin: 0; font-size: 13px; color: #323130; line-height: 1.4;">Utilize os dados apresentados abaixo para efetuar o pagamento através dos canais ligados a rede Multicaixa, nomeadamente ATM, Multicaixa Express ou Internet Banking.</p>
+        
+        <div class="payment-layout-container">
+            <div class="payment-logo-wrapper">
+                <img class="payment-logo" src="https://colegiodemo.github.io/all-images/multicaixa-logo.png?raw=true" alt="Logótipo Multicaixa">
+            </div>
+            
+            <div class="payment-data-wrapper">
+                <div class="payment-row">
+                    <div class="payment-label">Entidade:</div>
+                    <div id="lblEntidade" class="payment-value">-</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Referência:</div>
+                    <div id="lblReferencia" class="payment-value">-</div>
+                </div>
+                <div class="payment-row">
+                    <div class="payment-label">Valor:</div>
+                    <div id="lblValor" class="payment-value amount">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="lblValidadeNota" style="font-size: 11px; color: #605e5c; margin: -10px 0 20px 4px; font-style: italic; line-height: 1.4;">
+        *Referência de pagamento válida até: -
+    </div>
+
+    <div id="successFooterMessage" class="success-footer">
+        Estes dados foram também enviados para o endereço de e-mail fornecido. Caso não receba a mensagem, verifique a pasta de spam ou contacte a secretaria.
+    </div>
+
+    <div class="action-container" style="margin-top: 0;">
+        <button type="button" id="resetFormBtn" class="btn-secondary">Gerar Nova Referência</button>
+    </div></div><div id="confirmationModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-title">Confirmação</div>
+        <div class="modal-text">Pretende gerar uma referência para o pagamento antecipado das propinas?</div>
+        <div class="modal-actions">
+            <button type="button" id="btnModalBack" class="btn-modal-secondary">Cancelar</button>
+            <button type="button" id="btnModalContinue" class="btn-modal-primary">Sim, continuar</button>
+        </div>
+    </div></div><script>
+    const powerAutomateUrl = "https://default67e1fc55c47043779ddd6922b3f149.70.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9eef50864c8d4e92b10807b92be50a2a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=bkvPtldQos4Mf94_AiWHa9AS6wOdIku96sMV9QDJOm4";
+    
+    // UI Modal Elements
+    const confirmationModal = document.getElementById("confirmationModal");
+    const btnModalContinue = document.getElementById("btnModalContinue");
+    const btnModalBack = document.getElementById("btnModalBack");
+
+    // UI Panels Blocks
+    const formBlock = document.getElementById("formBlock");
+    const successPanel = document.getElementById("successPanel");
+    const resetFormBtn = document.getElementById("resetFormBtn");
+    
+    // UI Submission Loader
+    const submissionLoader = document.getElementById("submissionLoader");
+    
+    // UI Result Labels
+    const lblEntidade = document.getElementById("lblEntidade");
+    const lblReferencia = document.getElementById("lblReferencia");
+    const lblValor = document.getElementById("lblValor");
+    const lblValidadeNota = document.getElementById("lblValidadeNota");
+    const successFooterMessage = document.getElementById("successFooterMessage");
+
+    // UI Elements Estáticos Formulário
+    const statusLog = document.getElementById("statusLog");
+    const submitBtn = document.getElementById("submitBtn");
+    const precoMensalInput = document.getElementById("precoMensalInput");
+    const descontoPercentInput = document.getElementById("descontoPercentInput");
+    const descontoValorInput = document.getElementById("descontoValorInput");
+    const valorTotalInput = document.getElementById("valorTotalInput");
+    const emailInput = document.getElementById("emailInput");
+    const emailConfirmInput = document.getElementById("emailConfirmInput");
+    const emailError = document.getElementById("emailError");
+    const observacoesTextarea = document.getElementById("observacoesTextarea");
+    
+    // UI Elements - Novos Inputs Readonly do Transporte
+    const rotaInput = document.getElementById("rotaInput");
+    const viaturaInput = document.getElementById("viaturaInput");
+
+    // UI Elements Multi-Select (Meses)
+    const monthsContainer = document.getElementById("monthsContainer");
+    const monthsDropdownHeader = document.getElementById("monthsDropdownHeader");
+    const monthsDropdownOptions = document.getElementById("monthsDropdownOptions");
+    const chkAllMonths = document.getElementById("chkAllMonths");
+    const monthCheckboxes = document.querySelectorAll(".month-item input[type='checkbox']");
+
+    // UI Elements - Dropdown Classe
+    const classeDropdownHeader = document.getElementById("classeDropdownHeader");
+    const classeDropdownOptions = document.getElementById("classeDropdownOptions");
+    const classeSearchInput = document.getElementById("classeSearchInput");
+    const classeItemsContainer = document.getElementById("classeItemsContainer");
+
+    // UI Elements - Dropdown Turma
+    const turmaDropdownHeader = document.getElementById("turmaDropdownHeader");
+    const turmaDropdownOptions = document.getElementById("turmaDropdownOptions");
+    const turmaSearchInput = document.getElementById("turmaSearchInput");
+    const turmaItemsContainer = document.getElementById("turmaItemsContainer");
+
+    // UI Elements - Dropdown Aluno
+    const alunoDropdownHeader = document.getElementById("alunoDropdownHeader");
+    const alunoDropdownOptions = document.getElementById("alunoDropdownOptions");
+    const alunoSearchInput = document.getElementById("alunoSearchInput");
+    const alunoItemsContainer = document.getElementById("alunoItemsContainer");
+
+    // Memory State
+    let globalRawResponse = null;
+    let globalStudentData = [];
+    let distinctClassesList = [];
+    let currentTurmasList = [];
+    let currentFilteredStudents = [];
+    
+    // Selections State
+    let selectedClasseName = "";
+    let selectedTurmaName = "";
+    let selectedStudentName = "";
+    let selectedStudentPayload = null;
+
+    // Valores em memória para submissão direta estruturada
+    let currentRawTotalValue = 0;
+    let currentRawDiscountValue = 0;
+
+    // Fluxo do Modal Inicial
+    function setupInitialGate() {
+        btnModalContinue.addEventListener("click", function(e) {
+            e.stopPropagation();
+            confirmationModal.remove(); // Remove o pop-up libertando o segundo plano
+            initFetch(); // Dispara a chamada ao servidor
+        });
+
+        btnModalBack.addEventListener("click", function(e) {
+            e.stopPropagation();
+            confirmationModal.remove();
+            history.back(); // Volta para a página anterior
+        });
+    }
+
+    async function initFetch() {
+        setFormDisabledState(true);
+        showStatus("A carregar dados...", "#605e5c", "#f3f2f1");
+        
+        const payload = { 
+            "Flag": "GetSPOData-Aluno", 
+            "Source": "F9A3C7E1D0B4F6A2C8E1D9F7A3B6C4E0F1A9D3C7E5B2F8A0C6D4E1B9F703A5C2" 
+        };
+
+        try {
+            const response = await fetch(powerAutomateUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            
+            if (!response.ok) throw new Error();
+            globalRawResponse = await response.json();
+            globalStudentData = Array.isArray(globalRawResponse) ? globalRawResponse : (globalRawResponse.Estudantes || []);
+            
+            setFormDisabledState(false);
+            showStatus("Formulário carregado com sucesso. Por favor, preencha os campos obrigatórios.", "#107c41", "#dff6dd");
+            
+            resetTooltips();
+            buildClasseList();
+
+            setTimeout(() => {
+                statusLog.style.opacity = "0";
+                setTimeout(() => { statusLog.style.display = "none"; }, 1000);
+            }, 4000);
+
+        } catch (error) {
+            showStatus("Ocorreu um erro ao estabelecer ligação com o servidor. Verifique a sua ligação à internet...", "#a80000", "#fde7e9");
+            monthsDropdownHeader.innerText = "Indisponível";
+            classeDropdownHeader.innerText = "Indisponível";
+            turmaDropdownHeader.innerText = "Indisponível";
+            alunoDropdownHeader.innerText = "Indisponível";
+        }
+    }
+
+    function setFormDisabledState(disabled) {
+        emailInput.disabled = disabled;
+        emailConfirmInput.disabled = disabled;
+        observacoesTextarea.disabled = disabled;
+        
+        if (disabled) {
+            monthsDropdownHeader.classList.add("disabled"); monthsDropdownHeader.innerText = "A carregar...";
+            classeDropdownHeader.classList.add("disabled"); classeDropdownHeader.innerText = "A carregar...";
+            turmaDropdownHeader.classList.add("disabled"); turmaDropdownHeader.innerText = "A carregar...";
+            alunoDropdownHeader.classList.add("disabled"); alunoDropdownHeader.innerText = "A carregar...";
+            submitBtn.disabled = true;
+        } else {
+            monthsDropdownHeader.classList.remove("disabled"); monthsDropdownHeader.innerText = "Selecionar meses...";
+            monthsDropdownHeader.classList.remove("has-selection");
+            classeDropdownHeader.classList.remove("disabled"); classeDropdownHeader.innerText = "Selecione a Classe";
+            classeDropdownHeader.classList.remove("has-selection");
+            turmaDropdownHeader.innerText = "Selecione a Turma";
+            turmaDropdownHeader.classList.remove("has-selection");
+            alunoDropdownHeader.innerText = "Selecione o Aluno";
+            alunoDropdownHeader.classList.remove("has-selection");
+        }
+    }
+
+    const style = document.createElement('style');
+    style.innerHTML = '#rotaInput[readonly], #viaturaInput[readonly] { cursor: default; } #rotaInput:focus, #viaturaInput:focus { border-color: #C7D7F5; box-shadow: none; background-color: #E2ECFF; }';
+    document.head.appendChild(style);
+
+    function resetTooltips() {
+        classeDropdownHeader.setAttribute("title", "Selecione a Classe");
+        turmaDropdownHeader.setAttribute("title", "Selecione a Turma");
+        alunoDropdownHeader.setAttribute("title", "Selecione o Aluno");
+        emailInput.setAttribute("title", "Insira o email do destinatário");
+        emailConfirmInput.setAttribute("title", "Confirme o email do destinatário");
+        observacoesTextarea.setAttribute("title", "Observações adicionais");
+    }
+
+    function showStatus(text, textColor, bgColor) {
+        statusLog.style.opacity = "1"; statusLog.innerText = text; statusLog.style.color = textColor;
+        statusLog.style.backgroundColor = bgColor; statusLog.style.borderLeftColor = textColor; statusLog.style.display = "block";
+    }
+
+    // --- DROPDOWNS CUSTOMIZADOS ---
+    function closeAllDropdownonsExcept(openDropdownOptions) {
+        const lists = [monthsDropdownOptions, classeDropdownOptions, turmaDropdownOptions, alunoDropdownOptions];
+        lists.forEach(list => { if(list !== openDropdownOptions) list.style.display = "none"; });
+    }
+
+    monthsDropdownHeader.addEventListener("click", function(e) {
+        e.stopPropagation(); if (this.classList.contains("disabled")) return;
+        closeAllDropdownonsExcept(monthsDropdownOptions);
+        monthsDropdownOptions.style.display = monthsDropdownOptions.style.display === "block" ? "none" : "block";
+    });
+
+    monthsDropdownOptions.addEventListener("click", function(e) {
+        e.stopPropagation();
+    });
+
+    classeDropdownHeader.addEventListener("click", function(e) {
+        e.stopPropagation(); if (this.classList.contains("disabled")) return;
+        closeAllDropdownonsExcept(classeDropdownOptions);
+        if (classeDropdownOptions.style.display !== "block") {
+            classeDropdownOptions.style.display = "block"; classeSearchInput.focus();
+        } else { closeClasseDropdown(); }
+    });
+
+    try {
+        turmaDropdownHeader.addEventListener("click", function(e) {
+            e.stopPropagation(); if (this.classList.contains("disabled")) return;
+            closeAllDropdownonsExcept(turmaDropdownOptions);
+            if (turmaDropdownOptions.style.display !== "block") {
+                turmaDropdownOptions.style.display = "block"; turmaSearchInput.focus();
+            } else { closeTurmaDropdown(); }
+        });
+    } catch(e) {}
+
+    alunoDropdownHeader.addEventListener("click", function(e) {
+        e.stopPropagation(); if (this.classList.contains("disabled")) return;
+        closeAllDropdownonsExcept(alunoDropdownOptions);
+        if (alunoDropdownOptions.style.display !== "block") {
+            alunoDropdownOptions.style.display = "block"; alunoSearchInput.focus();
+        } else { closeAlunoDropdown(); }
+    });
+
+    document.addEventListener("click", function() {
+        closeAllDropdownonsExcept(null); closeClasseDropdown(); closeTurmaDropdown(); closeAlunoDropdown();
+    });
+
+    function closeClasseDropdown() { classeDropdownOptions.style.display = "none"; classeSearchInput.value = ""; filterClasseOptions(""); }
+    function closeTurmaDropdown() { turmaDropdownOptions.style.display = "none"; turmaSearchInput.value = ""; filterTurmaOptions(""); }
+    function closeAlunoDropdown() { alunoDropdownOptions.style.display = "none"; alunoSearchInput.value = ""; filterAlunoOptions(""); }
+
+    // --- CLASSE ---
+    function buildClasseList() {
+        distinctClassesList = [...new Set(globalStudentData.map(item => item.Classe))].filter(Boolean);
+        renderClasseOptions(distinctClassesList);
+    }
+    classeSearchInput.addEventListener("input", function() { filterClasseOptions(this.value); });
+    function filterClasseOptions(term) {
+        const lower = term.toLowerCase().trim();
+        const filtered = distinctClassesList.filter(c => c.toLowerCase().includes(lower));
+        renderClasseOptions(filtered);
+    }
+    function renderClasseOptions(list) {
+        classeItemsContainer.innerHTML = "";
+        if(list.length === 0) {
+            classeItemsContainer.innerHTML = '<div class="custom-dropdown-option no-results">Nenhuma classe encontrada</div>';
+            return;
+        }
+        list.forEach(classe => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = classe;
+            div.addEventListener("click", function() { selectClasse(classe); });
+            classeItemsContainer.appendChild(div);
+        });
+    }
+    function selectClasse(classe) {
+        selectedClasseName = classe; classeDropdownHeader.innerText = classe; classeDropdownHeader.setAttribute("title", classe);
+        classeDropdownHeader.classList.add("has-selection");
+        
+        turmaDropdownHeader.classList.remove("disabled"); turmaDropdownHeader.innerText = "Selecione a Turma"; turmaDropdownHeader.setAttribute("title", "Selecione a Turma");
+        turmaDropdownHeader.classList.remove("has-selection");
+        alunoDropdownHeader.classList.add("disabled"); alunoDropdownHeader.innerText = "Selecione o Aluno"; alunoDropdownHeader.setAttribute("title", "Aguardando Turma");
+        alunoDropdownHeader.classList.remove("has-selection");
+        
+        currentTurmasList = [...new Set(globalStudentData.filter(i => i.Classe === classe).map(i => i.Turma))].filter(Boolean);
+        renderTurmaOptions(currentTurmasList);
+        resetPropinaForm(); closeClasseDropdown(); validateForm();
+    }
+
+    // --- TURMA ---
+    turmaSearchInput.addEventListener("input", function() { filterTurmaOptions(this.value); });
+    function filterTurmaOptions(term) {
+        const lower = term.toLowerCase().trim();
+        const filtered = currentTurmasList.filter(t => t.toLowerCase().includes(lower));
+        renderTurmaOptions(filtered);
+    }
+    function renderTurmaOptions(list) {
+        turmaItemsContainer.innerHTML = "";
+        if(list.length === 0) {
+            turmaItemsContainer.innerHTML = '<div class="custom-dropdown-option no-results">Nenhuma turma encontrada</div>';
+            return;
+        }
+        list.forEach(turma => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = turma;
+            div.addEventListener("click", function() { selectTurma(turma); });
+            turmaItemsContainer.appendChild(div);
+        });
+    }
+    function selectTurma(turma) {
+        selectedTurmaName = turma; turmaDropdownHeader.innerText = turma; turmaDropdownHeader.setAttribute("title", turma);
+        turmaDropdownHeader.classList.add("has-selection");
+        
+        alunoDropdownHeader.classList.remove("disabled"); alunoDropdownHeader.innerText = "Selecione o Aluno"; alunoDropdownHeader.setAttribute("title", "Selecione o Aluno");
+        alunoDropdownHeader.classList.remove("has-selection");
+        
+        currentFilteredStudents = globalStudentData.filter(item => item.Classe === selectedClasseName && item.Turma === turma && item.NomeDoAluno);
+        renderAlunoOptions(currentFilteredStudents);
+        resetPropinaForm(); closeTurmaDropdown(); validateForm();
+    }
+
+    // --- ALUNO ---
+    alunoSearchInput.addEventListener("input", function() { filterAlunoOptions(this.value); });
+    function filterAlunoOptions(term) {
+        const lower = term.toLowerCase().trim();
+        const filtered = currentFilteredStudents.filter(s => s.NomeDoAluno.toLowerCase().includes(lower));
+        renderAlunoOptions(filtered);
+    }
+    function renderAlunoOptions(list) {
+        alunoItemsContainer.innerHTML = "";
+        if (list.length === 0) {
+            alunoItemsContainer.innerHTML = '<div class="custom-dropdown-option no-results">Nenhum aluno encontrado</div>';
+            return;
+        }
+        list.forEach(student => {
+            const div = document.createElement("div"); div.className = "custom-dropdown-option"; div.innerText = student.NomeDoAluno;
+            div.addEventListener("click", function() { selectAluno(student); });
+            alunoItemsContainer.appendChild(div);
+        });
+    }
+    
+    function selectAluno(student) {
+        selectedStudentName = student.NomeDoAluno; 
+        alunoDropdownHeader.innerText = student.NomeDoAluno; 
+        alunoDropdownHeader.setAttribute("title", student.NomeDoAluno);
+        alunoDropdownHeader.classList.add("has-selection");
+        
+        selectedStudentPayload = student;
+        
+        // Atribuição Dinâmica dos novos campos de leitura do Transporte
+        rotaInput.value = student.Rota || "";
+        viaturaInput.value = student.Viatura || "";
+        
+        precoMensalInput.value = Number(selectedStudentPayload.Valor).toLocaleString('pt-PT', { minimumFractionDigits: 2 }) + " Kz";
+        calculateCalculations(); 
+        closeAlunoDropdown(); 
+        validateForm();
+    }
+
+    // --- MESES MULTISELECT ---
+    chkAllMonths.addEventListener("change", function() { monthCheckboxes.forEach(cb => cb.checked = this.checked); updateMonthsSelection(); });
+    monthCheckboxes.forEach(cb => { cb.addEventListener("change", function() { chkAllMonths.checked = Array.from(monthCheckboxes).every(c => c.checked); updateMonthsSelection(); }); });
+    function getSelectedMonths() { return Array.from(monthCheckboxes).filter(c => c.checked).map(c => c.value); }
+    function updateMonthsSelection() {
+        const selected = getSelectedMonths();
+        if (selected.length === 0) {
+            monthsDropdownHeader.innerText = "Selecionar meses...";
+            monthsDropdownHeader.classList.remove("has-selection");
+        } else {
+            monthsDropdownHeader.innerText = (selected.length === monthCheckboxes.length ? "Todo o ano letivo" : selected.join(", "));
+            monthsDropdownHeader.classList.add("has-selection");
+        }
+        calculateCalculations(); validateForm();
+    }
+
+    // --- CÁLCULO E DESCONTO PROGRESSIVO ---
+    function calculateCalculations() {
+        const nMeses = getSelectedMonths().length;
+        
+        if (nMeses === 0) {
+            descontoPercentInput.value = "—";
+            descontoValorInput.value = "—";
+            valorTotalInput.value = "";
+            currentRawTotalValue = 0;
+            currentRawDiscountValue = 0;
+            return;
+        }
+
+        if (!selectedStudentPayload) {
+            descontoPercentInput.value = "0";
+            descontoValorInput.value = "0,00 Kz";
+            valorTotalInput.value = "0,00 Kz";
+            currentRawTotalValue = 0;
+            currentRawDiscountValue = 0;
+            return;
+        }
+
+        const valorMensal = Number(selectedStudentPayload.Valor) || 0;
+        const discountKey = nMeses + "Mes";
+        let percentagem = 0;
+        
+        if (selectedStudentPayload[discountKey] !== undefined) {
+            percentagem = Number(selectedStudentPayload[discountKey]) || 0;
+        }
+
+        descontoPercentInput.value = percentagem.toLocaleString('pt-PT');
+
+        currentRawDiscountValue = valorMensal * nMeses * (percentagem / 100);
+        descontoValorInput.value = currentRawDiscountValue.toLocaleString('pt-PT', { minimumFractionDigits: 2 }).replace(/\u00a0/g, " ") + " Kz";
+
+        currentRawTotalValue = (valorMensal * nMeses) - currentRawDiscountValue;
+        valorTotalInput.value = currentRawTotalValue.toLocaleString('pt-PT', { minimumFractionDigits: 2 }).replace(/\u00a0/g, " ") + " Kz";
+    }
+
+    function resetPropinaForm() {
+        selectedStudentPayload = null; selectedStudentName = ""; chkAllMonths.checked = false;
+        monthCheckboxes.forEach(cb => cb.checked = false); monthsDropdownHeader.innerText = "Selecionar meses...";
+        monthsDropdownHeader.classList.remove("has-selection");
+        
+        // Reseta os novos campos de leitura do Transporte
+        rotaInput.value = "";
+        viaturaInput.value = "";
+        
+        precoMensalInput.value = ""; 
+        descontoPercentInput.value = "—";
+        descontoValorInput.value = "—";
+        valorTotalInput.value = ""; 
+        currentRawTotalValue = 0;
+        currentRawDiscountValue = 0;
+        emailInput.value = ""; emailConfirmInput.value = ""; observacoesTextarea.value = "";
+        emailError.style.display = "none";
+    }
+
+    // Validação específica para o comportamento do evento blur
+    function checkEmailMatch() {
+        const emailVal = emailInput.value.trim().toLowerCase();
+        const confirmVal = emailConfirmInput.value.trim().toLowerCase();
+        
+        if (confirmVal !== "" && emailVal !== confirmVal) {
+            emailError.style.display = "block";
+            return false;
+        } else {
+            emailError.style.display = "none";
+            return true;
+        }
+    }
+
+    emailConfirmInput.addEventListener("blur", checkEmailMatch);
+    
+    emailInput.addEventListener("input", function() {
+        if (emailError.style.display === "block") {
+            const emailVal = emailInput.value.trim().toLowerCase();
+            const confirmVal = emailConfirmInput.value.trim().toLowerCase();
+            if (emailVal === confirmVal) {
+                emailError.style.display = "none";
+            }
+        }
+        validateForm();
+    });
+    
+    emailConfirmInput.addEventListener("input", validateForm);
+
+    function validateForm() {
+        let isValid = !!(selectedClasseName && selectedTurmaName && selectedStudentName);
+        const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailVal = emailInput.value.trim().toLowerCase();
+        const confirmVal = emailConfirmInput.value.trim().toLowerCase();
+        
+        if (getSelectedMonths().length === 0 || !emailInput.value || !emailConfirmInput.value || emailVal !== confirmVal || !emailReg.test(emailInput.value)) {
+            isValid = false;
+        }
+        submitBtn.disabled = !isValid;
+    }
+
+    // --- SUBMISSÃO ---
+    submitBtn.addEventListener("click", async function() {
+        if (!checkEmailMatch()) {
+            this.disabled = true;
+            return;
+        }
+
+        // Ativa o bloqueio rígido e apresenta o Spinner de carregamento imediatamente
+        this.disabled = true; 
+        setFormDisabledState(true);
+        submissionLoader.style.display = "flex"; 
+        statusLog.style.display = "none";
+
+        const targetUserEmail = emailInput.value || "";
+        const selectedMonthsArray = getSelectedMonths();
+        const rawInitialStudentValue = selectedStudentPayload ? Number(selectedStudentPayload.Valor) : 0;
+        
+        const finalSubmissionBody = {
+            "Flag": "GetPaymentReference", 
+            "Servico": "Transporte-Antecipado",
+            "Classe": String(selectedClasseName), 
+            "Turma": String(selectedTurmaName),
+            "NomeDoAluno": String(selectedStudentPayload ? selectedStudentPayload.NomeDoAluno : ""),
+            "NumeroAluno": String(selectedStudentPayload && selectedStudentPayload.NumeroAluno !== undefined ? selectedStudentPayload.NumeroAluno : ""),
+            "ID": String(selectedStudentPayload && selectedStudentPayload.ID !== null ? selectedStudentPayload.ID : ""),
+            "Telefone": String(selectedStudentPayload ? selectedStudentPayload.Telefone : ""),
+            "Rota": String(selectedStudentPayload && selectedStudentPayload.Rota ? selectedStudentPayload.Rota : ""),
+            "Viatura": String(selectedStudentPayload && selectedStudentPayload.Viatura ? selectedStudentPayload.Viatura : ""),
+            "Matricula": String(selectedStudentPayload && selectedStudentPayload.Matricula ? selectedStudentPayload.Matricula : ""),
+            "Email": String(targetUserEmail), 
+            "Valor": String(rawInitialStudentValue.toFixed(2)),
+            "ValorTotal": String(currentRawTotalValue.toFixed(2)),
+            "ValorDesconto": String(currentRawDiscountValue.toFixed(2)),
+            "EntidadeMcx": String(selectedStudentPayload && selectedStudentPayload.EntidadeMcx !== null ? selectedStudentPayload.EntidadeMcx : ""),
+            "Banco": String(selectedStudentPayload && selectedStudentPayload.Banco ? selectedStudentPayload.Banco : ""),
+            "Notes": String(observacoesTextarea.value || ""), 
+            "MesAntecipado": String(selectedMonthsArray.join(",")),
+            "NumMesesAnticipados": String(selectedMonthsArray.length),
+            "Source": "F9A3C7E1D0B4F6A2C8E1D9F7A3B6C4E0F1A9D3C7E5B2F8A0C6D4E1B9F703A5C2"
+        };
+
+        try {
+            const response = await fetch(powerAutomateUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(finalSubmissionBody) });
+            
+            // Remove o Spinner de Submissão independentemente da resposta do servidor
+            submissionLoader.style.display = "none";
+
+            if (response.ok) {
+                const responseData = await response.json();
+                
+                let rawReturnedAmount = Number(responseData.Valor) || 0;
+                let angolanVisualAmount = rawReturnedAmount.toLocaleString('pt-PT', { minimumFractionDigits: 2 }).replace(/\u00a0/g, " ") + " Kz";
+
+                lblEntidade.innerText = responseData.Entidade || "-";
+                lblReferencia.innerText = responseData.Referencia || "-";
+                lblValor.innerText = angolanVisualAmount;
+                
+                lblValidadeNota.innerText = `*Referência de pagamento válida até: ${responseData.Validade || "-"}`;
+                
+                successFooterMessage.innerHTML = `Estes dados foram também enviados para <strong>${targetUserEmail}</strong>. Caso não receba a mensagem, verifique a pasta de spam ou contacte a secretaria.`;
+
+                // O formulário perde opacidade e interação mas mantém a sua altura para suportar o iframe do SharePoint
+                formBlock.style.opacity = "0";
+                formBlock.style.pointerEvents = "none";
+                
+                // O painel de sucesso surge ancorado de forma absoluta no viewport útil inicial (250px do topo)
+                successPanel.style.display = "block";
+
+            } else { throw new Error(); }
+        } catch (err) {
+            // Remove o Spinner de Submissão, restaura os controlos e imprime a mensagem visual de falha
+            submissionLoader.style.display = "none";
+            showStatus("Erro ao enviar pedido. Por favor, tente novamente.", "#a80000", "#fde7e9");
+            setFormDisabledState(false); 
+            validateForm();
+        }
+    });
+
+    // Reposição
+    resetFormBtn.addEventListener("click", function() {
+        selectedClasseName = "";
+        selectedTurmaName = "";
+        selectedStudentName = "";
+        selectedStudentPayload = null;
+
+        classeDropdownHeader.innerText = "Selecione a Classe";
+        classeDropdownHeader.setAttribute("title", "Selecione a Classe");
+        classeDropdownHeader.classList.remove("has-selection");
+        
+        turmaDropdownHeader.classList.add("disabled");
+        turmaDropdownHeader.innerText = "Selecione a Turma";
+        turmaDropdownHeader.setAttribute("title", "Aguardando Classe");
+        turmaDropdownHeader.classList.remove("has-selection");
+        
+        alunoDropdownHeader.classList.add("disabled");
+        alunoDropdownHeader.innerText = "Selecione o Aluno";
+        alunoDropdownHeader.setAttribute("title", "Aguardando Turma");
+        alunoDropdownHeader.classList.remove("has-selection");
+
+        resetPropinaForm();
+        setFormDisabledState(false);
+        
+        statusLog.style.display = "none";
+        statusLog.style.opacity = "1";
+
+        successPanel.style.display = "none";
+        
+        // Restaura a visibilidade e as ações do formulário padrão
+        formBlock.style.opacity = "1";
+        formBlock.style.pointerEvents = "auto";
+        
+        buildClasseList();
+        validateForm();
+    });
+
+    // Inicialização segura
+    window.addEventListener("DOMContentLoaded", setupInitialGate);</script></body></html>
