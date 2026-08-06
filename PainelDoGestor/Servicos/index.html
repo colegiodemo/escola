@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Integrado — Serviços e Emolumentos</title>
+    <style>
+        :root {
+            /* Base institucional */
+            --ink: #0F1A2E;
+            --ink-soft: #334155;
+            --muted: #64748B;
+            --muted-soft: #94A3B8;
+            --line: #E6EAF2;
+            --line-soft: #EEF1F6;
+            --surface: #FFFFFF;
+            --canvas: #F7F9FC;
+            --navy: #0F2557;
+
+            /* Cor temática da secção */
+            --c1: #B45309; /* Serviços e Emolumentos — composição/percentagem */
+
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { color-scheme: light; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background:
+                radial-gradient(1100px 420px at 18% -8%, rgba(30,58,138,0.045), transparent 60%),
+                radial-gradient(900px 380px at 100% 0%, rgba(13,148,136,0.035), transparent 55%),
+                #FFFFFF;
+            color: var(--ink-soft);
+            line-height: 1.55;
+            padding: 0 16px 16px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ Cabeçalho visual de ancoragem ============ */
+        .dashboard-hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 4px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Etiqueta discreta do cabeçalho */
+        .hero-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--navy);
+            text-align: right;
+            padding-right: 2px;
+        }
+
+        /* ============ Contentor principal ============ */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 52px;
+        }
+
+        .dashboard-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            opacity: 0;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .dashboard-section:nth-of-type(1) { animation-delay: 0.02s; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dashboard-section {
+                animation: none;
+                opacity: 1;
+            }
+            .dashboard-card,
+            .dashboard-card:hover {
+                transition: none;
+                transform: none;
+            }
+        }
+
+        /* ============ Cabeçalho de secção: ícone + índice + título ============ */
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 12%, white);
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, white);
+        }
+
+        .section-icon svg {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .section-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding-top: 2px;
+        }
+
+        .section-index {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--muted-soft);
+        }
+
+        .section-title {
+            font-size: 1.22rem;
+            font-weight: 750;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+            line-height: 1.25;
+        }
+
+        .section-description {
+            font-size: 0.925rem;
+            font-weight: 400;
+            color: var(--muted);
+            max-width: 1080px;
+            padding-left: 54px;
+        }
+
+        /* ============ Cartão do relatório ============ */
+        .dashboard-card {
+            position: relative;
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 3px 0 0;
+            box-shadow:
+                0 1px 2px rgba(15, 23, 42, 0.04),
+                0 10px 26px -18px rgba(15, 23, 42, 0.22);
+            border: 1px solid var(--line);
+            transition: box-shadow 0.28s ease, transform 0.28s ease, border-color 0.28s ease;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: "";
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 45%, white));
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+            box-shadow:
+                0 2px 4px rgba(15, 23, 42, 0.05),
+                0 22px 40px -20px rgba(15, 23, 42, 0.28);
+        }
+
+        /* Técnica de Iframe Crop Wrapper */
+        .iframe-crop-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--canvas);
+        }
+
+        .iframe-crop-wrapper iframe {
+            width: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 0;
+        }
+
+        /* Altura do wrapper de iframe — valor de partida, a afinar visualmente como nas páginas anteriores */
+        .crop-servicos-emolumentos { height: 1564px; } .crop-servicos-emolumentos iframe { height: 1600px !important; }
+
+        /* ============ Ajustes Responsivos ============ */
+        @media (max-width: 768px) {
+            body { padding: 0 10px 10px; }
+            .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
+            .hero-label { font-size: 0.64rem; letter-spacing: 0.13em; }
+            .dashboard-container { gap: 36px; }
+            .section-title { font-size: 1.08rem; }
+            .section-description { padding-left: 0; margin-top: 6px; }
+            .section-icon { width: 34px; height: 34px; border-radius: 10px; }
+            .section-icon svg { width: 16px; height: 16px; }
+            .dashboard-card { margin-top: 16px; }
+        }
+
+        @media (max-width: 480px) {
+            .section-header { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO VISUAL DE ANCORAGEM -->
+    <div class="dashboard-hero">
+        <span class="hero-label">Painel Analítico</span>
+    </div>
+
+    <main class="dashboard-container">
+
+        <!-- SECÇÃO 1 -->
+        <section class="dashboard-section" style="--accent:#B45309">
+            <div class="section-header">
+                <div class="section-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
+                </div>
+                <div class="section-heading">
+                    <span class="section-index">01</span>
+                    <h2 class="section-title">Serviços e Emolomentos</h2>
+                </div>
+            </div>
+            <p class="section-description">Receita arrecadada por tipo de serviço e respectivo peso percentual no total cobrado. Use esta secção para identificar os serviços com maior contribuição financeira e optimizar a oferta de serviços da escola.</p>
+            <article class="dashboard-card">
+                <div class="iframe-crop-wrapper crop-servicos-emolumentos">
+                    <iframe src="https://datastudio.google.com/embed/reporting/fc5da10b-0f7d-4bc6-9df1-b5b6cccf8a16/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                </div>
+            </article>
+        </section>
+
+    </main>
+</body>
+</html>
