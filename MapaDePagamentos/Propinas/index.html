@@ -364,8 +364,8 @@
         .crop-todos-registos { height: 1500px; } .crop-todos-registos iframe { height: 1536px !important; }
 
         /* Turmas — o relatório-base foi fornecido com 1500px de altura; recorte de 36px (barra do Looker Studio) */
-        .crop-turma { height: 1464px; } .crop-turma iframe { height: 1500px !important; }
-        .crop-turma-1050 { height: 1464px; } .crop-turma-1050 iframe { height: 1500px !important; }
+        .crop-turma { height: 1500px; } .crop-turma iframe { height: 1536px !important; }
+        .crop-turma-1050 { height: 1500px; } .crop-turma-1050 iframe { height: 1536px !important; }
 
         /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
@@ -1602,10 +1602,18 @@
 
         // 2) Ao expandir uma secção-mãe ou uma turma, posicionar o scroll no seu
         //    topo, para que o utilizador veja imediatamente o cabeçalho aberto.
+        //    Usamos dois requestAnimationFrame seguidos para garantir que o
+        //    browser já terminou o reflow (incluindo o fecho automático de uma
+        //    turma irmã, via atributo name) antes de calcular a posição —
+        //    sem isto, a posição podia ser calculada com o layout ainda a meio.
         document.querySelectorAll('details.group-section, details.subsection').forEach(function (el) {
             el.addEventListener('toggle', function () {
                 if (el.open) {
-                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        });
+                    });
                 }
             });
         });
