@@ -614,5 +614,29 @@
         <!-- Para adicionar um novo ciclo/classe, duplicar o bloco <section class="dashboard-section">...</section> de uma secção-mãe (SECÇÃO 2, 3 ou 4), atribuindo uma nova cor --accent e o índice seguinte -->
 
     </main>
+
+    <script>
+        // 1) Ao colapsar uma secção-mãe, as suas turmas que estivessem
+        //    expandidas voltam ao estado colapsado — não herdam o estado aberto.
+        document.querySelectorAll('details.group-section').forEach(function (group) {
+            group.addEventListener('toggle', function () {
+                if (!group.open) {
+                    group.querySelectorAll('details.subsection[open]').forEach(function (sub) {
+                        sub.open = false;
+                    });
+                }
+            });
+        });
+
+        // 2) Ao expandir uma turma, posicionar o scroll no topo dessa turma,
+        //    para que o utilizador veja imediatamente o seu cabeçalho.
+        document.querySelectorAll('details.subsection').forEach(function (sub) {
+            sub.addEventListener('toggle', function () {
+                if (sub.open) {
+                    sub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
