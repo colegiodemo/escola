@@ -616,6 +616,13 @@
     </main>
 
     <script>
+        // Os dois blocos abaixo seleccionam elementos por CLASSE (não por ID nem
+        // por uma lista fixa), e o script corre no fim do <body> — por isso
+        // aplicam-se automaticamente a qualquer secção-mãe (.group-section) ou
+        // turma (.subsection) que venha a ser adicionada no futuro, desde que
+        // sigam o mesmo padrão de marcação já usado nas secções existentes.
+        // Não é necessário tocar neste script ao criar novas secções ou turmas.
+
         // 1) Ao colapsar uma secção-mãe, as suas turmas que estivessem
         //    expandidas voltam ao estado colapsado — não herdam o estado aberto.
         document.querySelectorAll('details.group-section').forEach(function (group) {
@@ -628,12 +635,12 @@
             });
         });
 
-        // 2) Ao expandir uma turma, posicionar o scroll no topo dessa turma,
-        //    para que o utilizador veja imediatamente o seu cabeçalho.
-        document.querySelectorAll('details.subsection').forEach(function (sub) {
-            sub.addEventListener('toggle', function () {
-                if (sub.open) {
-                    sub.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // 2) Ao expandir uma secção-mãe ou uma turma, posicionar o scroll no seu
+        //    topo, para que o utilizador veja imediatamente o cabeçalho aberto.
+        document.querySelectorAll('details.group-section, details.subsection').forEach(function (el) {
+            el.addEventListener('toggle', function () {
+                if (el.open) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
