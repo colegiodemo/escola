@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Integrado — Cobranças por Turma</title>
+    <style>
+        :root {
+            /* Base institucional */
+            --ink: #0F1A2E;
+            --ink-soft: #334155;
+            --muted: #64748B;
+            --muted-soft: #94A3B8;
+            --line: #E6EAF2;
+            --line-soft: #EEF1F6;
+            --surface: #FFFFFF;
+            --canvas: #FFFFFF;
+            --navy: #0F2557;
+
+            /* Cor de acento — única para todas as secções */
+            --accent-brand: #1E3A8A;
+
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { color-scheme: light; scroll-behavior: smooth; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #FFFFFF;
+            color: var(--ink-soft);
+            line-height: 1.55;
+            padding: 0 16px 16px;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============ Cabeçalho visual de ancoragem ============ */
+        .dashboard-hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 4px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .hero-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--navy);
+            text-align: right;
+            padding-right: 2px;
+        }
+
+        /* ============ Contentor principal ============ */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .dashboard-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            opacity: 0;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .dashboard-section:nth-of-type(1) { animation-delay: 0.02s; }
+        .dashboard-section:nth-of-type(2) { animation-delay: 0.08s; }
+        .dashboard-section:nth-of-type(3) { animation-delay: 0.14s; }
+        .dashboard-section:nth-of-type(4) { animation-delay: 0.20s; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dashboard-section { animation: none; opacity: 1; }
+            .group-section { transition: none; }
+            .group-chevron svg, .subsection-chevron svg { transition: none; }
+        }
+
+        /* ============ Cabeçalho de secção de topo (nível 1) ============ */
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 12%, white);
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, white);
+        }
+
+        .section-icon svg {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .section-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            padding-top: 2px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-title {
+            font-size: 1.22rem;
+            font-weight: 750;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+            line-height: 1.25;
+        }
+
+        .section-description {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--muted);
+            max-width: 1080px;
+            line-height: 1.5;
+        }
+
+        /* ============ Cartão de relatório (secção simples, sem subsecções) ============ */
+        .dashboard-card {
+            position: relative;
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 4px 0 0;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 26px -18px rgba(15, 23, 42, 0.22);
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: "";
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: var(--accent);
+        }
+
+        /* ============ Secção-mãe colapsável (agrupamento lógico, sem iframe próprio) ============ */
+        .group-section {
+            position: relative;
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--line);
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 26px -18px rgba(15, 23, 42, 0.2);
+            transition: box-shadow 0.28s ease, border-color 0.28s ease;
+            overflow: hidden;
+            scroll-margin-top: 14px;
+        }
+
+        .group-section::before {
+            content: "";
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 45%, white));
+        }
+
+        .group-section[open] {
+            box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 20px 36px -20px rgba(15, 23, 42, 0.24);
+            border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
+        }
+
+        .group-summary {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 20px 22px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .group-summary::-webkit-details-marker { display: none; }
+        .group-summary::marker { content: ""; }
+
+        .group-summary:hover .section-heading .section-title { color: var(--accent); }
+
+        .group-chevron {
+            width: 22px;
+            height: 22px;
+            flex-shrink: 0;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-soft);
+        }
+
+        .group-chevron svg {
+            width: 15px;
+            height: 15px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.25s ease;
+        }
+
+        .group-section[open] > .group-summary .group-chevron svg {
+            transform: rotate(90deg);
+        }
+
+        .group-body {
+            padding: 4px 22px 22px;
+        }
+
+        .subsections {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding-top: 16px;
+            margin-top: 6px;
+            border-top: 1px solid var(--line-soft);
+            margin-left: 54px;
+        }
+
+        /* ============ Subsecção (turma) — nível 2, também colapsável ============ */
+        .subsection {
+            border: 1px solid var(--line-soft);
+            border-radius: var(--radius-md);
+            background-color: var(--canvas);
+            overflow: hidden;
+            scroll-margin-top: 14px;
+        }
+
+        .subsection-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 13px 16px 11px;
+            background-color: var(--surface);
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .subsection-header::-webkit-details-marker { display: none; }
+        .subsection-header::marker { content: ""; }
+
+        .subsection-header:hover .subsection-title { color: var(--accent); }
+
+        .subsection-icon {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 10%, white);
+            border: 1px solid color-mix(in srgb, var(--accent) 18%, white);
+        }
+
+        .subsection-icon svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .subsection-title {
+            font-size: 0.95rem;
+            font-weight: 650;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .subsection-chevron {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-soft);
+        }
+
+        .subsection-chevron svg {
+            width: 13px;
+            height: 13px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.25s ease;
+        }
+
+        .subsection[open] > .subsection-header .subsection-chevron svg {
+            transform: rotate(90deg);
+        }
+
+        .subsection-card {
+            position: relative;
+            margin: 0 10px 10px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background-color: var(--surface);
+        }
+
+        .subsection-card::before {
+            content: "";
+            display: block;
+            height: 4px;
+            width: 100%;
+            background: var(--accent);
+        }
+
+        /* ============ Técnica de Iframe Crop Wrapper (comum a todos os níveis) ============ */
+        .iframe-crop-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--canvas);
+        }
+
+        .iframe-crop-wrapper iframe {
+            width: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 0;
+        }
+
+        /* Todos os Registos — altura de partida igual às restantes páginas do projecto */
+        .crop-todos-registos { height: 1500px; } .crop-todos-registos iframe { height: 1536px !important; }
+
+        /* Turmas — o relatório-base foi fornecido com 1500px de altura; recorte de 36px (barra do Looker Studio) */
+        .crop-turma { height: 1500px; } .crop-turma iframe { height: 1536px !important; }
+        .crop-turma-1050 { height: 1500px; } .crop-turma-1050 iframe { height: 1536px !important; }
+
+        /* ============ Ajustes Responsivos ============ */
+        @media (max-width: 768px) {
+            body { padding: 0 10px 10px; }
+            .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
+            .hero-label { font-size: 0.64rem; letter-spacing: 0.13em; }
+            .dashboard-container { gap: 30px; }
+            .section-title { font-size: 1.08rem; }
+            .section-icon { width: 34px; height: 34px; border-radius: 10px; }
+            .section-icon svg { width: 16px; height: 16px; }
+            .dashboard-card { margin-top: 16px; }
+
+            .group-summary { padding: 16px; gap: 10px; }
+            .group-body { padding: 0 16px 16px; }
+            .subsections { margin-left: 0; }
+        }
+
+        @media (max-width: 480px) {
+            .section-header { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO VISUAL DE ANCORAGEM -->
+    <div class="dashboard-hero">
+        <span class="hero-label">Painel Operacional (Secretaria)</span>
+    </div>
+
+    <main class="dashboard-container">
+
+        <!-- SECÇÃO 1 — TODOS OS REGISTOS (colapsável, sem subsecções) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-todos-os-registos">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="3.2" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Todos os Registos</h2>
+                        <p class="section-description">Listagem completa de todas as cobranças do período, com estado, valores e descontos ou multas aplicadas. Use esta secção para consultar ou verificar rapidamente um registo específico, sem necessidade de abrir a turma correspondente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <article class="dashboard-card">
+                        <div class="iframe-crop-wrapper crop-todos-registos">
+                            <iframe src="https://datastudio.google.com/embed/reporting/287fb464-b5ba-466a-b53d-3dee8079df39/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                        </div>
+                    </article>
+                </div>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 2 — CAMAMA (agrupamento colapsável) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-camama">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Camama</h2>
+                        <p class="section-description">Cobranças e pagamentos da rota Camama. Expanda para consultar o relatório de cada viatura individualmente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <div class="subsections">
+
+                        <!-- SUBSECÇÃO 2.1 -->
+                        <details class="subsection" name="turmas-camama" id="turma-vtr-0001">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0001</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Camama%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0001%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SUBSECÇÃO 2.2 -->
+                        <details class="subsection" name="turmas-camama" id="turma-vtr-0002">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0002</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Camama%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0002%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Para adicionar uma nova viatura à rota Camama, duplicar o bloco <details class="subsection" name="turmas-camama">...</details> acima -->
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 3 — KILAMBA (agrupamento colapsável) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-kilamba">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Kilamba</h2>
+                        <p class="section-description">Cobranças e pagamentos da rota Kilamba. Expanda para consultar o relatório de cada viatura individualmente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <div class="subsections">
+
+                        <!-- SUBSECÇÃO 3.1 -->
+                        <details class="subsection" name="turmas-kilamba" id="turma-vtr-0003">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0003</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Kilamba%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0003%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SUBSECÇÃO 3.2 -->
+                        <details class="subsection" name="turmas-kilamba" id="turma-vtr-0004">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0004</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Kilamba%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0004%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Para adicionar uma nova viatura à rota Kilamba, duplicar o bloco <details class="subsection" name="turmas-kilamba">...</details> acima -->
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 4 — MORRO BENTO (agrupamento colapsável) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-morro-bento">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Morro Bento</h2>
+                        <p class="section-description">Cobranças e pagamentos da rota Morro Bento. Expanda para consultar o relatório de cada viatura individualmente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <div class="subsections">
+
+                        <!-- SUBSECÇÃO 4.1 -->
+                        <details class="subsection" name="turmas-morrobento" id="turma-vtr-0005">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0005</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Morro%2520Bento%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0005%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SUBSECÇÃO 4.2 -->
+                        <details class="subsection" name="turmas-morrobento" id="turma-vtr-0006">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0006</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Morro%2520Bento%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0006%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Para adicionar uma nova viatura à rota Morro Bento, duplicar o bloco <details class="subsection" name="turmas-morrobento">...</details> acima -->
+                    </div>
+                </div>
+            </details>
+        </section>
+
+
+        <!-- SECÇÃO 5 — NOVA VIDA (agrupamento colapsável) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-nova-vida">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Nova vida</h2>
+                        <p class="section-description">Cobranças e pagamentos da rota Nova vida. Expanda para consultar o relatório de cada viatura individualmente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <div class="subsections">
+
+                        <!-- SUBSECÇÃO 5.1 -->
+                        <details class="subsection" name="turmas-novavida" id="turma-vtr-0007">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0007</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Nova%2520vida%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0007%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SUBSECÇÃO 5.2 -->
+                        <details class="subsection" name="turmas-novavida" id="turma-vtr-0008">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0008</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Nova%2520vida%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0008%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Para adicionar uma nova viatura à rota Nova vida, duplicar o bloco <details class="subsection" name="turmas-novavida">...</details> acima -->
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 6 — PATRIOTA (agrupamento colapsável) -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section" name="painel-accordion" id="grupo-patriota">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <h2 class="section-title">Patriota</h2>
+                        <p class="section-description">Cobranças e pagamentos da rota Patriota. Expanda para consultar o relatório de cada viatura individualmente.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <div class="group-body">
+                    <div class="subsections">
+
+                        <!-- SUBSECÇÃO 6.1 -->
+                        <details class="subsection" name="turmas-patriota" id="turma-vtr-0009">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0009</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Patriota%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0009%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- SUBSECÇÃO 6.2 -->
+                        <details class="subsection" name="turmas-patriota" id="turma-vtr-0010">
+                            <summary class="subsection-header">
+                                <div class="subsection-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="2" y="7" width="12" height="10" rx="1.5"/><path d="M14 10h4l3 3v4h-7z"/><circle cx="6.5" cy="18" r="1.7"/><circle cx="17" cy="18" r="1.7"/></svg>
+                                </div>
+                                <div>
+                                    <h3 class="subsection-title">Viatura – VTR-0010</h3>
+                                </div>
+                                <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                            </summary>
+                            <div class="subsection-body">
+                                <div class="subsection-card">
+                                    <div class="iframe-crop-wrapper crop-turma-1050">
+                                        <iframe src="https://lookerstudio.google.com/embed/reporting/f561f484-416e-47e2-a701-784c5b5c4edf/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580Patriota%22,%22df34%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%2580VTR-0010%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <!-- Para adicionar uma nova viatura à rota Patriota, duplicar o bloco <details class="subsection" name="turmas-patriota">...</details> acima -->
+                    </div>
+                </div>
+            </details>
+        </section>
+
+        <!-- Para adicionar uma nova rota, duplicar o bloco <section class="dashboard-section">...</section> de uma secção-mãe (SECÇÃO 2 a 6), atribuindo uma nova cor --accent e o índice seguinte -->
+
+
+
+    </main>
+
+    <script>
+        // Os dois blocos abaixo seleccionam elementos por CLASSE (não por ID nem
+        // por uma lista fixa), e o script corre no fim do <body> — por isso
+        // aplicam-se automaticamente a qualquer secção-mãe (.group-section) ou
+        // turma (.subsection) que venha a ser adicionada no futuro, desde que
+        // sigam o mesmo padrão de marcação já usado nas secções existentes.
+        // Não é necessário tocar neste script ao criar novas secções ou turmas.
+
+        // 1) Ao colapsar uma secção-mãe, as suas turmas que estivessem
+        //    expandidas voltam ao estado colapsado — não herdam o estado aberto.
+        document.querySelectorAll('details.group-section').forEach(function (group) {
+            group.addEventListener('toggle', function () {
+                if (!group.open) {
+                    group.querySelectorAll('details.subsection[open]').forEach(function (sub) {
+                        sub.open = false;
+                    });
+                }
+            });
+        });
+
+        // 2) Ao expandir uma secção-mãe ou uma turma, posicionar o scroll no seu
+        //    topo usando navegação nativa por âncora (#id). Em vez de calcularmos
+        //    a posição nós próprios (scrollIntoView), delegamos essa conta ao
+        //    motor do browser, que só resolve o scroll depois de o layout estar
+        //    definitivamente assente — evitando problemas de temporização.
+        document.querySelectorAll('details.group-section, details.subsection').forEach(function (el) {
+            el.addEventListener('toggle', function () {
+                if (el.open && el.id) {
+                    // Limpa a âncora actual primeiro; se já estivéssemos no
+                    // mesmo #id (ex.: reabrir a mesma turma), o browser não
+                    // repetiria o scroll ao definir o mesmo valor outra vez.
+                    var cleanUrl = window.location.pathname + window.location.search;
+                    history.replaceState(null, '', cleanUrl);
+                    requestAnimationFrame(function () {
+                        window.location.hash = el.id;
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
