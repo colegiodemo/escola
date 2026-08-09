@@ -116,6 +116,9 @@
                 transition: none;
                 transform: none;
             }
+            .group-chevron svg {
+                transition: none;
+            }
         }
 
         /* ============ Cabeçalho de secção: ícone + índice + título ============ */
@@ -209,6 +212,55 @@
                 0 22px 40px -20px rgba(15, 23, 42, 0.28);
         }
 
+        /* ============ Mecanismo colapsável (secções 02–08) ============ */
+        .group-summary {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .group-summary::-webkit-details-marker { display: none; }
+        .group-summary::marker { content: ""; }
+
+        .group-summary:hover .section-title { color: var(--accent); }
+
+        .group-chevron {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-left: auto;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-soft);
+        }
+
+        .group-chevron svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.25s ease;
+        }
+
+        .group-section[open] > .group-summary .group-chevron svg {
+            transform: rotate(90deg);
+        }
+
+        /* Descrição quando já está dentro do cabeçalho colapsável — sem o
+           indent de 54px, porque já está alinhada pela coluna do título */
+        .section-heading .section-description {
+            padding-left: 0;
+            margin-top: 2px;
+        }
+
         /* Técnica de Iframe Crop Wrapper */
         .iframe-crop-wrapper {
             width: 100%;
@@ -232,7 +284,7 @@
         .crop-padrao { height: 900px; } .crop-padrao iframe { height: 936px !important; }
         .crop-estrutura { height: 1060px; } .crop-estrutura iframe { height: 1096px !important; }
         .crop-controlo-divida { height: 1200px; } .crop-controlo-divida iframe { height: 1236px !important; }
-        .crop-recuperacao-divida { height: 830px; } .crop-recuperacao-divida iframe { height: 966px !important; }
+        .crop-recuperacao-divida { height: 830px; } .crop-recuperacao-divida iframe { height: 866px !important; }
         .crop-perfil-pagamentos { height: 980px; } .crop-perfil-pagamentos iframe { height: 1016px !important; }
 
         /* ============ Ajustes Responsivos ============ */
@@ -264,154 +316,178 @@
 
         <!-- SECÇÃO 1 -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M4 20V11M12 20V4M20 20V14"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">01</span>
-                    <h2 class="section-title">Balanço da Cobrança</h2>
-                </div>
-            </div>
-            <p class="section-description">Resumo financeiro do período: o que foi facturado, arrecadado, projectado e o que permanece em aberto ou em dívida. Use estes indicadores para avaliar o desempenho global da cobrança e apoiar a tomada de decisões.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-balanco">
-                    <iframe src="https://datastudio.google.com/embed/reporting/d775ce33-0c75-430f-8084-73097bd8a02b/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 20V11M12 20V4M20 20V14"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">01</span>
+                        <h2 class="section-title">Balanço da Cobrança</h2>
+                        <p class="section-description">Resumo financeiro do período: o que foi facturado, arrecadado, projectado e o que permanece em aberto ou em dívida. Use estes indicadores para avaliar o desempenho global da cobrança e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-balanco">
+                        <iframe src="https://datastudio.google.com/embed/reporting/d775ce33-0c75-430f-8084-73097bd8a02b/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 2 -->
         <section class="dashboard-section" style="--accent:#2563EB">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">02</span>
-                    <h2 class="section-title">Desempenho da Cobrança</h2>
-                </div>
-            </div>
-            <p class="section-description">Estado actual das referências emitidas — liquidadas, em aberto e vencidas — e eficácia dos lembretes SMS. Use esta secção para monitorizar a eficiência do processo de cobrança automático.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-desempenho">
-                    <iframe src="https://datastudio.google.com/embed/reporting/d9e32136-7d1a-43d5-a7f6-b52d87f905f2/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">02</span>
+                        <h2 class="section-title">Desempenho da Cobrança</h2>
+                        <p class="section-description">Estado actual das referências emitidas — liquidadas, em aberto e vencidas — e eficácia dos lembretes SMS. Use esta secção para monitorizar a eficiência do processo de cobrança automático.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-desempenho">
+                        <iframe src="https://datastudio.google.com/embed/reporting/d9e32136-7d1a-43d5-a7f6-b52d87f905f2/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 3 -->
         <section class="dashboard-section" style="--accent:#4F46E5">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M8 3v14M8 3L4 7M8 3l4 4"/><path d="M16 21V7M16 21l-4-4M16 21l4-4"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">03</span>
-                    <h2 class="section-title">Receita vs. Dívida — Tendência e Proporção</h2>
-                </div>
-            </div>
-            <p class="section-description">Compara, mês a mês, a evolução da receita e da dívida, bem como a sua proporção acumulada no período. Uma dívida persistentemente inferior à receita e uma baixa proporção acumulada reflectem uma cobrança eficiente. Use esta secção para identificar tendências de incumprimento e apoiar a tomada de decisões.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-receita-divida">
-                    <iframe src="https://datastudio.google.com/embed/reporting/334d9856-7c43-4e2b-99bc-3f708924f63c/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M8 3v14M8 3L4 7M8 3l4 4"/><path d="M16 21V7M16 21l-4-4M16 21l4-4"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">03</span>
+                        <h2 class="section-title">Receita vs. Dívida — Tendência e Proporção</h2>
+                        <p class="section-description">Compara, mês a mês, a evolução da receita e da dívida, bem como a sua proporção acumulada no período. Uma dívida persistentemente inferior à receita e uma baixa proporção acumulada reflectem uma cobrança eficiente. Use esta secção para identificar tendências de incumprimento e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-receita-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/334d9856-7c43-4e2b-99bc-3f708924f63c/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 4 -->
         <section class="dashboard-section" style="--accent:#B45309">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="2.4"/><circle cx="17" cy="17" r="2.4"/><path d="M18 6L6 18"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">04</span>
-                    <h2 class="section-title">Descontos e Multas</h2>
-                </div>
-            </div>
-            <p class="section-description">Descontos concedidos e multas aplicadas — valores, tendência mensal e impacto na receita. Use esta secção para avaliar se a política de descontos e multas está equilibrada e apoiar a tomada de decisões.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-padrao">
-                    <iframe src="https://datastudio.google.com/embed/reporting/dc27566c-a1a7-43dd-9f52-c1eea8360806/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="2.4"/><circle cx="17" cy="17" r="2.4"/><path d="M18 6L6 18"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">04</span>
+                        <h2 class="section-title">Descontos e Multas</h2>
+                        <p class="section-description">Descontos concedidos e multas aplicadas — valores, tendência mensal e impacto na receita. Use esta secção para avaliar se a política de descontos e multas está equilibrada e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-padrao">
+                        <iframe src="https://datastudio.google.com/embed/reporting/dc27566c-a1a7-43dd-9f52-c1eea8360806/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 5 -->
         <section class="dashboard-section" style="--accent:#0D9488">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 3L3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">05</span>
-                    <h2 class="section-title">Receita e Dívida por Estrutura Escolar</h2>
-                </div>
-            </div>
-            <p class="section-description">Identifique quais os ciclos e classes com maior contribuição para a receita da escola e aqueles onde a dívida acumulada representa um maior risco. Use esta secção para identificar as estruturas mais rentáveis, aquelas com menor rentabilidade financeira e apoiar a tomada de decisões.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-estrutura">
-                    <iframe src="https://datastudio.google.com/embed/reporting/0791bdf8-181b-47a6-bdd9-c2bdd1ef7c82/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3L3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">05</span>
+                        <h2 class="section-title">Receita e Dívida por Estrutura Escolar</h2>
+                        <p class="section-description">Identifique quais os ciclos e classes com maior contribuição para a receita da escola e aqueles onde a dívida acumulada representa um maior risco. Use esta secção para identificar as estruturas mais rentáveis, aquelas com menor rentabilidade financeira e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-estrutura">
+                        <iframe src="https://datastudio.google.com/embed/reporting/0791bdf8-181b-47a6-bdd9-c2bdd1ef7c82/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 6 -->
         <section class="dashboard-section" style="--accent:#B91C1C">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">06</span>
-                    <h2 class="section-title">Controlo da Dívida e Incumprimento</h2>
-                </div>
-            </div>
-            <p class="section-description">Volume, antiguidade e peso financeiro da dívida acumulada. Use esta secção para apoiar a tomada de decisões em acções de recuperação da dívida junto dos alunos com maior incumprimento.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-controlo-divida">
-                    <iframe src="https://datastudio.google.com/embed/reporting/30465ab1-3596-4077-b6e7-6493e374315c/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">06</span>
+                        <h2 class="section-title">Controlo da Dívida e Incumprimento</h2>
+                        <p class="section-description">Volume, antiguidade e peso financeiro da dívida acumulada. Use esta secção para apoiar a tomada de decisões em acções de recuperação da dívida junto dos alunos com maior incumprimento.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-controlo-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/30465ab1-3596-4077-b6e7-6493e374315c/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 7 -->
         <section class="dashboard-section" style="--accent:#047857">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0114-5.3"/><path d="M20 12a8 8 0 01-14 5.3"/><path d="M18 3v5h-5"/><path d="M6 21v-5h5"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">07</span>
-                    <h2 class="section-title">Recuperação de Dívida e Risco de Incumprimento</h2>
-                </div>
-            </div>
-            <p class="section-description">Desempenho da recuperação de dívidas e cobranças em risco de entrar em incumprimento. Use esta secção para avaliar o esforço de recuperação e agir preventivamente sobre os casos em risco.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-recuperacao-divida">
-                    <iframe src="https://datastudio.google.com/embed/reporting/4231a53c-1dc4-454b-8206-9fd1efd52f7d/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0114-5.3"/><path d="M20 12a8 8 0 01-14 5.3"/><path d="M18 3v5h-5"/><path d="M6 21v-5h5"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">07</span>
+                        <h2 class="section-title">Recuperação de Dívida e Risco de Incumprimento</h2>
+                        <p class="section-description">Desempenho da recuperação de dívidas e cobranças em risco de entrar em incumprimento. Use esta secção para avaliar o esforço de recuperação e agir preventivamente sobre os casos em risco.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-recuperacao-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/4231a53c-1dc4-454b-8206-9fd1efd52f7d/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
         <!-- SECÇÃO 8 -->
         <section class="dashboard-section" style="--accent:#6D28D9">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10.2h19"/><path d="M6 15h4"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">08</span>
-                    <h2 class="section-title">Perfil de Pagamentos</h2>
-                </div>
-            </div>
-            <p class="section-description">Distribuição dos pagamentos por banco, canal e período, com o tempo médio até pagamento após a data da cobrança. Use esta secção para identificar os canais mais utilizados, antecipar picos de pagamento e optimizar o timing dos lembretes.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-perfil-pagamentos">
-                    <iframe src="https://datastudio.google.com/embed/reporting/104ebf4e-8e7f-43f3-b1d3-f5caa92e2f6a/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10.2h19"/><path d="M6 15h4"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">08</span>
+                        <h2 class="section-title">Perfil de Pagamentos</h2>
+                        <p class="section-description">Distribuição dos pagamentos por banco, canal e período, com o tempo médio até pagamento após a data da cobrança. Use esta secção para identificar os canais mais utilizados, antecipar picos de pagamento e optimizar o timing dos lembretes.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-perfil-pagamentos">
+                        <iframe src="https://datastudio.google.com/embed/reporting/104ebf4e-8e7f-43f3-b1d3-f5caa92e2f6a/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
     </main>
