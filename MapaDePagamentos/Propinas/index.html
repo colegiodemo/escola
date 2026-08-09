@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Integrado — Cobranças por Turma</title>
+    <title>Mapa de Controlo de Propinas</title>
     <style>
         :root {
             /* Base institucional */
@@ -97,63 +97,54 @@
             .group-chevron svg, .subsection-chevron svg { transition: none; }
         }
 
-        /* ============ Secção Informativa (Ajustada com a tipografia das restantes secções) ============ */
+        /* ============ Secção Informativa (Banner) ============ */
         .info-banner-section {
-            background-color: var(--line-soft);
-            border-left: 4px solid var(--accent-brand);
-            border-radius: var(--radius-md);
-            padding: 24px 28px;
-            margin-top: 10px;
-            margin-bottom: 10px;
-            
-            /* Altura e centralização vertical */
-            min-height: 200px;
             display: flex;
             align-items: center;
             gap: 20px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
+            border: 1px solid #E0E7FF;
+            border-left: 5px solid var(--accent-brand);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 26px -18px rgba(15, 23, 42, 0.12);
         }
 
         .info-banner-icon {
-            width: 40px;
-            height: 40px;
+            width: 54px;
+            height: 54px;
             flex-shrink: 0;
-            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: color-mix(in srgb, var(--accent-brand) 12%, white);
-            border: 1px solid color-mix(in srgb, var(--accent-brand) 20%, white);
         }
 
         .info-banner-icon img {
-            width: 20px;
-            height: 20px;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
         }
 
         .info-banner-content {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 4px;
             flex: 1;
         }
 
-        /* Tipografia idêntica ao .section-title */
         .info-banner-title {
-            font-size: 1.22rem;
+            font-size: 1.15rem;
             font-weight: 750;
             color: var(--ink);
             letter-spacing: -0.015em;
-            line-height: 1.25;
         }
 
-        /* Tipografia idêntica ao .section-description */
         .info-banner-text {
-            font-size: 0.9rem;
+            font-size: 0.92rem;
             font-weight: 400;
-            color: var(--muted);
-            max-width: 1080px;
+            color: var(--ink-soft);
             line-height: 1.5;
+            max-width: 1080px;
         }
 
         /* ============ Cabeçalho de secção de topo (nível 1) ============ */
@@ -434,7 +425,7 @@
             .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
             .hero-label { font-size: 0.64rem; letter-spacing: 0.13em; }
             .dashboard-container { gap: 30px; }
-            .section-title, .info-banner-title { font-size: 1.08rem; }
+            .section-title { font-size: 1.08rem; }
             .section-icon { width: 34px; height: 34px; border-radius: 10px; }
             .section-icon svg { width: 16px; height: 16px; }
             .dashboard-card { margin-top: 16px; }
@@ -442,13 +433,15 @@
             .group-summary { padding: 16px; gap: 10px; }
             .group-body { padding: 0 16px 16px; }
             .subsections { margin-left: 0; }
-            .info-banner-section { padding: 18px 20px; gap: 14px; min-height: 160px; }
-            .info-banner-icon { width: 34px; height: 34px; }
-            .info-banner-icon img { width: 17px; height: 17px; }
+            .info-banner-section { padding: 16px; gap: 14px; }
+            .info-banner-icon { width: 42px; height: 42px; }
+            .info-banner-title { font-size: 1.05rem; }
+            .info-banner-text { font-size: 0.88rem; }
         }
 
         @media (max-width: 480px) {
             .section-header { gap: 10px; }
+            .info-banner-section { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
     </style>
 </head>
@@ -484,7 +477,7 @@
             </details>
         </section>
 
-        <!-- SECÇÃO INFORMATIVA (Ajustada com a mesma tipografia das restantes secções) -->
+        <!-- SECÇÃO INFORMATIVA (Ajustada com a nova configuração visual) -->
         <section class="dashboard-section">
             <div class="info-banner-section">
                 <div class="info-banner-icon">
@@ -810,7 +803,7 @@
                             <div class="subsection-body">
                                 <div class="subsection-card">
                                     <div class="iframe-crop-wrapper crop-turma-1050">
-                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%25803%25C2%25AA%2520-%2520A%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%25803%25C2%25AA%2520-%2520A%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -830,7 +823,7 @@
                             <div class="subsection-body">
                                 <div class="subsection-card">
                                     <div class="iframe-crop-wrapper crop-turma-1050">
-                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%25803%25C2%25AA%2520-%2520B%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%25803%25C2%25AA%2520-%2520B%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                                     </div>
                                 </div>
                             </div>
@@ -850,7 +843,7 @@
                             <div class="subsection-body">
                                 <div class="subsection-card">
                                     <div class="iframe-crop-wrapper crop-turma-1050">
-                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%2580%25803%25C2%25AA%2520-%2520C%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                                        <iframe src="https://datastudio.google.com/embed/reporting/eacfedb4-d944-431f-94a7-21200dadedc9/page/CaS0F?params=%7B%22df13%22:%22include%25EE%2580%25800%25EE%2580%2580IN%25EE%25803%25C2%25AA%2520-%2520C%22%7D" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
                                     </div>
                                 </div>
                             </div>
