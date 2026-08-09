@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Integrado</title>
+    <style>
+        :root {
+            /* Base institucional */
+            --ink: #0F1A2E;
+            --ink-soft: #334155;
+            --muted: #64748B;
+            --muted-soft: #94A3B8;
+            --line: #E6EAF2;
+            --line-soft: #EEF1F6;
+            --surface: #FFFFFF;
+            --canvas: #F7F9FC;
+            --navy: #0F2557;
+
+            /* Cores temáticas por secção — cada uma reflecte a natureza do conteúdo */
+            --c1: #1E3A8A; /* Balanço — visão institucional */
+            --c2: #2563EB; /* Desempenho — actividade */
+            --c3: #4F46E5; /* Receita vs Dívida — comparação */
+            --c4: #B45309; /* Descontos e Multas — ajuste */
+            --c5: #0D9488; /* Estrutura Escolar — composição */
+            --c6: #B91C1C; /* Controlo da Dívida — risco */
+            --c7: #047857; /* Recuperação — acção positiva */
+            --c8: #6D28D9; /* Perfil de Pagamentos — canais */
+
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html { color-scheme: light; height: auto; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background:
+                radial-gradient(1100px 420px at 18% -8%, rgba(30,58,138,0.045), transparent 60%),
+                radial-gradient(900px 380px at 100% 0%, rgba(13,148,136,0.035), transparent 55%),
+                #FFFFFF;
+            color: var(--ink-soft);
+            line-height: 1.55;
+            padding: 0 16px 16px;
+            overflow-x: hidden;
+            overflow-y: hidden; /* Prevents double scrollbars inside iframe */
+            -webkit-font-smoothing: antialiased;
+            height: auto;
+            min-height: 100%;
+        }
+
+        /* ============ Cabeçalho visual de ancoragem ============ */
+        .dashboard-hero {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px 4px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* Etiqueta discreta do cabeçalho */
+        .hero-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--navy);
+            text-align: right;
+            padding-right: 2px;
+        }
+
+        /* ============ Contentor principal ============ */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 52px;
+        }
+
+        .dashboard-section {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            opacity: 0;
+            animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .dashboard-section:nth-of-type(1) { animation-delay: 0.02s; }
+        .dashboard-section:nth-of-type(2) { animation-delay: 0.07s; }
+        .dashboard-section:nth-of-type(3) { animation-delay: 0.12s; }
+        .dashboard-section:nth-of-type(4) { animation-delay: 0.17s; }
+        .dashboard-section:nth-of-type(5) { animation-delay: 0.22s; }
+        .dashboard-section:nth-of-type(6) { animation-delay: 0.27s; }
+        .dashboard-section:nth-of-type(7) { animation-delay: 0.32s; }
+        .dashboard-section:nth-of-type(8) { animation-delay: 0.37s; }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .dashboard-section {
+                animation: none;
+                opacity: 1;
+            }
+            .dashboard-card,
+            .dashboard-card:hover {
+                transition: none;
+                transform: none;
+            }
+            .group-chevron svg {
+                transition: none;
+            }
+        }
+
+        /* ============ Cabeçalho de secção: ícone + índice + título ============ */
+        .section-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent) 12%, white);
+            border: 1px solid color-mix(in srgb, var(--accent) 20%, white);
+        }
+
+        .section-icon svg {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .section-heading {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            padding-top: 2px;
+        }
+
+        .section-index {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: var(--muted-soft);
+        }
+
+        .section-title {
+            font-size: 1.22rem;
+            font-weight: 750;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+            line-height: 1.25;
+        }
+
+        .section-description {
+            font-size: 0.925rem;
+            font-weight: 400;
+            color: var(--muted);
+            max-width: 1080px;
+            padding-left: 54px;
+        }
+
+        /* ============ Cartão do relatório ============ */
+        .dashboard-card {
+            position: relative;
+            background-color: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 3px 0 0;
+            box-shadow:
+                0 1px 2px rgba(15, 23, 42, 0.04),
+                0 10px 26px -18px rgba(15, 23, 42, 0.22);
+            border: 1px solid var(--line);
+            transition: box-shadow 0.28s ease, transform 0.28s ease, border-color 0.28s ease;
+            margin-top: 20px;
+            overflow: hidden;
+        }
+
+        .dashboard-card::before {
+            content: "";
+            display: block;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 45%, white));
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+            box-shadow:
+                0 2px 4px rgba(15, 23, 42, 0.05),
+                0 22px 40px -20px rgba(15, 23, 42, 0.28);
+        }
+
+        /* ============ Mecanismo colapsável (secções 02–08) ============ */
+        .group-summary {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .group-summary::-webkit-details-marker { display: none; }
+        .group-summary::marker { content: ""; }
+
+        .group-summary:hover .section-title { color: var(--accent); }
+
+        .group-chevron {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-left: auto;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-soft);
+        }
+
+        .group-chevron svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.25s ease;
+        }
+
+        .group-section[open] > .group-summary .group-chevron svg {
+            transform: rotate(90deg);
+        }
+
+        /* Descrição quando já está dentro do cabeçalho colapsável */
+        .section-heading .section-description {
+            padding-left: 0;
+            margin-top: 2px;
+        }
+
+        /* Técnica de Iframe Crop Wrapper */
+        .iframe-crop-wrapper {
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            background-color: var(--canvas);
+        }
+
+        .iframe-crop-wrapper iframe {
+            width: 100% !important;
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 0;
+        }
+
+        /* Alturas dos Wrappers de Iframe */
+        .crop-balanco { height: 560px; } .crop-balanco iframe { height: 596px !important; }
+        .crop-desempenho { height: 1020px; } .crop-desempenho iframe { height: 1056px !important; }
+        .crop-receita-divida { height: 700px; } .crop-receita-divida iframe { height: 736px !important; }
+        .crop-padrao { height: 900px; } .crop-padrao iframe { height: 936px !important; }
+        .crop-estrutura { height: 1060px; } .crop-estrutura iframe { height: 1096px !important; }
+        .crop-controlo-divida { height: 1200px; } .crop-controlo-divida iframe { height: 1236px !important; }
+        .crop-recuperacao-divida { height: 830px; } .crop-recuperacao-divida iframe { height: 866px !important; }
+        .crop-perfil-pagamentos { height: 980px; } .crop-perfil-pagamentos iframe { height: 1016px !important; }
+
+        /* ============ Ajustes Responsivos ============ */
+        @media (max-width: 768px) {
+            body { padding: 0 10px 10px; }
+            .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
+            .hero-label { font-size: 0.64rem; letter-spacing: 0.13em; }
+            .dashboard-container { gap: 36px; }
+            .section-title { font-size: 1.08rem; }
+            .section-description { padding-left: 0; margin-top: 6px; }
+            .section-icon { width: 34px; height: 34px; border-radius: 10px; }
+            .section-icon svg { width: 16px; height: 16px; }
+            .dashboard-card { margin-top: 16px; }
+        }
+
+        @media (max-width: 480px) {
+            .section-header { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABEÇALHO VISUAL DE ANCORAGEM -->
+    <div class="dashboard-hero">
+        <span class="hero-label">Painel Analítico</span>
+    </div>
+
+    <main class="dashboard-container">
+
+        <!-- SECÇÃO 1 -->
+        <section class="dashboard-section" style="--accent:#1E3A8A">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 20V11M12 20V4M20 20V14"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">01</span>
+                        <h2 class="section-title">Balanço da Cobrança</h2>
+                        <p class="section-description">Resumo financeiro do período: o que foi facturado, arrecadado, projectado e o que permanece em aberto ou em dívida. Use estes indicadores para avaliar o desempenho global da cobrança e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-balanco">
+                        <iframe src="https://datastudio.google.com/embed/reporting/d775ce33-0c75-430f-8084-73097bd8a02b/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 2 -->
+        <section class="dashboard-section" style="--accent:#2563EB">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">02</span>
+                        <h2 class="section-title">Desempenho da Cobrança</h2>
+                        <p class="section-description">Estado actual das referências emitidas — liquidadas, em aberto e vencidas — e eficácia dos lembretes SMS. Use esta secção para monitorizar a eficiência do processo de cobrança automático.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-desempenho">
+                        <iframe src="https://datastudio.google.com/embed/reporting/d9e32136-7d1a-43d5-a7f6-b52d87f905f2/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 3 -->
+        <section class="dashboard-section" style="--accent:#4F46E5">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M8 3v14M8 3L4 7M8 3l4 4"/><path d="M16 21V7M16 21l-4-4M16 21l4-4"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">03</span>
+                        <h2 class="section-title">Receita vs. Dívida — Tendência e Proporção</h2>
+                        <p class="section-description">Compara, mês a mês, a evolução da receita e da dívida, bem como a sua proporção acumulada no período. Uma dívida persistentemente inferior à receita e uma baixa proporção acumulada reflectem uma cobrança eficiente. Use esta secção para identificar tendências de incumprimento e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-receita-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/334d9856-7c43-4e2b-99bc-3f708924f63c/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 4 -->
+        <section class="dashboard-section" style="--accent:#B45309">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="7" cy="7" r="2.4"/><circle cx="17" cy="17" r="2.4"/><path d="M18 6L6 18"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">04</span>
+                        <h2 class="section-title">Descontos e Multas</h2>
+                        <p class="section-description">Descontos concedidos e multas aplicadas — valores, tendência mensal e impacto na receita. Use esta secção para avaliar se a política de descontos e multas está equilibrada e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-padrao">
+                        <iframe src="https://datastudio.google.com/embed/reporting/dc27566c-a1a7-43dd-9f52-c1eea8360806/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 5 -->
+        <section class="dashboard-section" style="--accent:#0D9488">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3L3 8l9 5 9-5-9-5z"/><path d="M3 13l9 5 9-5"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">05</span>
+                        <h2 class="section-title">Receita e Dívida por Estrutura Escolar</h2>
+                        <p class="section-description">Identifique quais os ciclos e classes com maior contribuição para a receita da escola e aqueles onde a dívida acumulada representa um maior risco. Use esta secção para identificar as estruturas mais rentáveis, aquelas com menor rentabilidade financeira e apoiar a tomada de decisões.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-estrutura">
+                        <iframe src="https://datastudio.google.com/embed/reporting/0791bdf8-181b-47a6-bdd9-c2bdd1ef7c82/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 6 -->
+        <section class="dashboard-section" style="--accent:#B91C1C">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12 3L2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.6" fill="currentColor" stroke="none"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">06</span>
+                        <h2 class="section-title">Controlo da Dívida e Incumprimento</h2>
+                        <p class="section-description">Volume, antiguidade e peso financeiro da dívida acumulada. Use esta secção para apoiar a tomada de decisões em acções de recuperação da dívida junto dos alunos com maior incumprimento.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-controlo-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/30465ab1-3596-4077-b6e7-6493e374315c/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 7 -->
+        <section class="dashboard-section" style="--accent:#047857">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 0114-5.3"/><path d="M20 12a8 8 0 01-14 5.3"/><path d="M18 3v5h-5"/><path d="M6 21v-5h5"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">07</span>
+                        <h2 class="section-title">Recuperação de Dívida e Risco de Incumprimento</h2>
+                        <p class="section-description">Desempenho da recuperação de dívidas e cobranças em risco de entrar em incumprimento. Use esta secção para avaliar o esforço de recuperação e agir preventivamente sobre os casos em risco.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-recuperacao-divida">
+                        <iframe src="https://datastudio.google.com/embed/reporting/4231a53c-1dc4-454b-8206-9fd1efd52f7d/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+        <!-- SECÇÃO 8 -->
+        <section class="dashboard-section" style="--accent:#6D28D9">
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="2.2"/><path d="M2.5 10.2h19"/><path d="M6 15h4"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">08</span>
+                        <h2 class="section-title">Perfil de Pagamentos</h2>
+                        <p class="section-description">Distribuição dos pagamentos por banco, canal e período, com o tempo médio até pagamento após a data da cobrança. Use esta secção para identificar os canais mais utilizados, antecipar picos de pagamento e optimizar o timing dos lembretes.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-perfil-pagamentos">
+                        <iframe src="https://datastudio.google.com/embed/reporting/104ebf4e-8e7f-43f3-b1d3-f5caa92e2f6a/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
+        </section>
+
+    </main>
+
+    <!-- ====================================================== -->
+    <!-- AUTO-RESIZER SCRIPT FOR SHAREPOINT EMBED               -->
+    <!-- ====================================================== -->
+    <script>
+      (function() {
+        let isPosting = false;
+
+        function sendHeightToParent() {
+          if (isPosting) return;
+          isPosting = true;
+
+          // Request animation frame ensures DOM calculations finish rendering
+          requestAnimationFrame(() => {
+            const body = document.body;
+            const html = document.documentElement;
+
+            // Calculate exact total visible height including margins & paddings
+            const height = Math.max(
+              body.scrollHeight, body.offsetHeight,
+              html.clientHeight, html.scrollHeight, html.offsetHeight
+            );
+
+            // Payload natively recognized by SharePoint Embed WebPart
+            const payload = JSON.stringify({
+              hostUrl: window.location.href,
+              eventName: 'set-iframe-height',
+              height: height
+            });
+
+            // Send postMessage up to SharePoint
+            window.parent.postMessage(payload, '*');
+            isPosting = false;
+          });
+        }
+
+        // 1. Trigger when DOM loads
+        window.addEventListener('load', sendHeightToParent);
+
+        // 2. Trigger when browser window resizes
+        window.addEventListener('resize', sendHeightToParent);
+
+        // 3. Trigger every time an accordion (<details>) is toggled open/closed
+        document.querySelectorAll('details').forEach(detail => {
+          detail.addEventListener('toggle', sendHeightToParent);
+        });
+
+        // 4. MutationObserver to handle dynamic height changes automatically
+        const observer = new MutationObserver(sendHeightToParent);
+        observer.observe(document.body, { 
+          childList: true, 
+          subtree: true, 
+          attributes: true 
+        });
+
+        // Initial trigger
+        sendHeightToParent();
+      })();
+    </script>
+</body>
+</html>
