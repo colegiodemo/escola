@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Integrado — Cobranças por Turma</title>
+    <title>Mapa de Controlo de Transporte Escolar</title>
     <style>
         :root {
             /* Base institucional */
@@ -95,6 +95,54 @@
             .dashboard-section { animation: none; opacity: 1; }
             .group-section { transition: none; }
             .group-chevron svg, .subsection-chevron svg { transition: none; }
+        }
+
+        /* ============ Secção Informativa (Banner) ============ */
+        .info-banner-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #EEF2FF 100%);
+            border: 1px solid #E0E7FF;
+            border-left: 5px solid var(--accent-brand);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 26px -18px rgba(15, 23, 42, 0.12);
+        }
+
+        .info-banner-icon {
+            width: 54px;
+            height: 54px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-banner-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .info-banner-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-banner-title {
+            font-size: 1.15rem;
+            font-weight: 750;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+        }
+
+        .info-banner-text {
+            font-size: 0.92rem;
+            font-weight: 400;
+            color: var(--ink-soft);
+            line-height: 1.5;
         }
 
         /* ============ Cabeçalho de secção de topo (nível 1) ============ */
@@ -365,9 +413,9 @@
         /* Todos os Registos — altura de partida igual às restantes páginas do projecto */
         .crop-todos-registos { height: 1500px; } .crop-todos-registos iframe { height: 1536px !important; }
 
-        /* Turmas — o relatório-base foi fornecido com 1500px de altura; recorte de 36px (barra do Looker Studio) */
-        .crop-turma { height: 1500px; } .crop-turma iframe { height: 1536px !important; }
-        .crop-turma-1050 { height: 1500px; } .crop-turma-1050 iframe { height: 1536px !important; }
+        /* Turmas / Viaturas — altura ajustada */
+        .crop-turma { height: 1050px; } .crop-turma iframe { height: 1086px !important; }
+        .crop-turma-1050 { height: 1050px; } .crop-turma-1050 iframe { height: 1086px !important; }
 
         /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
@@ -380,6 +428,11 @@
             .section-icon svg { width: 16px; height: 16px; }
             .dashboard-card { margin-top: 16px; }
 
+            .info-banner-section { padding: 16px; gap: 14px; }
+            .info-banner-icon { width: 42px; height: 42px; }
+            .info-banner-title { font-size: 1.05rem; }
+            .info-banner-text { font-size: 0.88rem; }
+
             .group-summary { padding: 16px; gap: 10px; }
             .group-body { padding: 0 16px 16px; }
             .subsections { margin-left: 0; }
@@ -387,6 +440,7 @@
 
         @media (max-width: 480px) {
             .section-header { gap: 10px; }
+            .info-banner-section { flex-direction: column; align-items: flex-start; gap: 12px; }
         }
     </style>
 </head>
@@ -420,6 +474,19 @@
                     </article>
                 </div>
             </details>
+        </section>
+
+        <!-- SECÇÃO INFORMATIVA (Posicionada imediatamente abaixo de "Todos os Registos") -->
+        <section class="dashboard-section">
+            <div class="info-banner-section">
+                <div class="info-banner-icon">
+                    <img src="https://colegiodemo.github.io/escola/all-images/info-mapa-pagamentos.png" alt="Ícone de informação">
+                </div>
+                <div class="info-banner-content">
+                    <h3 class="info-banner-title">Pagamentos por Rotas</h3>
+                    <p class="info-banner-text">Nas secções abaixo pode consultar o detalhe dos pagamentos dos alunos, organizado por rotas e viaturas. Utilize estas informações para acompanhar e analisar a situação dos pagamentos de cada turma.</p>
+                </div>
+            </div>
         </section>
 
         <!-- SECÇÃO 2 — CAMAMA (agrupamento colapsável) -->
@@ -608,7 +675,6 @@
             </details>
         </section>
 
-
         <!-- SECÇÃO 5 — NOVA VIDA (agrupamento colapsável) -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
             <details class="group-section" name="painel-accordion" id="grupo-nova-vida">
@@ -734,8 +800,6 @@
         </section>
 
         <!-- Para adicionar uma nova rota, duplicar o bloco <section class="dashboard-section">...</section> de uma secção-mãe (SECÇÃO 2 a 6), atribuindo uma nova cor --accent e o índice seguinte -->
-
-
 
     </main>
 
