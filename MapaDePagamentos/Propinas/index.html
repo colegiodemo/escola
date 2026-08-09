@@ -97,6 +97,65 @@
             .group-chevron svg, .subsection-chevron svg { transition: none; }
         }
 
+        /* ============ Secção Informativa (Ajustada com a tipografia das restantes secções) ============ */
+        .info-banner-section {
+            background-color: var(--line-soft);
+            border-left: 4px solid var(--accent-brand);
+            border-radius: var(--radius-md);
+            padding: 24px 28px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            
+            /* Altura e centralização vertical */
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .info-banner-icon {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: color-mix(in srgb, var(--accent-brand) 12%, white);
+            border: 1px solid color-mix(in srgb, var(--accent-brand) 20%, white);
+        }
+
+        .info-banner-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+        }
+
+        .info-banner-content {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            flex: 1;
+        }
+
+        /* Tipografia idêntica ao .section-title */
+        .info-banner-title {
+            font-size: 1.22rem;
+            font-weight: 750;
+            color: var(--ink);
+            letter-spacing: -0.015em;
+            line-height: 1.25;
+        }
+
+        /* Tipografia idêntica ao .section-description */
+        .info-banner-text {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: var(--muted);
+            max-width: 1080px;
+            line-height: 1.5;
+        }
+
         /* ============ Cabeçalho de secção de topo (nível 1) ============ */
         .section-header {
             display: flex;
@@ -375,7 +434,7 @@
             .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
             .hero-label { font-size: 0.64rem; letter-spacing: 0.13em; }
             .dashboard-container { gap: 30px; }
-            .section-title { font-size: 1.08rem; }
+            .section-title, .info-banner-title { font-size: 1.08rem; }
             .section-icon { width: 34px; height: 34px; border-radius: 10px; }
             .section-icon svg { width: 16px; height: 16px; }
             .dashboard-card { margin-top: 16px; }
@@ -383,6 +442,9 @@
             .group-summary { padding: 16px; gap: 10px; }
             .group-body { padding: 0 16px 16px; }
             .subsections { margin-left: 0; }
+            .info-banner-section { padding: 18px 20px; gap: 14px; min-height: 160px; }
+            .info-banner-icon { width: 34px; height: 34px; }
+            .info-banner-icon img { width: 17px; height: 17px; }
         }
 
         @media (max-width: 480px) {
@@ -422,6 +484,19 @@
             </details>
         </section>
 
+        <!-- SECÇÃO INFORMATIVA (Ajustada com a mesma tipografia das restantes secções) -->
+        <section class="dashboard-section">
+            <div class="info-banner-section">
+                <div class="info-banner-icon">
+                    <img src="https://colegiodemo.github.io/escola/all-images/info-mapa-pagamentos.png" alt="Ícone de informação">
+                </div>
+                <div class="info-banner-content">
+                    <h3 class="info-banner-title">Pagamentos por Turmas</h3>
+                    <p class="info-banner-text">Nas secções abaixo pode consultar o detalhe dos pagamentos dos alunos, organizado por classe e turma. Utilize estas informações para acompanhar e analisar a situação dos pagamentos de cada turma.</p>
+                </div>
+            </div>
+        </section>
+
         <!-- SECÇÃO 2 — PRÉ-ESCOLAR (agrupamento colapsável) -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
             <details class="group-section" name="painel-accordion" id="grupo-pre-escolar">
@@ -445,7 +520,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Iniciação – A</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -466,7 +540,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Iniciação – B</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -479,7 +552,6 @@
                                 </div>
                             </div>
                         </details>
-
 
                         <!-- SUBSECÇÃO 2.3 -->
                         <details class="subsection" name="turmas-preescolar" id="turma-iniciacao-c">
@@ -521,7 +593,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma ao Pré-escolar, duplicar o bloco <details class="subsection" name="turmas-preescolar">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -550,7 +621,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Turma – 1A</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -571,7 +641,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Turma – 1B</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -584,7 +653,6 @@
                                 </div>
                             </div>
                         </details>
-
 
                         <!-- SUBSECÇÃO 3.3 -->
                         <details class="subsection" name="turmas-1classe" id="turma-1c">
@@ -626,7 +694,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 1ª Classe, duplicar o bloco <details class="subsection" name="turmas-1classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -655,7 +722,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Turma – 2A</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -676,7 +742,6 @@
                                     <svg viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                                 <div>
-                                    
                                     <h3 class="subsection-title">Turma – 2B</h3>
                                 </div>
                                 <span class="subsection-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
@@ -689,7 +754,6 @@
                                 </div>
                             </div>
                         </details>
-
 
                         <!-- SUBSECÇÃO 4.3 -->
                         <details class="subsection" name="turmas-2classe" id="turma-2c">
@@ -711,12 +775,10 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 2ª Classe, duplicar o bloco <details class="subsection" name="turmas-2classe">...</details> acima -->
                     </div>
                 </div>
             </details>
         </section>
-
 
         <!-- SECÇÃO 5 — 3ª CLASSE (agrupamento colapsável) -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
@@ -794,7 +856,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 3ª Classe, duplicar o bloco <details class="subsection" name="turmas-3classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -876,7 +937,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 4ª Classe, duplicar o bloco <details class="subsection" name="turmas-4classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -958,7 +1018,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 5ª Classe, duplicar o bloco <details class="subsection" name="turmas-5classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1040,7 +1099,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 6ª Classe, duplicar o bloco <details class="subsection" name="turmas-6classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1122,7 +1180,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 7ª Classe, duplicar o bloco <details class="subsection" name="turmas-7classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1204,7 +1261,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 8ª Classe, duplicar o bloco <details class="subsection" name="turmas-8classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1306,7 +1362,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 9ª Classe, duplicar o bloco <details class="subsection" name="turmas-9classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1388,7 +1443,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 10ª Classe, duplicar o bloco <details class="subsection" name="turmas-10classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1490,7 +1544,6 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 11ª Classe, duplicar o bloco <details class="subsection" name="turmas-11classe">...</details> acima -->
                     </div>
                 </div>
             </details>
@@ -1572,26 +1625,14 @@
                             </div>
                         </details>
 
-                        <!-- Para adicionar uma nova turma à 12ª Classe, duplicar o bloco <details class="subsection" name="turmas-12classe">...</details> acima -->
                     </div>
                 </div>
             </details>
         </section>
 
-        <!-- Para adicionar um novo ciclo/classe, duplicar o bloco <section class="dashboard-section">...</section> de uma secção-mãe (SECÇÃO 2, 3 ou 4), atribuindo uma nova cor --accent e o índice seguinte -->
-
     </main>
 
     <script>
-        // Os dois blocos abaixo seleccionam elementos por CLASSE (não por ID nem
-        // por uma lista fixa), e o script corre no fim do <body> — por isso
-        // aplicam-se automaticamente a qualquer secção-mãe (.group-section) ou
-        // turma (.subsection) que venha a ser adicionada no futuro, desde que
-        // sigam o mesmo padrão de marcação já usado nas secções existentes.
-        // Não é necessário tocar neste script ao criar novas secções ou turmas.
-
-        // 1) Ao colapsar uma secção-mãe, as suas turmas que estivessem
-        //    expandidas voltam ao estado colapsado — não herdam o estado aberto.
         document.querySelectorAll('details.group-section').forEach(function (group) {
             group.addEventListener('toggle', function () {
                 if (!group.open) {
@@ -1602,17 +1643,9 @@
             });
         });
 
-        // 2) Ao expandir uma secção-mãe ou uma turma, posicionar o scroll no seu
-        //    topo usando navegação nativa por âncora (#id). Em vez de calcularmos
-        //    a posição nós próprios (scrollIntoView), delegamos essa conta ao
-        //    motor do browser, que só resolve o scroll depois de o layout estar
-        //    definitivamente assente — evitando problemas de temporização.
         document.querySelectorAll('details.group-section, details.subsection').forEach(function (el) {
             el.addEventListener('toggle', function () {
                 if (el.open && el.id) {
-                    // Limpa a âncora actual primeiro; se já estivéssemos no
-                    // mesmo #id (ex.: reabrir a mesma turma), o browser não
-                    // repetiria o scroll ao definir o mesmo valor outra vez.
                     var cleanUrl = window.location.pathname + window.location.search;
                     history.replaceState(null, '', cleanUrl);
                     requestAnimationFrame(function () {
