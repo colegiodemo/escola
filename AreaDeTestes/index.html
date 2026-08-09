@@ -37,7 +37,7 @@
             padding: 0;
         }
 
-        html { color-scheme: light; height: auto; }
+        html { color-scheme: light; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -47,12 +47,10 @@
                 #FFFFFF;
             color: var(--ink-soft);
             line-height: 1.55;
-            padding: 0 16px 16px;
+            padding: 0 16px 24px;
             overflow-x: hidden;
-            overflow-y: hidden; /* Prevents double scrollbars inside iframe */
+            overflow-y: auto;
             -webkit-font-smoothing: antialiased;
-            height: auto;
-            min-height: 100%;
         }
 
         /* ============ Cabeçalho visual de ancoragem ============ */
@@ -214,7 +212,7 @@
                 0 22px 40px -20px rgba(15, 23, 42, 0.28);
         }
 
-        /* ============ Mecanismo colapsável (secções 02–08) ============ */
+        /* ============ Mecanismo colapsável ============ */
         .group-summary {
             display: flex;
             align-items: flex-start;
@@ -256,37 +254,36 @@
             transform: rotate(90deg);
         }
 
-        /* Descrição quando já está dentro do cabeçalho colapsável */
         .section-heading .section-description {
             padding-left: 0;
             margin-top: 2px;
         }
 
-        /* Técnica de Iframe Crop Wrapper */
+        /* ============ Option A: Fluid Container Adjustment ============ */
         .iframe-crop-wrapper {
             width: 100%;
             position: relative;
             overflow: hidden;
             background-color: var(--canvas);
+            height: auto !important; /* Flexible height for Option A */
         }
 
         .iframe-crop-wrapper iframe {
             width: 100% !important;
-            position: absolute;
-            top: 0;
-            left: 0;
             border: 0;
+            display: block;
+            position: relative !important;
         }
 
-        /* Alturas dos Wrappers de Iframe */
-        .crop-balanco { height: 560px; } .crop-balanco iframe { height: 596px !important; }
-        .crop-desempenho { height: 1020px; } .crop-desempenho iframe { height: 1056px !important; }
-        .crop-receita-divida { height: 700px; } .crop-receita-divida iframe { height: 736px !important; }
-        .crop-padrao { height: 900px; } .crop-padrao iframe { height: 936px !important; }
-        .crop-estrutura { height: 1060px; } .crop-estrutura iframe { height: 1096px !important; }
-        .crop-controlo-divida { height: 1200px; } .crop-controlo-divida iframe { height: 1236px !important; }
-        .crop-recuperacao-divida { height: 830px; } .crop-recuperacao-divida iframe { height: 866px !important; }
-        .crop-perfil-pagamentos { height: 980px; } .crop-perfil-pagamentos iframe { height: 1016px !important; }
+        /* Dynamic heights for full internal report viewing */
+        .crop-balanco iframe { height: 596px !important; }
+        .crop-desempenho iframe { height: 1056px !important; }
+        .crop-receita-divida iframe { height: 736px !important; }
+        .crop-padrao iframe { height: 936px !important; }
+        .crop-estrutura iframe { height: 1096px !important; }
+        .crop-controlo-divida iframe { height: 1236px !important; }
+        .crop-recuperacao-divida iframe { height: 866px !important; }
+        .crop-perfil-pagamentos iframe { height: 1016px !important; }
 
         /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
@@ -493,63 +490,5 @@
 
     </main>
 
-    <!-- ====================================================== -->
-    <!-- AUTO-RESIZER SCRIPT FOR SHAREPOINT EMBED               -->
-    <!-- ====================================================== -->
-    <script>
-      (function() {
-        let isPosting = false;
-
-        function sendHeightToParent() {
-          if (isPosting) return;
-          isPosting = true;
-
-          // Request animation frame ensures DOM calculations finish rendering
-          requestAnimationFrame(() => {
-            const body = document.body;
-            const html = document.documentElement;
-
-            // Calculate exact total visible height including margins & paddings
-            const height = Math.max(
-              body.scrollHeight, body.offsetHeight,
-              html.clientHeight, html.scrollHeight, html.offsetHeight
-            );
-
-            // Payload natively recognized by SharePoint Embed WebPart
-            const payload = JSON.stringify({
-              hostUrl: window.location.href,
-              eventName: 'set-iframe-height',
-              height: height
-            });
-
-            // Send postMessage up to SharePoint
-            window.parent.postMessage(payload, '*');
-            isPosting = false;
-          });
-        }
-
-        // 1. Trigger when DOM loads
-        window.addEventListener('load', sendHeightToParent);
-
-        // 2. Trigger when browser window resizes
-        window.addEventListener('resize', sendHeightToParent);
-
-        // 3. Trigger every time an accordion (<details>) is toggled open/closed
-        document.querySelectorAll('details').forEach(detail => {
-          detail.addEventListener('toggle', sendHeightToParent);
-        });
-
-        // 4. MutationObserver to handle dynamic height changes automatically
-        const observer = new MutationObserver(sendHeightToParent);
-        observer.observe(document.body, { 
-          childList: true, 
-          subtree: true, 
-          attributes: true 
-        });
-
-        // Initial trigger
-        sendHeightToParent();
-      })();
-    </script>
 </body>
 </html>
