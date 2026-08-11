@@ -168,11 +168,6 @@
       background-color: #1E293B;
       border-radius: var(--card-radius);
       box-shadow: var(--card-shadow);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
       overflow: hidden;
       border: 1px solid var(--border-color);
       transition: var(--transition-standard);
@@ -182,35 +177,10 @@
       box-shadow: var(--card-shadow-hover);
     }
 
-    .play-btn {
-      width: 72px;
-      height: 72px;
-      background-color: var(--color-teal);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 12px;
-      box-shadow: 0 4px 20px rgba(13, 148, 136, 0.4);
-      transition: transform 0.2s ease;
-    }
-
-    .video-wrapper:hover .play-btn {
-      transform: scale(1.1);
-    }
-
-    .play-btn svg {
-      width: 28px;
-      height: 28px;
-      fill: #FFFFFF;
-      margin-left: 4px;
-    }
-
-    .video-placeholder-text {
-      color: #FFFFFF;
-      font-family: var(--font-heading);
-      font-weight: 600;
-      font-size: 16px;
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
     }
 
     .video-caption {
@@ -709,12 +679,12 @@
       </p>
 
       <div class="video-wrapper">
-        <div class="play-btn">
-          <svg viewBox="0 0 24 24">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-        </div>
-        <div class="video-placeholder-text">[Vídeo explicativo]</div>
+        <iframe 
+          src="https://www.youtube.com/embed/CoYormVJGAg" 
+          title="SMS Recarga - Vídeo explicativo" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+          allowfullscreen>
+        </iframe>
       </div>
 
       <p class="video-caption">
