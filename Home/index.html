@@ -21,35 +21,26 @@
     }
 
     :root {
-      /* Cores Principais */
       --color-primary: #1E3A8A;
       --color-teal: #0D9488;
       --color-teal-light: #CCFBF1;
       --color-amber: #D97706;
       --color-purple: #7C3AED;
       --color-red: #DC2626;
-
-      /* Neutros & Fundos */
       --bg-main: #FFFFFF;
       --bg-alt: #F8FAFC;
       --text-main: #1E293B;
       --text-secondary: #64748B;
       --border-color: #E2E8F0;
-
-      /* Tipografia */
       --font-heading: 'Poppins', sans-serif;
       --font-body: 'Inter', sans-serif;
-
-      /* Sombras & Bordas */
       --card-radius: 12px;
       --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
       --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
       --transition-standard: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-body);
@@ -62,7 +53,6 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Container Global */
     .container {
       max-width: 1100px;
       margin: 0 auto;
@@ -70,31 +60,16 @@
       width: 100%;
     }
 
-    /* Utilitários de Secção */
     section {
       padding: 64px 0;
       width: 100%;
     }
 
-    .bg-white {
-      background-color: var(--bg-main);
-    }
+    .bg-white { background-color: var(--bg-main); }
+    .bg-alt { background-color: var(--bg-alt); }
+    .bg-dark-blue { background-color: var(--color-primary); color: #FFFFFF; }
+    .bg-teal { background-color: var(--color-teal); color: #FFFFFF; }
 
-    .bg-alt {
-      background-color: var(--bg-alt);
-    }
-
-    .bg-dark-blue {
-      background-color: var(--color-primary);
-      color: #FFFFFF;
-    }
-
-    .bg-teal {
-      background-color: var(--color-teal);
-      color: #FFFFFF;
-    }
-
-    /* Tipografia de Cabeçalhos */
     .section-title {
       font-family: var(--font-heading);
       font-size: clamp(24px, 4vw, 32px);
@@ -104,9 +79,7 @@
       line-height: 1.25;
     }
 
-    .section-title.text-white {
-      color: #FFFFFF;
-    }
+    .section-title.text-white { color: #FFFFFF; }
 
     .section-subtitle {
       font-family: var(--font-body);
@@ -116,20 +89,11 @@
       line-height: 1.6;
     }
 
-    .section-subtitle.text-white-sub {
-      color: rgba(255, 255, 255, 0.8);
-    }
+    .section-subtitle.text-white-sub { color: rgba(255, 255, 255, 0.8); }
 
-    .text-center {
-      text-align: center;
-    }
+    .text-center { text-align: center; }
+    .subtitle-center { margin-left: auto; margin-right: auto; }
 
-    .subtitle-center {
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* Animações de Entrada (Intersection Observer) */
     .fade-in {
       opacity: 0;
       transform: translateY(20px);
@@ -142,68 +106,7 @@
     }
 
     /* ==========================================================================
-       SECÇÃO 1 — VÍDEO EXPLICATIVO
-       ========================================================================== */
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      background-color: var(--color-teal-light);
-      color: var(--color-teal);
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: 50px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 850px;
-      margin: 32px auto 0;
-      aspect-ratio: 16 / 9;
-      background-color: #1E293B;
-      border-radius: var(--card-radius);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      transition: var(--transition-standard);
-    }
-
-    .video-wrapper:hover {
-      box-shadow: var(--card-shadow-hover);
-    }
-
-    .video-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    .video-caption {
-      margin-top: 16px;
-      font-style: italic;
-      color: var(--text-secondary);
-      font-size: 14px;
-      max-width: 750px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 2 — HERO / PROPOSTA DE VALOR
-       ========================================================================== */
-    .hero-box {
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 3 — O PROBLEMA QUE RESOLVEMOS
+       SECÇÃO 1 — O PROBLEMA
        ========================================================================== */
     .cards-grid-3 {
       display: grid;
@@ -246,6 +149,65 @@
       font-size: 14px;
       color: var(--text-secondary);
       line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       SECÇÃO 2 — HERO / PROPOSTA DE VALOR
+       ========================================================================== */
+    .hero-box {
+      text-align: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       SECÇÃO 3 — VÍDEO EXPLICATIVO
+       ========================================================================== */
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background-color: var(--color-teal-light);
+      color: var(--color-teal);
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 50px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      max-width: 850px;
+      margin: 32px auto 0;
+      aspect-ratio: 16 / 9;
+      background-color: #1E293B;
+      border-radius: var(--card-radius);
+      box-shadow: var(--card-shadow);
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+      transition: var(--transition-standard);
+    }
+
+    .video-wrapper:hover { box-shadow: var(--card-shadow-hover); }
+
+    .video-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .video-caption {
+      margin-top: 16px;
+      font-style: italic;
+      color: var(--text-secondary);
+      font-size: 14px;
+      max-width: 750px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     /* ==========================================================================
@@ -364,7 +326,7 @@
     }
 
     /* ==========================================================================
-       SECÇÕES 6 & 7 — AÇÕES RÁPIDAS (PAINEL GESTOR E SECRETARIA)
+       SECÇÕES 6 & 7 — AÇÕES RÁPIDAS
        ========================================================================== */
     .panel-box {
       background-color: var(--bg-main);
@@ -374,9 +336,7 @@
       box-shadow: var(--card-shadow);
     }
 
-    .panel-header {
-      margin-bottom: 32px;
-    }
+    .panel-header { margin-bottom: 32px; }
 
     .panel-title {
       font-family: var(--font-heading);
@@ -422,9 +382,7 @@
       transition: filter 0.2s ease;
     }
 
-    .quick-card:hover .quick-card-header {
-      filter: brightness(0.92);
-    }
+    .quick-card:hover .quick-card-header { filter: brightness(0.92); }
 
     .quick-card-header.bg-teal { background-color: var(--color-teal); }
     .quick-card-header.bg-amber { background-color: var(--color-amber); }
@@ -522,7 +480,7 @@
     }
 
     .ai-questions-list li::before {
-      content: "“";
+      content: "\201C";
       position: absolute;
       left: 0;
       top: -2px;
@@ -531,7 +489,7 @@
     }
 
     .ai-questions-list li::after {
-      content: "”";
+      content: "\201D";
     }
 
     .ai-highlight-box {
@@ -557,7 +515,7 @@
     }
 
     /* ==========================================================================
-       SECÇÃO 10 — NÚMEROS QUE FALAM (KPIS ALINHADOS)
+       SECÇÃO 10 — KPIS
        ========================================================================== */
     .kpi-grid {
       display: grid;
@@ -566,9 +524,7 @@
       margin-top: 40px;
     }
 
-    .kpi-card {
-      text-align: center;
-    }
+    .kpi-card { text-align: center; }
 
     .kpi-value {
       font-family: var(--font-heading);
@@ -587,33 +543,21 @@
     }
 
     /* ==========================================================================
-       RESPONSIVIDADE (MEDIA QUERIES)
+       RESPONSIVIDADE
        ========================================================================== */
     @media (max-width: 992px) {
-      .cards-grid-8 {
-        grid-template-columns: repeat(2, 1fr);
-      }
-      .kpi-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-      }
+      .cards-grid-8 { grid-template-columns: repeat(2, 1fr); }
+      .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
     }
 
     @media (max-width: 768px) {
-      section {
-        padding: 48px 0;
-      }
-
-      .cards-grid-3 {
-        grid-template-columns: 1fr;
-      }
-
+      section { padding: 48px 0; }
+      .cards-grid-3 { grid-template-columns: 1fr; }
       .timeline-container {
         flex-direction: column;
         align-items: flex-start;
         gap: 32px;
       }
-
       .timeline-line {
         top: 25px;
         bottom: 25px;
@@ -621,95 +565,30 @@
         width: 3px;
         height: auto;
       }
-
       .timeline-step {
         flex-direction: row;
         align-items: flex-start;
         text-align: left;
         gap: 20px;
       }
-
       .step-number {
         margin-bottom: 0;
         flex-shrink: 0;
         box-shadow: 0 0 0 4px var(--bg-alt);
       }
-
-      .cards-grid-8 {
-        grid-template-columns: 1fr;
-      }
-
-      .quick-links-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .panel-box {
-        padding: 24px 16px;
-      }
-
-      .ai-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .kpi-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-      }
-      
-      .kpi-value {
-        font-size: 40px;
-      }
+      .cards-grid-8 { grid-template-columns: 1fr; }
+      .quick-links-grid { grid-template-columns: 1fr; }
+      .panel-box { padding: 24px 16px; }
+      .ai-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr; gap: 24px; }
+      .kpi-value { font-size: 40px; }
     }
   </style>
 </head>
 <body>
 
   <!-- ==========================================================================
-     SECÇÃO 1 — VÍDEO EXPLICATIVO
-     ========================================================================== -->
-  <section class="bg-white fade-in">
-    <div class="container text-center">
-      <div class="badge-pill">
-        COBRANÇAS E PAGAMENTOS ESCOLARES · POR REFERÊNCIA MULTICAIXA
-      </div>
-      <h1 class="section-title">Veja como funciona em 2 minutos</h1>
-      <p class="section-subtitle subtitle-center">
-        Da emissão das referências ao relatório financeiro — tudo automatizado..
-      </p>
-
-      <div class="video-wrapper">
-        <iframe 
-          src="https://www.youtube.com/embed/CoYormVJGAg" 
-          title="SMS Recarga - Vídeo explicativo" 
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-          allowfullscreen>
-        </iframe>
-      </div>
-
-      <p class="video-caption">
-        O sistema apoia a sua equipa em cada etapa do processo de cobrança — gera as referências Multicaixa, envia lembretes por SMS, aplica as multas e actualiza o painel.
-      </p>
-    </div>
-  </section>
-
-
-  <!-- ==========================================================================
-     SECÇÃO 2 — HERO / PROPOSTA DE VALOR
-     ========================================================================== -->
-  <section class="bg-alt fade-in">
-    <div class="container hero-box">
-      <h2 class="section-title">
-        Controlo total das cobranças escolares — automatizado, inteligente e em tempo real.
-      </h2>
-      <p class="section-subtitle subtitle-center" style="margin-top: 16px;">
-        Da emissão da referência Multicaixa ao acompanhamento da dívida — tudo num único painel.
-      </p>
-    </div>
-  </section>
-
-
-  <!-- ==========================================================================
-     SECÇÃO 3 — O PROBLEMA QUE RESOLVEMOS
+     SECÇÃO 1 — O PROBLEMA QUE RESOLVEMOS
      ========================================================================== -->
   <section class="bg-white fade-in">
     <div class="container text-center">
@@ -753,7 +632,51 @@
 
 
   <!-- ==========================================================================
-     SECÇÃO 4 — COMO FUNCIONA
+     SECÇÃO 2 — HERO / PROPOSTA DE VALOR
+     ========================================================================== -->
+  <section class="bg-alt fade-in">
+    <div class="container hero-box">
+      <h2 class="section-title">
+        Controlo total das cobranças escolares — automatizado, inteligente e em tempo real.
+      </h2>
+      <p class="section-subtitle subtitle-center" style="margin-top: 16px;">
+        Da emissão da referência Multicaixa ao acompanhamento da dívida — tudo num único painel, concebido para escolas privadas angolanas.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+     SECÇÃO 3 — VÍDEO EXPLICATIVO
+     ========================================================================== -->
+  <section class="bg-white fade-in">
+    <div class="container text-center">
+      <div class="badge-pill">
+        COBRANÇAS E PAGAMENTOS ESCOLARES · MULTICAIXA
+      </div>
+      <h1 class="section-title">Veja como funciona em 2 minutos</h1>
+      <p class="section-subtitle subtitle-center">
+        Da emissão das referências ao relatório financeiro — tudo automatizado.
+      </p>
+
+      <div class="video-wrapper">
+        <iframe
+          src="https://www.youtube.com/embed/CoYormVJGAg"
+          title="SMS Recarga - Vídeo explicativo"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <p class="video-caption">
+        O sistema apoia a sua equipa em cada etapa do processo de cobrança — gera as referências Multicaixa, envia lembretes por SMS, aplica as multas e actualiza o painel.
+      </p>
+    </div>
+  </section>
+
+
+  <!-- ==========================================================================
+     SECÇÃO 4 — COMO FUNCIONA (FLUXOGRAMA)
      ========================================================================== -->
   <section class="bg-alt fade-in">
     <div class="container text-center">
@@ -803,7 +726,7 @@
           <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
           </svg>
-          <div class="step-title">Relatório em Tempo Real</div>
+          <div class="step-title">Painel em Tempo Real</div>
           <div class="step-desc">Os dados são consolidados automaticamente no painel, dando à direcção visibilidade total sobre o estado financeiro da escola.</div>
         </div>
       </div>
@@ -908,7 +831,7 @@
               <h4>Propina</h4>
             </div>
             <div class="quick-card-body">
-              Visão integrada do ciclo de cobrança de propinas — da emissão ao pagamento e à recuperação da dívida..
+              Visão integrada do ciclo de cobrança de propinas — da emissão ao pagamento e à recuperação da dívida.
             </div>
           </a>
 
@@ -931,7 +854,7 @@
               <svg viewBox="0 0 24 24">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
               </svg>
-              <h4>Serviços & Emolumentos</h4>
+              <h4>Serviços &amp; Emolumentos</h4>
             </div>
             <div class="quick-card-body">
               Visão integrada da distribuição dos pagamentos de serviços e emolumentos escolares por tipo de serviço e respectivo peso na receita total.
@@ -987,7 +910,7 @@
               <svg viewBox="0 0 24 24">
                 <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
               </svg>
-              <h4>Serviços & Emolumentos</h4>
+              <h4>Serviços &amp; Emolumentos</h4>
             </div>
             <div class="quick-card-body">
               Registo dos pagamentos de serviços escolares recebidos por aluno. Use este relatório para consultar e verificar os pagamentos efectuados por tipo de serviço no período seleccionado.
@@ -1087,7 +1010,7 @@
           </svg>
           <h3 class="card-problem-title">🤖 ColégioGPT</h3>
           <p class="card-problem-desc">
-            Faça perguntas em linguagem natural e obtenha respostas imediatas sobre cobranças, dívida e desempenho financeiro..
+            Faça perguntas em linguagem natural e obtenha respostas imediatas sobre cobranças, dívida e desempenho financeiro.
           </p>
         </div>
       </div>
@@ -1096,41 +1019,32 @@
 
 
   <!-- ==========================================================================
-     SECÇÃO 10 — NÚMEROS QUE FALAM (KPIS ALIMENTADOS VIA CLOUD FUNCTION)
+     SECÇÃO 10 — NÚMEROS QUE FALAM (KPIS)
      ========================================================================== -->
   <section id="kpi-section" class="bg-teal fade-in">
     <div class="container text-center">
       <h2 class="section-title text-white">O impacto em números reais.</h2>
 
       <div class="kpi-grid">
-        <!-- KPI 1 -->
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="referencias" data-target="50000" data-suffix="" data-format="space">0</div>
           <div class="kpi-label">Referências Emitidas</div>
         </div>
-
-        <!-- KPI 2 -->
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="pagamentos" data-target="38027" data-suffix="" data-format="space">0</div>
           <div class="kpi-label">Pagamentos Recebidos</div>
         </div>
-
-        <!-- KPI 3 -->
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="liquidacao" data-target="76.1" data-suffix="%" data-decimals="1">0</div>
-          <div class="kpi-label">Taxa de liquidação</div>
+          <div class="kpi-label">Taxa de Liquidação</div>
         </div>
-
-        <!-- KPI 4 -->
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="eficacia" data-target="6.6" data-suffix="%" data-decimals="1">0</div>
-          <div class="kpi-label">Eficácia dos lembretes SMS</div>
+          <div class="kpi-label">Taxa de Resposta aos Lembretes</div>
         </div>
-
-        <!-- KPI 5 -->
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="tempo" data-target="5.6" data-suffix=" dias" data-decimals="1">0</div>
-          <div class="kpi-label">Tempo médio até pagamento</div>
+          <div class="kpi-label">Tempo Médio até Pagamento</div>
         </div>
       </div>
     </div>
@@ -1138,20 +1052,13 @@
 
 
   <!-- ==========================================================================
-     JAVASCRIPT NATIVO (FETCH DINÂMICO DA CLOUD FUNCTION)
+     JAVASCRIPT
      ========================================================================== -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
 
-      // 1. INTERSECTION OBSERVER PARA FADE-IN DE SECÇÕES
+      // 1. INTERSECTION OBSERVER — FADE-IN
       const fadeElements = document.querySelectorAll('.fade-in');
-
-      const fadeObserverOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.15
-      };
-
       const fadeObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -1159,12 +1066,10 @@
             observer.unobserve(entry.target);
           }
         });
-      }, fadeObserverOptions);
-
+      }, { root: null, rootMargin: '0px', threshold: 0.15 });
       fadeElements.forEach(el => fadeObserver.observe(el));
 
-
-      // 2. FUNÇÕES DE ANIMAÇÃO DOS CONTADORES DE KPIS
+      // 2. ANIMAÇÃO DOS CONTADORES DE KPIS
       const kpiSection = document.getElementById('kpi-section');
       const kpiValues = document.querySelectorAll('.kpi-value');
       let animated = false;
@@ -1175,8 +1080,7 @@
           const suffix = counter.getAttribute('data-suffix') || '';
           const decimals = parseInt(counter.getAttribute('data-decimals')) || 0;
           const formatSpace = counter.getAttribute('data-format') === 'space';
-          
-          const duration = 2000; // 2 segundos de animação
+          const duration = 2000;
           const steps = 60;
           const stepTime = duration / steps;
           let currentStep = 0;
@@ -1186,7 +1090,6 @@
             const progress = currentStep / steps;
             const easeProgress = 1 - (1 - progress) * (1 - progress);
             const currentValue = target * easeProgress;
-
             if (currentStep >= steps) {
               clearInterval(timer);
               renderValue(counter, target, decimals, suffix, formatSpace);
@@ -1198,68 +1101,38 @@
       }
 
       function renderValue(el, val, decimals, suffix, formatSpace) {
-        let formattedNum = val.toFixed(decimals);
-        
-        // Formatar vírgula decimal (PT-PT)
-        formattedNum = formattedNum.replace('.', ',');
-
-        // Formatar separador de milhares por espaço (ex: 50 000)
+        let formattedNum = val.toFixed(decimals).replace('.', ',');
         if (formatSpace) {
           const parts = formattedNum.split(',');
           parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
           formattedNum = parts.join(',');
         }
-
         el.textContent = formattedNum + suffix;
       }
 
-
-      // 3. CARREGAMENTO DINÂMICO VIA CLOUD RUN / FUNCTION COM FALLBACK AUTOMÁTICO
+      // 3. FETCH DINÂMICO COM FALLBACK
       async function fetchKpisAndAnimate() {
-        // URL PÚBLICA DA TUA CLOUD FUNCTION NO CLOUD RUN:
         const API_URL = 'https://get-kpis-escola-378415142176.europe-west1.run.app';
-
         try {
-          // Define um limite de tempo de 3.5 segundos para a resposta
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 3500);
-
           const response = await fetch(API_URL, { signal: controller.signal });
           clearTimeout(timeoutId);
-
           if (!response.ok) throw new Error('Servidor retornou erro HTTP');
-
           const data = await response.json();
-
-          // Sobrescreve os atributos 'data-target' com os dados retornados em tempo real pela API
-          if (data.totalReferencias !== undefined) {
-            document.querySelector('[data-kpi="referencias"]').setAttribute('data-target', data.totalReferencias);
-          }
-          if (data.pagamentosRecebidos !== undefined) {
-            document.querySelector('[data-kpi="pagamentos"]').setAttribute('data-target', data.pagamentosRecebidos);
-          }
-          if (data.taxaLiquidacao !== undefined) {
-            document.querySelector('[data-kpi="liquidacao"]').setAttribute('data-target', data.taxaLiquidacao);
-          }
-          if (data.eficaciaSms !== undefined) {
-            document.querySelector('[data-kpi="eficacia"]').setAttribute('data-target', data.eficaciaSms);
-          }
-          if (data.tempoMedio !== undefined) {
-            document.querySelector('[data-kpi="tempo"]').setAttribute('data-target', data.tempoMedio);
-          }
-
+          if (data.totalReferencias !== undefined) document.querySelector('[data-kpi="referencias"]').setAttribute('data-target', data.totalReferencias);
+          if (data.pagamentosRecebidos !== undefined) document.querySelector('[data-kpi="pagamentos"]').setAttribute('data-target', data.pagamentosRecebidos);
+          if (data.taxaLiquidacao !== undefined) document.querySelector('[data-kpi="liquidacao"]').setAttribute('data-target', data.taxaLiquidacao);
+          if (data.eficaciaSms !== undefined) document.querySelector('[data-kpi="eficacia"]').setAttribute('data-target', data.eficaciaSms);
+          if (data.tempoMedio !== undefined) document.querySelector('[data-kpi="tempo"]').setAttribute('data-target', data.tempoMedio);
         } catch (error) {
-          // MODO FALLBACK SILENCIOSO:
-          // Se houver falha de rede ou timeout, utiliza os últimos dados gravados no HTML.
           console.info('A utilizar valores fallback dos atributos HTML.', error);
         } finally {
-          // Inicia a animação independentemente da origem dos dados
           animateCounters();
         }
       }
 
-
-      // 4. OBSERVER DA SECÇÃO DE KPIS (Dispara quando o utilizador rola até à secção)
+      // 4. OBSERVER DA SECÇÃO DE KPIS
       const kpiObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !animated) {
@@ -1269,10 +1142,7 @@
         });
       }, { threshold: 0.3 });
 
-      if (kpiSection) {
-        kpiObserver.observe(kpiSection);
-      }
-
+      if (kpiSection) kpiObserver.observe(kpiSection);
     });
   </script>
 
