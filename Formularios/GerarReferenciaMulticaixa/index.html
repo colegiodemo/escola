@@ -6,7 +6,6 @@
     <title>Area de Pagamentos</title>
     <style>
         :root {
-            /* Base institucional */
             --ink: #0F1A2E;
             --ink-soft: #334155;
             --muted: #64748B;
@@ -16,12 +15,9 @@
             --surface: #FFFFFF;
             --canvas: #F7F9FC;
             --navy: #0F2557;
-
-            /* Cores temáticas por secção */
             --c1: #1E3A8A;
             --c2: #2563EB;
             --c3: #4F46E5;
-
             --radius-lg: 18px;
             --radius-md: 12px;
         }
@@ -36,10 +32,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background:
-                radial-gradient(1100px 420px at 18% -8%, rgba(30,58,138,0.045), transparent 60%),
-                radial-gradient(900px 380px at 100% 0%, rgba(13,148,136,0.035), transparent 55%),
-                #FFFFFF;
+            background: #FFFFFF;
             color: var(--ink-soft);
             line-height: 1.55;
             padding: 0 16px 16px;
@@ -95,28 +88,12 @@
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .dashboard-section {
-                animation: none;
-                opacity: 1;
-            }
-            .dashboard-card,
-            .dashboard-card:hover {
-                transition: none;
-                transform: none;
-            }
-            .group-chevron svg {
-                transition: none;
-            }
+            .dashboard-section { animation: none; opacity: 1; }
+            .dashboard-card, .dashboard-card:hover { transition: none; transform: none; }
+            .group-chevron svg { transition: none; }
         }
 
         /* ============ Cabeçalho de secção ============ */
-        .section-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            margin-bottom: 10px;
-        }
-
         .section-icon {
             width: 40px;
             height: 40px;
@@ -159,7 +136,6 @@
             font-weight: 400;
             color: var(--muted);
             max-width: 1080px;
-            padding-left: 0;
             margin-top: 2px;
         }
 
@@ -206,7 +182,6 @@
 
         .group-summary::-webkit-details-marker { display: none; }
         .group-summary::marker { content: ""; }
-
         .group-summary:hover .section-title { color: var(--accent); }
 
         .group-chevron {
@@ -253,9 +228,9 @@
         }
 
         /* Alturas dos Wrappers de Iframe */
-        .crop-propina { height: 1250px; } .crop-propina iframe { height: 1296px !important; }
-        .crop-transporte { height: 1300px; } .crop-transporte iframe { height: 1336px !important; }
-        .crop-servico { height: 1250px; } .crop-servico iframe { height: 1296px !important; }
+        .crop-propina   { height: 1250px; } .crop-propina   iframe { height: 1296px !important; }
+        .crop-transporte{ height: 1300px; } .crop-transporte iframe { height: 1336px !important; }
+        .crop-servico   { height: 1250px; } .crop-servico   iframe { height: 1296px !important; }
 
         /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
@@ -271,7 +246,7 @@
         }
 
         @media (max-width: 480px) {
-            .section-header { gap: 10px; }
+            .group-summary { gap: 10px; }
         }
     </style>
 </head>
@@ -367,10 +342,8 @@
 
         allDetails.forEach(details => {
             details.addEventListener('toggle', function () {
-                // Só actua quando uma secção é aberta
                 if (this.open) {
                     allDetails.forEach(other => {
-                        // Colapsa todas as outras secções abertas
                         if (other !== this && other.open) {
                             other.open = false;
                         }
