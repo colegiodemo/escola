@@ -4,578 +4,101 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home Page - Gestão de Cobranças e Pagamentos Escolares por Referência Multicaixa</title>
-
-  <!-- Google Fonts: Inter e Poppins -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-
   <style>
-    /* ==========================================================================
-       RESET & VARIÁVEIS GLOBAIS
-       ========================================================================== */
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --color-primary: #1E3A8A;
-      --color-teal: #0D9488;
-      --color-teal-light: #CCFBF1;
-      --color-amber: #D97706;
-      --color-purple: #7C3AED;
-      --color-red: #DC2626;
-      --bg-main: #FFFFFF;
-      --bg-alt: #F8FAFC;
-      --text-main: #1E293B;
-      --text-secondary: #64748B;
-      --border-color: #E2E8F0;
-      --font-heading: 'Poppins', sans-serif;
-      --font-body: 'Inter', sans-serif;
-      --card-radius: 12px;
-      --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-      --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12);
-      --transition-standard: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      --color-primary: #1E3A8A; --color-teal: #0D9488; --color-teal-light: #CCFBF1;
+      --color-amber: #D97706; --color-purple: #7C3AED; --color-red: #DC2626;
+      --bg-main: #FFFFFF; --bg-alt: #F8FAFC; --text-main: #1E293B;
+      --text-secondary: #64748B; --border-color: #E2E8F0;
+      --font-heading: 'Poppins', sans-serif; --font-body: 'Inter', sans-serif;
+      --card-radius: 12px; --card-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      --card-shadow-hover: 0 8px 24px rgba(0,0,0,0.12);
+      --transition-standard: all 0.25s cubic-bezier(0.16,1,0.3,1);
     }
-
     html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--font-body);
-      color: var(--text-main);
-      background-color: var(--bg-main);
-      line-height: 1.6;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    .container {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px;
-      width: 100%;
-    }
-
-    section {
-      padding: 64px 0;
-      width: 100%;
-    }
-
+    body { font-family: var(--font-body); color: var(--text-main); background-color: var(--bg-main); line-height: 1.6; margin: 0; padding: 0; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; width: 100%; }
+    section { padding: 64px 0; width: 100%; }
     .bg-white { background-color: var(--bg-main); }
     .bg-alt { background-color: var(--bg-alt); }
     .bg-dark-blue { background-color: var(--color-primary); color: #FFFFFF; }
     .bg-teal { background-color: var(--color-teal); color: #FFFFFF; }
-
-    .section-title {
-      font-family: var(--font-heading);
-      font-size: clamp(24px, 4vw, 32px);
-      font-weight: 700;
-      color: var(--color-primary);
-      margin-bottom: 12px;
-      line-height: 1.25;
-    }
-
+    .section-title { font-family: var(--font-heading); font-size: clamp(24px,4vw,32px); font-weight: 700; color: var(--color-primary); margin-bottom: 12px; line-height: 1.25; }
     .section-title.text-white { color: #FFFFFF; }
-
-    .section-subtitle {
-      font-family: var(--font-body);
-      font-size: clamp(15px, 2vw, 18px);
-      color: var(--text-secondary);
-      max-width: 800px;
-      line-height: 1.6;
-    }
-
-    .section-subtitle.text-white-sub { color: rgba(255, 255, 255, 0.8); }
-
+    .section-subtitle { font-family: var(--font-body); font-size: clamp(15px,2vw,18px); color: var(--text-secondary); max-width: 800px; line-height: 1.6; }
+    .section-subtitle.text-white-sub { color: rgba(255,255,255,0.8); }
     .text-center { text-align: center; }
     .subtitle-center { margin-left: auto; margin-right: auto; }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-
-    .fade-in.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ==========================================================================
-       SECÇÃO 1 — O PROBLEMA
-       ========================================================================== */
-    .cards-grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      margin-top: 40px;
-    }
-
-    .card-problem {
-      background-color: var(--bg-main);
-      border-radius: var(--card-radius);
-      padding: 32px 24px;
-      box-shadow: var(--card-shadow);
-      border: 1px solid var(--border-color);
-      border-top: 4px solid var(--color-teal);
-      transition: var(--transition-standard);
-    }
-
-    .card-problem:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--card-shadow-hover);
-    }
-
-    .card-problem-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 20px;
-      color: var(--color-teal);
-    }
-
-    .card-problem-title {
-      font-family: var(--font-heading);
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 12px;
-    }
-
-    .card-problem-desc {
-      font-size: 14px;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 2 — HERO / PROPOSTA DE VALOR
-       ========================================================================== */
-    .hero-box {
-      text-align: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 3 — VÍDEO EXPLICATIVO
-       ========================================================================== */
-    .badge-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 16px;
-      background-color: var(--color-teal-light);
-      color: var(--color-teal);
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: 50px;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .video-wrapper {
-      position: relative;
-      width: 100%;
-      max-width: 850px;
-      margin: 32px auto 0;
-      aspect-ratio: 16 / 9;
-      background-color: #1E293B;
-      border-radius: var(--card-radius);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-      transition: var(--transition-standard);
-    }
-
+    .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+    .cards-grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 40px; }
+    .card-problem { background-color: var(--bg-main); border-radius: var(--card-radius); padding: 32px 24px; box-shadow: var(--card-shadow); border: 1px solid var(--border-color); border-top: 4px solid var(--color-teal); transition: var(--transition-standard); }
+    .card-problem:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+    .card-problem-icon { width: 48px; height: 48px; margin-bottom: 20px; color: var(--color-teal); }
+    .card-problem-title { font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+    .card-problem-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; }
+    .hero-box { text-align: center; max-width: 900px; margin: 0 auto; }
+    .badge-pill { display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; background-color: var(--color-teal-light); color: var(--color-teal); font-size: 13px; font-weight: 600; border-radius: 50px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .video-wrapper { position: relative; width: 100%; max-width: 850px; margin: 32px auto 0; aspect-ratio: 16/9; background-color: #1E293B; border-radius: var(--card-radius); box-shadow: var(--card-shadow); overflow: hidden; border: 1px solid var(--border-color); transition: var(--transition-standard); }
     .video-wrapper:hover { box-shadow: var(--card-shadow-hover); }
-
-    .video-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-    }
-
-    .video-caption {
-      margin-top: 16px;
-      font-style: italic;
-      color: var(--text-secondary);
-      font-size: 14px;
-      max-width: 750px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 4 — COMO FUNCIONA (TIMELINE)
-       ========================================================================== */
-    .timeline-container {
-      position: relative;
-      margin-top: 48px;
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .timeline-line {
-      position: absolute;
-      top: 24px;
-      left: 40px;
-      right: 40px;
-      height: 3px;
-      background-color: var(--border-color);
-      z-index: 1;
-    }
-
-    .timeline-step {
-      position: relative;
-      z-index: 2;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-    }
-
-    .step-number {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background-color: var(--color-primary);
-      color: #FFFFFF;
-      font-family: var(--font-heading);
-      font-weight: 700;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 16px;
-      box-shadow: 0 0 0 6px var(--bg-alt);
-    }
-
-    .step-icon {
-      width: 28px;
-      height: 28px;
-      color: var(--color-teal);
-      margin-bottom: 12px;
-    }
-
-    .step-title {
-      font-family: var(--font-heading);
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 8px;
-    }
-
-    .step-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 5 — O QUE O DASHBOARD OFERECE (GRID 8 CARDS)
-       ========================================================================== */
-    .cards-grid-8 {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 24px;
-      margin-top: 48px;
-    }
-
-    .card-feature {
-      background: var(--bg-main);
-      border-radius: var(--card-radius);
-      padding: 24px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--card-shadow);
-      transition: var(--transition-standard);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card-feature:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--card-shadow-hover);
-      border-color: var(--color-teal);
-    }
-
-    .card-feature-icon {
-      width: 40px;
-      height: 40px;
-      margin-bottom: 16px;
-    }
-
-    .card-feature-title {
-      font-family: var(--font-heading);
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--color-primary);
-      margin-bottom: 8px;
-    }
-
-    .card-feature-desc {
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    /* ==========================================================================
-       SECÇÕES 6 & 7 — AÇÕES RÁPIDAS
-       ========================================================================== */
-    .panel-box {
-      background-color: var(--bg-main);
-      border-radius: var(--card-radius);
-      padding: 40px 32px;
-      border: 1px solid var(--border-color);
-      box-shadow: var(--card-shadow);
-    }
-
+    .video-wrapper iframe { width: 100%; height: 100%; border: 0; }
+    .video-caption { margin-top: 16px; font-style: italic; color: var(--text-secondary); font-size: 14px; max-width: 750px; margin-left: auto; margin-right: auto; }
+    .timeline-container { position: relative; margin-top: 48px; display: flex; justify-content: space-between; gap: 16px; }
+    .timeline-line { position: absolute; top: 24px; left: 40px; right: 40px; height: 3px; background-color: var(--border-color); z-index: 1; }
+    .timeline-step { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .step-number { width: 50px; height: 50px; border-radius: 50%; background-color: var(--color-primary); color: #FFFFFF; font-family: var(--font-heading); font-weight: 700; font-size: 18px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; box-shadow: 0 0 0 6px var(--bg-alt); }
+    .step-icon { width: 28px; height: 28px; color: var(--color-teal); margin-bottom: 12px; }
+    .step-title { font-family: var(--font-heading); font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .step-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .cards-grid-8 { display: grid; grid-template-columns: repeat(4,1fr); gap: 24px; margin-top: 48px; }
+    .card-feature { background: var(--bg-main); border-radius: var(--card-radius); padding: 24px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); transition: var(--transition-standard); display: flex; flex-direction: column; }
+    .card-feature:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); border-color: var(--color-teal); }
+    .card-feature-icon { width: 40px; height: 40px; margin-bottom: 16px; }
+    .card-feature-title { font-family: var(--font-heading); font-size: 16px; font-weight: 700; color: var(--color-primary); margin-bottom: 8px; }
+    .card-feature-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .panel-box { background-color: var(--bg-main); border-radius: var(--card-radius); padding: 40px 32px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow); }
     .panel-header { margin-bottom: 32px; }
-
-    .panel-title {
-      font-family: var(--font-heading);
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-
-    .panel-subtitle {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .quick-links-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .quick-card {
-      display: block;
-      text-decoration: none;
-      background: var(--bg-main);
-      border-radius: var(--card-radius);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--card-shadow);
-      overflow: hidden;
-      transition: var(--transition-standard);
-    }
-
-    .quick-card:hover {
-      transform: translateY(-3px);
-      box-shadow: var(--card-shadow-hover);
-    }
-
-    .quick-card-header {
-      padding: 20px 16px;
-      color: #FFFFFF;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transition: filter 0.2s ease;
-    }
-
+    .panel-title { font-family: var(--font-heading); font-size: 22px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+    .panel-subtitle { font-size: 14px; color: var(--text-secondary); }
+    .quick-links-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .quick-card { display: block; text-decoration: none; background: var(--bg-main); border-radius: var(--card-radius); border: 1px solid var(--border-color); box-shadow: var(--card-shadow); overflow: hidden; transition: var(--transition-standard); }
+    .quick-card:hover { transform: translateY(-3px); box-shadow: var(--card-shadow-hover); }
+    .quick-card-header { padding: 20px 16px; color: #FFFFFF; display: flex; align-items: center; gap: 12px; transition: filter 0.2s ease; }
     .quick-card:hover .quick-card-header { filter: brightness(0.92); }
-
     .quick-card-header.bg-teal { background-color: var(--color-teal); }
     .quick-card-header.bg-amber { background-color: var(--color-amber); }
     .quick-card-header.bg-purple { background-color: var(--color-purple); }
-
-    .quick-card-header svg {
-      width: 24px;
-      height: 24px;
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      flex-shrink: 0;
-    }
-
-    .quick-card-header h4 {
-      font-family: var(--font-heading);
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .quick-card-body {
-      padding: 20px 16px;
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 8 — COLÉGIOGPT (IA)
-       ========================================================================== */
-    .ai-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 12px;
-      background-color: rgba(13, 148, 136, 0.2);
-      color: #5EEAD4;
-      border: 1px solid rgba(13, 148, 136, 0.4);
-      border-radius: 50px;
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 16px;
-    }
-
-    .ai-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
-      margin-top: 40px;
-    }
-
-    .ai-card {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: var(--card-radius);
-      padding: 32px 24px;
-      backdrop-filter: blur(10px);
-    }
-
-    .ai-card-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .ai-card-header svg {
-      width: 28px;
-      height: 28px;
-      color: #5EEAD4;
-    }
-
-    .ai-card-title {
-      font-family: var(--font-heading);
-      font-size: 18px;
-      font-weight: 700;
-      color: #FFFFFF;
-    }
-
-    .ai-questions-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .ai-questions-list li {
-      font-size: 14px;
-      font-style: italic;
-      color: rgba(255, 255, 255, 0.75);
-      position: relative;
-      padding-left: 20px;
-    }
-
-    .ai-questions-list li::before {
-      content: "\201C";
-      position: absolute;
-      left: 0;
-      top: -2px;
-      font-size: 18px;
-      color: #5EEAD4;
-    }
-
-    .ai-questions-list li::after {
-      content: "\201D";
-    }
-
-    .ai-highlight-box {
-      margin-top: 32px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--color-teal);
-      border-radius: var(--card-radius);
-      padding: 20px;
-      text-align: center;
-      font-size: 14px;
-      font-weight: 500;
-      color: #FFFFFF;
-    }
-
-    /* ==========================================================================
-       SECÇÃO 9 — PARA QUEM É
-       ========================================================================== */
-    .card-target-icon {
-      width: 44px;
-      height: 44px;
-      margin-bottom: 16px;
-      color: var(--color-primary);
-    }
-
-    /* ==========================================================================
-       SECÇÃO 10 — KPIS
-       ========================================================================== */
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
-      margin-top: 40px;
-    }
-
+    .quick-card-header svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .quick-card-header h4 { font-family: var(--font-heading); font-size: 16px; font-weight: 700; }
+    .quick-card-body { padding: 20px 16px; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+    .ai-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; background-color: rgba(13,148,136,0.2); color: #5EEAD4; border: 1px solid rgba(13,148,136,0.4); border-radius: 50px; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+    .ai-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 24px; margin-top: 40px; }
+    .ai-card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--card-radius); padding: 32px 24px; backdrop-filter: blur(10px); }
+    .ai-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .ai-card-header svg { width: 28px; height: 28px; color: #5EEAD4; }
+    .ai-card-title { font-family: var(--font-heading); font-size: 18px; font-weight: 700; color: #FFFFFF; }
+    .ai-questions-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .ai-questions-list li { font-size: 14px; font-style: italic; color: rgba(255,255,255,0.75); position: relative; padding-left: 20px; }
+    .ai-questions-list li::before { content: "\201C"; position: absolute; left: 0; top: -2px; font-size: 18px; color: #5EEAD4; }
+    .ai-questions-list li::after { content: "\201D"; }
+    .ai-highlight-box { margin-top: 32px; background: rgba(255,255,255,0.05); border: 1px solid var(--color-teal); border-radius: var(--card-radius); padding: 20px; text-align: center; font-size: 14px; font-weight: 500; color: #FFFFFF; }
+    .card-target-icon { width: 44px; height: 44px; margin-bottom: 16px; color: var(--color-primary); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 16px; margin-top: 40px; }
     .kpi-card { text-align: center; }
-
-    .kpi-value {
-      font-family: var(--font-heading);
-      font-size: 38px;
-      font-weight: 800;
-      color: #FFFFFF;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .kpi-label {
-      font-size: 13px;
-      color: rgba(255, 255, 255, 0.85);
-      font-weight: 500;
-      line-height: 1.3;
-    }
-
-    /* ==========================================================================
-       RESPONSIVIDADE
-       ========================================================================== */
-    @media (max-width: 992px) {
-      .cards-grid-8 { grid-template-columns: repeat(2, 1fr); }
-      .kpi-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
-    }
-
+    .kpi-value { font-family: var(--font-heading); font-size: 38px; font-weight: 800; color: #FFFFFF; line-height: 1; margin-bottom: 8px; }
+    .kpi-label { font-size: 13px; color: rgba(255,255,255,0.85); font-weight: 500; line-height: 1.3; }
+    @media (max-width: 992px) { .cards-grid-8 { grid-template-columns: repeat(2,1fr); } .kpi-grid { grid-template-columns: repeat(3,1fr); gap: 24px; } }
     @media (max-width: 768px) {
       section { padding: 48px 0; }
       .cards-grid-3 { grid-template-columns: 1fr; }
-      .timeline-container {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 32px;
-      }
-      .timeline-line {
-        top: 25px;
-        bottom: 25px;
-        left: 24px;
-        width: 3px;
-        height: auto;
-      }
-      .timeline-step {
-        flex-direction: row;
-        align-items: flex-start;
-        text-align: left;
-        gap: 20px;
-      }
-      .step-number {
-        margin-bottom: 0;
-        flex-shrink: 0;
-        box-shadow: 0 0 0 4px var(--bg-alt);
-      }
+      .timeline-container { flex-direction: column; align-items: flex-start; gap: 32px; }
+      .timeline-line { top: 25px; bottom: 25px; left: 24px; width: 3px; height: auto; }
+      .timeline-step { flex-direction: row; align-items: flex-start; text-align: left; gap: 20px; }
+      .step-number { margin-bottom: 0; flex-shrink: 0; box-shadow: 0 0 0 4px var(--bg-alt); }
       .cards-grid-8 { grid-template-columns: 1fr; }
       .quick-links-grid { grid-template-columns: 1fr; }
       .panel-box { padding: 24px 16px; }
@@ -587,16 +110,15 @@
 </head>
 <body>
 
-  <!-- ==========================================================================
-     SECÇÃO 1 — O PROBLEMA QUE RESOLVEMOS
-     ========================================================================== -->
+  <!-- SECÇÃO 1 — O PROBLEMA -->
   <section class="bg-white fade-in">
     <div class="container text-center">
       <h2 class="section-title">
         A cobrança de propinas e outros serviços ainda é manual, dispersa e sem visibilidade.
       </h2>
-
       <div class="cards-grid-3 text-center">
+
+        <!-- Card 1: Conciliação manual -->
         <div class="card-problem">
           <svg class="card-problem-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
@@ -607,9 +129,10 @@
           </p>
         </div>
 
+        <!-- Card 2: Comprovativos — ÍCONE ALTERADO PARA EMAIL ENVIADO -->
         <div class="card-problem">
           <svg class="card-problem-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
           </svg>
           <h3 class="card-problem-title">Comprovativos por todo o lado</h3>
           <p class="card-problem-desc">
@@ -617,6 +140,7 @@
           </p>
         </div>
 
+        <!-- Card 3: Sem visibilidade -->
         <div class="card-problem">
           <svg class="card-problem-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
@@ -626,14 +150,13 @@
             A verificação é tão morosa que a direcção nunca sabe, em tempo real, quanto foi efectivamente cobrado, quem está em dívida e qual o estado financeiro real da escola.
           </p>
         </div>
+
       </div>
     </div>
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 2 — HERO / PROPOSTA DE VALOR
-     ========================================================================== -->
+  <!-- SECÇÃO 2 — HERO / PROPOSTA DE VALOR -->
   <section class="bg-alt fade-in">
     <div class="container hero-box">
       <h2 class="section-title">
@@ -646,28 +169,17 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 3 — VÍDEO EXPLICATIVO
-     ========================================================================== -->
+  <!-- SECÇÃO 3 — VÍDEO EXPLICATIVO -->
   <section class="bg-white fade-in">
     <div class="container text-center">
-      <div class="badge-pill">
-        COBRANÇAS E PAGAMENTOS ESCOLARES · MULTICAIXA
-      </div>
+      <div class="badge-pill">COBRANÇAS E PAGAMENTOS ESCOLARES · MULTICAIXA</div>
       <h1 class="section-title">Veja como funciona em 2 minutos</h1>
       <p class="section-subtitle subtitle-center">
         Da emissão das referências ao relatório financeiro — tudo automatizado.
       </p>
-
       <div class="video-wrapper">
-        <iframe
-          src="https://www.youtube.com/embed/CoYormVJGAg"
-          title="SMS Recarga - Vídeo explicativo"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen>
-        </iframe>
+        <iframe src="https://www.youtube.com/embed/CoYormVJGAg" title="SMS Recarga - Vídeo explicativo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
       </div>
-
       <p class="video-caption">
         O sistema apoia a sua equipa em cada etapa do processo de cobrança — gera as referências Multicaixa, envia lembretes por SMS, aplica as multas e actualiza o painel.
       </p>
@@ -675,57 +187,39 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 4 — COMO FUNCIONA (FLUXOGRAMA)
-     ========================================================================== -->
+  <!-- SECÇÃO 4 — COMO FUNCIONA (FLUXOGRAMA) -->
   <section class="bg-alt fade-in">
     <div class="container text-center">
       <h2 class="section-title">Da cobrança ao pagamento, tudo automatizado. A direcção foca-se nas decisões.</h2>
-
       <div class="timeline-container">
         <div class="timeline-line"></div>
-
         <div class="timeline-step">
           <div class="step-number">1</div>
-          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
+          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
           <div class="step-title">Início do Mês</div>
           <div class="step-desc">As referências Multicaixa são geradas automaticamente e enviadas por SMS a cada encarregado.</div>
         </div>
-
         <div class="timeline-step">
           <div class="step-number">2</div>
-          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v1.341C7.67 7.165 6 9.388 6 12v2.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9"></path>
-          </svg>
+          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v1.341C7.67 7.165 6 9.388 6 12v2.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 01-6 0v-1m6 0H9"></path></svg>
           <div class="step-title">Durante o Mês</div>
           <div class="step-desc">Monitorização contínua com lembretes automáticos enviados antes do prazo de pagamento.</div>
         </div>
-
         <div class="timeline-step">
           <div class="step-number">3</div>
-          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <div class="step-title">Fim do Prazo</div>
           <div class="step-desc">As multas são aplicadas automaticamente e o encarregado é notificado de imediato por SMS.</div>
         </div>
-
         <div class="timeline-step">
           <div class="step-number">4</div>
-          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <div class="step-title">Pagamento Recebido</div>
           <div class="step-desc">O pagamento é validado instantaneamente, registado de forma automática e confirmado ao encarregado por SMS.</div>
         </div>
-
         <div class="timeline-step">
           <div class="step-number">5</div>
-          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-          </svg>
+          <svg class="step-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
           <div class="step-title">Painel em Tempo Real</div>
           <div class="step-desc">Os dados são consolidados automaticamente no painel, dando à direcção visibilidade total sobre o estado financeiro da escola.</div>
         </div>
@@ -734,74 +228,48 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 5 — O QUE O DASHBOARD OFERECE
-     ========================================================================== -->
+  <!-- SECÇÃO 5 — O QUE O DASHBOARD OFERECE -->
   <section class="bg-white fade-in">
     <div class="container text-center">
       <h2 class="section-title">Tudo o que a direcção precisa de saber. Num único ecrã.</h2>
-
       <div class="cards-grid-8 text-center">
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           <h3 class="card-feature-title">💰 Balanço de Cobrança</h3>
           <p class="card-feature-desc">Resumo financeiro do período — o que foi facturado, arrecadado, projectado e o que permanece em dívida.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
           <h3 class="card-feature-title">📊 Desempenho da Cobrança</h3>
           <p class="card-feature-desc">Estado das referências emitidas — liquidadas, em aberto, vencidas — e eficácia dos lembretes SMS.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
           <h3 class="card-feature-title">📈 Receita vs. Dívida</h3>
           <p class="card-feature-desc">Evolução mensal da receita face à dívida. Identifique tendências de incumprimento antes que se tornem críticas.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
           <h3 class="card-feature-title">🏫 Estrutura Escolar</h3>
           <p class="card-feature-desc">Distribuição financeira por ciclo e classe. Identifique as estruturas mais rentáveis e as de maior risco.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-red);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-red);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
           <h3 class="card-feature-title">⚠️ Controlo da Dívida</h3>
           <p class="card-feature-desc">Volume, antiguidade e peso financeiro da dívida. Saiba quem deve, quanto e há quanto tempo.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           <h3 class="card-feature-title">🔄 Recuperação de Dívida</h3>
           <p class="card-feature-desc">Acompanhe o desempenho da recuperação de dívida e identifique as cobranças em risco de incumprimento.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-amber);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
           <h3 class="card-feature-title">🏷️ Descontos e Multas</h3>
           <p class="card-feature-desc">Impacto financeiro dos descontos concedidos e das multas aplicadas.</p>
         </div>
-
         <div class="card-feature">
-          <svg class="card-feature-icon" style="color: var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-          </svg>
+          <svg class="card-feature-icon" style="color:var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
           <h3 class="card-feature-title">💳 Perfil de Pagamentos</h3>
           <p class="card-feature-desc">Como, onde e quando os encarregados pagam. Optimize os canais de cobrança.</p>
         </div>
@@ -810,9 +278,7 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 6 — PAINEL DO GESTOR — ACESSO RÁPIDO
-     ========================================================================== -->
+  <!-- SECÇÃO 6 — PAINEL DO GESTOR -->
   <section class="bg-alt fade-in">
     <div class="container">
       <div class="panel-box">
@@ -820,45 +286,27 @@
           <h3 class="panel-title">Painel do Gestor</h3>
           <p class="panel-subtitle">Visão global do ciclo de cobrança — da emissão de referências Multicaixa ao pagamento e à recuperação da dívida.</p>
         </div>
-
         <div class="quick-links-grid">
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Propina.aspx" class="quick-card">
             <div class="quick-card-header bg-teal">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
               <h4>Propina</h4>
             </div>
-            <div class="quick-card-body">
-              Visão integrada do ciclo de cobrança de propinas — da emissão ao pagamento e à recuperação da dívida.
-            </div>
+            <div class="quick-card-body">Visão integrada do ciclo de cobrança de propinas — da emissão ao pagamento e à recuperação da dívida.</div>
           </a>
-
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Transporte.aspx" class="quick-card">
             <div class="quick-card-header bg-amber">
-              <svg viewBox="0 0 24 24">
-                <path d="M8 7h8m-8 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                <circle cx="7.5" cy="16.5" r="1.5" fill="currentColor"></circle>
-                <circle cx="16.5" cy="16.5" r="1.5" fill="currentColor"></circle>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M8 7h8m-8 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path><circle cx="7.5" cy="16.5" r="1.5" fill="currentColor"></circle><circle cx="16.5" cy="16.5" r="1.5" fill="currentColor"></circle></svg>
               <h4>Transporte Escolar</h4>
             </div>
-            <div class="quick-card-body">
-              Visão integrada do ciclo de cobrança do transporte escolar — da emissão ao pagamento e à recuperação da dívida.
-            </div>
+            <div class="quick-card-body">Visão integrada do ciclo de cobrança do transporte escolar — da emissão ao pagamento e à recuperação da dívida.</div>
           </a>
-
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Servicos.aspx" class="quick-card">
             <div class="quick-card-header bg-purple">
-              <svg viewBox="0 0 24 24">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
               <h4>Serviços &amp; Emolumentos</h4>
             </div>
-            <div class="quick-card-body">
-              Visão integrada da distribuição dos pagamentos de serviços e emolumentos escolares por tipo de serviço e respectivo peso na receita total.
-            </div>
+            <div class="quick-card-body">Visão integrada da distribuição dos pagamentos de serviços e emolumentos escolares por tipo de serviço e respectivo peso na receita total.</div>
           </a>
         </div>
       </div>
@@ -866,9 +314,7 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 7 — COBRANÇAS E PAGAMENTOS — ACESSO RÁPIDO (SECRETARIA)
-     ========================================================================== -->
+  <!-- SECÇÃO 7 — COBRANÇAS E PAGAMENTOS (SECRETARIA) -->
   <section class="bg-alt fade-in" style="padding-top: 0;">
     <div class="container">
       <div class="panel-box">
@@ -876,45 +322,27 @@
           <h3 class="panel-title">Cobranças e Pagamentos</h3>
           <p class="panel-subtitle">Visão operacional sobre o estado individual de cada aluno por turma — Pago, Em Aberto e Dívida.</p>
         </div>
-
         <div class="quick-links-grid">
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Propina.aspx" class="quick-card">
             <div class="quick-card-header bg-teal">
-              <svg viewBox="0 0 24 24">
-                <path d="M12 14l9-5-9-5-9 5 9 5z"></path>
-                <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
               <h4>Propina</h4>
             </div>
-            <div class="quick-card-body">
-              Estado individual da propina de cada aluno por turma. Use este relatório para acompanhar e gerir as cobranças da turma no período seleccionado.
-            </div>
+            <div class="quick-card-body">Estado individual da propina de cada aluno por turma. Use este relatório para acompanhar e gerir as cobranças da turma no período seleccionado.</div>
           </a>
-
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Transporte.aspx" class="quick-card">
             <div class="quick-card-header bg-amber">
-              <svg viewBox="0 0 24 24">
-                <path d="M8 7h8m-8 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                <circle cx="7.5" cy="16.5" r="1.5" fill="currentColor"></circle>
-                <circle cx="16.5" cy="16.5" r="1.5" fill="currentColor"></circle>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M8 7h8m-8 4h8m-9 8h10a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path><circle cx="7.5" cy="16.5" r="1.5" fill="currentColor"></circle><circle cx="16.5" cy="16.5" r="1.5" fill="currentColor"></circle></svg>
               <h4>Transporte Escolar</h4>
             </div>
-            <div class="quick-card-body">
-              Estado individual do transporte escolar de cada aluno por rota. Use este relatório para acompanhar e gerir as cobranças por rota no período seleccionado.
-            </div>
+            <div class="quick-card-body">Estado individual do transporte escolar de cada aluno por rota. Use este relatório para acompanhar e gerir as cobranças por rota no período seleccionado.</div>
           </a>
-
           <a href="https://propinas.sharepoint.com/sites/demoschool/SitePages/Painel-Gestor-Servicos.aspx" class="quick-card">
             <div class="quick-card-header bg-purple">
-              <svg viewBox="0 0 24 24">
-                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-              </svg>
+              <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
               <h4>Serviços &amp; Emolumentos</h4>
             </div>
-            <div class="quick-card-body">
-              Registo dos pagamentos de serviços escolares recebidos por aluno. Use este relatório para consultar e verificar os pagamentos efectuados por tipo de serviço no período seleccionado.
-            </div>
+            <div class="quick-card-body">Registo dos pagamentos de serviços escolares recebidos por aluno. Use este relatório para consultar e verificar os pagamentos efectuados por tipo de serviço no período seleccionado.</div>
           </a>
         </div>
       </div>
@@ -922,26 +350,18 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 8 — COLÉGIOGPT — ASSISTENTE IA
-     ========================================================================== -->
+  <!-- SECÇÃO 8 — COLÉGIOGPT -->
   <section class="bg-dark-blue fade-in">
     <div class="container text-center">
-      <div class="ai-badge">
-        Inteligência Artificial · Microsoft Copilot Studio
-      </div>
+      <div class="ai-badge">Inteligência Artificial · Microsoft Copilot Studio</div>
       <h2 class="section-title text-white">Dois assistentes IA especializados. Um para cada perfil.</h2>
       <p class="section-subtitle text-white-sub subtitle-center">
         O ColégioGPT não é um chatbot genérico. É um assistente preparado com os dados financeiros do seu colégio — que responde em linguagem natural, com precisão e contexto.
       </p>
-
       <div class="ai-grid text-left">
         <div class="ai-card">
           <div class="ai-card-header">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-            </svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
             <h3 class="ai-card-title">ColégioGPT Gestor</h3>
           </div>
           <ul class="ai-questions-list">
@@ -951,12 +371,9 @@
             <li>Qual a projecção de receita para os próximos 30 dias?</li>
           </ul>
         </div>
-
         <div class="ai-card">
           <div class="ai-card-header">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-            </svg>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
             <h3 class="ai-card-title">ColégioGPT Secretaria</h3>
           </div>
           <ul class="ai-questions-list">
@@ -967,7 +384,6 @@
           </ul>
         </div>
       </div>
-
       <div class="ai-highlight-box">
         Cada agente conhece apenas o que precisa de saber. Informação segmentada por perfil — de forma intencional.
       </div>
@@ -975,56 +391,35 @@
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 9 — PARA QUEM É
-     ========================================================================== -->
+  <!-- SECÇÃO 9 — PARA QUEM É -->
   <section class="bg-white fade-in">
     <div class="container text-center">
       <h2 class="section-title">Concebido para todos os que gerem cobranças escolares.</h2>
-
       <div class="cards-grid-3 text-center" style="margin-top: 40px;">
         <div class="card-problem" style="border-top-color: var(--color-primary);">
-          <svg class="card-target-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
-          </svg>
+          <svg class="card-target-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
           <h3 class="card-problem-title">🎓 Directores e Gestores</h3>
-          <p class="card-problem-desc">
-            Visão estratégica e financeira completa. Tome decisões com base em dados reais, não em estimativas.
-          </p>
+          <p class="card-problem-desc">Visão estratégica e financeira completa. Tome decisões com base em dados reais, não em estimativas.</p>
         </div>
-
         <div class="card-problem" style="border-top-color: var(--color-teal);">
-          <svg class="card-target-icon" style="color: var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
-          </svg>
+          <svg class="card-target-icon" style="color:var(--color-teal);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
           <h3 class="card-problem-title">📋 Secretaria e Administração</h3>
-          <p class="card-problem-desc">
-            Mapa operacional por turma — estado individual de cada aluno, com filtros e pesquisa.
-          </p>
+          <p class="card-problem-desc">Mapa operacional por turma — estado individual de cada aluno, com filtros e pesquisa.</p>
         </div>
-
         <div class="card-problem" style="border-top-color: var(--color-purple);">
-          <svg class="card-target-icon" style="color: var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
-          </svg>
+          <svg class="card-target-icon" style="color:var(--color-purple);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
           <h3 class="card-problem-title">🤖 ColégioGPT</h3>
-          <p class="card-problem-desc">
-            Faça perguntas em linguagem natural e obtenha respostas imediatas sobre cobranças, dívida e desempenho financeiro.
-          </p>
+          <p class="card-problem-desc">Faça perguntas em linguagem natural e obtenha respostas imediatas sobre cobranças, dívida e desempenho financeiro.</p>
         </div>
       </div>
     </div>
   </section>
 
 
-  <!-- ==========================================================================
-     SECÇÃO 10 — NÚMEROS QUE FALAM (KPIS)
-     ========================================================================== -->
+  <!-- SECÇÃO 10 — KPIS -->
   <section id="kpi-section" class="bg-teal fade-in">
     <div class="container text-center">
       <h2 class="section-title text-white">O impacto em números reais.</h2>
-
       <div class="kpi-grid">
         <div class="kpi-card">
           <div class="kpi-value" data-kpi="referencias" data-target="50000" data-suffix="" data-format="space">0</div>
@@ -1051,25 +446,16 @@
   </section>
 
 
-  <!-- ==========================================================================
-     JAVASCRIPT
-     ========================================================================== -->
   <script>
     document.addEventListener("DOMContentLoaded", function () {
-
-      // 1. INTERSECTION OBSERVER — FADE-IN
       const fadeElements = document.querySelectorAll('.fade-in');
       const fadeObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
+          if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }
         });
       }, { root: null, rootMargin: '0px', threshold: 0.15 });
       fadeElements.forEach(el => fadeObserver.observe(el));
 
-      // 2. ANIMAÇÃO DOS CONTADORES DE KPIS
       const kpiSection = document.getElementById('kpi-section');
       const kpiValues = document.querySelectorAll('.kpi-value');
       let animated = false;
@@ -1080,22 +466,15 @@
           const suffix = counter.getAttribute('data-suffix') || '';
           const decimals = parseInt(counter.getAttribute('data-decimals')) || 0;
           const formatSpace = counter.getAttribute('data-format') === 'space';
-          const duration = 2000;
-          const steps = 60;
-          const stepTime = duration / steps;
+          const duration = 2000; const steps = 60; const stepTime = duration / steps;
           let currentStep = 0;
-
           const timer = setInterval(() => {
             currentStep++;
             const progress = currentStep / steps;
             const easeProgress = 1 - (1 - progress) * (1 - progress);
             const currentValue = target * easeProgress;
-            if (currentStep >= steps) {
-              clearInterval(timer);
-              renderValue(counter, target, decimals, suffix, formatSpace);
-            } else {
-              renderValue(counter, currentValue, decimals, suffix, formatSpace);
-            }
+            if (currentStep >= steps) { clearInterval(timer); renderValue(counter, target, decimals, suffix, formatSpace); }
+            else { renderValue(counter, currentValue, decimals, suffix, formatSpace); }
           }, stepTime);
         });
       }
@@ -1110,7 +489,6 @@
         el.textContent = formattedNum + suffix;
       }
 
-      // 3. FETCH DINÂMICO COM FALLBACK
       async function fetchKpisAndAnimate() {
         const API_URL = 'https://get-kpis-escola-378415142176.europe-west1.run.app';
         try {
@@ -1132,16 +510,11 @@
         }
       }
 
-      // 4. OBSERVER DA SECÇÃO DE KPIS
       const kpiObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-          if (entry.isIntersecting && !animated) {
-            animated = true;
-            fetchKpisAndAnimate();
-          }
+          if (entry.isIntersecting && !animated) { animated = true; fetchKpisAndAnimate(); }
         });
       }, { threshold: 0.3 });
-
       if (kpiSection) kpiObserver.observe(kpiSection);
     });
   </script>
