@@ -6,7 +6,6 @@
     <title>Dashboard Integrado — Cobranças por Turma</title>
     <style>
         :root {
-            /* Base institucional */
             --ink: #0F1A2E;
             --ink-soft: #334155;
             --muted: #64748B;
@@ -16,20 +15,13 @@
             --surface: #FFFFFF;
             --canvas: #FFFFFF;
             --navy: #0F2557;
-
-            /* Cor de acento — única para todas as secções */
             --accent-brand: #1E3A8A;
-
             --radius-lg: 18px;
             --radius-md: 12px;
             --radius-sm: 10px;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html { color-scheme: light; scroll-behavior: smooth; }
 
@@ -152,26 +144,18 @@
             line-height: 1.5;
         }
 
-        /* ============ Cartão de relatório (secção simples, sem subsecções) ============ */
+        /* ============ Cartão de relatório ============ */
         .dashboard-card {
             position: relative;
             background-color: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 4px 0 0;
+            padding: 0;
             box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 10px 26px -18px rgba(15, 23, 42, 0.22);
             margin-top: 20px;
             overflow: hidden;
         }
 
-        .dashboard-card::before {
-            content: "";
-            display: block;
-            height: 4px;
-            width: 100%;
-            background: var(--accent);
-        }
-
-        /* ============ Secção-mãe colapsável (agrupamento lógico, sem iframe próprio) ============ */
+        /* ============ Secção-mãe colapsável ============ */
         .group-section {
             position: relative;
             background-color: var(--surface);
@@ -181,14 +165,6 @@
             transition: box-shadow 0.28s ease, border-color 0.28s ease;
             overflow: hidden;
             scroll-margin-top: 14px;
-        }
-
-        .group-section::before {
-            content: "";
-            display: block;
-            height: 3px;
-            width: 100%;
-            background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 45%, white));
         }
 
         .group-section[open] {
@@ -207,7 +183,6 @@
 
         .group-summary::-webkit-details-marker { display: none; }
         .group-summary::marker { content: ""; }
-
         .group-summary:hover .section-heading .section-title { color: var(--accent); }
 
         .group-chevron {
@@ -232,13 +207,9 @@
             transition: transform 0.25s ease;
         }
 
-        .group-section[open] > .group-summary .group-chevron svg {
-            transform: rotate(90deg);
-        }
+        .group-section[open] > .group-summary .group-chevron svg { transform: rotate(90deg); }
 
-        .group-body {
-            padding: 4px 22px 22px;
-        }
+        .group-body { padding: 4px 22px 22px; }
 
         .subsections {
             display: flex;
@@ -250,7 +221,7 @@
             margin-left: 54px;
         }
 
-        /* ============ Subsecção (turma) — nível 2, também colapsável ============ */
+        /* ============ Subsecção ============ */
         .subsection {
             border: 1px solid var(--line-soft);
             border-radius: var(--radius-md);
@@ -271,7 +242,6 @@
 
         .subsection-header::-webkit-details-marker { display: none; }
         .subsection-header::marker { content: ""; }
-
         .subsection-header:hover .subsection-title { color: var(--accent); }
 
         .subsection-icon {
@@ -326,9 +296,7 @@
             transition: transform 0.25s ease;
         }
 
-        .subsection[open] > .subsection-header .subsection-chevron svg {
-            transform: rotate(90deg);
-        }
+        .subsection[open] > .subsection-header .subsection-chevron svg { transform: rotate(90deg); }
 
         .subsection-card {
             position: relative;
@@ -338,15 +306,7 @@
             background-color: var(--surface);
         }
 
-        .subsection-card::before {
-            content: "";
-            display: block;
-            height: 4px;
-            width: 100%;
-            background: var(--accent);
-        }
-
-        /* ============ Técnica de Iframe Crop Wrapper (comum a todos os níveis) ============ */
+        /* ============ Técnica de Iframe Crop Wrapper ============ */
         .iframe-crop-wrapper {
             width: 100%;
             position: relative;
@@ -362,10 +322,7 @@
             border: 0;
         }
 
-        /* Todos os Registos — altura de partida igual às restantes páginas do projecto */
         .crop-todos-registos { height: 1300px; } .crop-todos-registos iframe { height: 1336px !important; }
-
-        /* Turmas — o relatório-base foi fornecido com 1500px de altura; recorte de 36px (barra do Looker Studio) */
         .crop-turma { height: 1500px; } .crop-turma iframe { height: 1536px !important; }
         .crop-turma-1050 { height: 1500px; } .crop-turma-1050 iframe { height: 1536px !important; }
 
@@ -379,7 +336,6 @@
             .section-icon { width: 34px; height: 34px; border-radius: 10px; }
             .section-icon svg { width: 16px; height: 16px; }
             .dashboard-card { margin-top: 16px; }
-
             .group-summary { padding: 16px; gap: 10px; }
             .group-body { padding: 0 16px 16px; }
             .subsections { margin-left: 0; }
@@ -394,12 +350,12 @@
 
     <!-- CABEÇALHO VISUAL DE ANCORAGEM -->
     <div class="dashboard-hero">
-        <span class="hero-label">Painel Operacional (Secretaria)</span>
+        <span class="hero-label">Painel Operacional — Serviços e Emolumentos</span>
     </div>
 
     <main class="dashboard-container">
 
-        <!-- SECÇÃO 1 — TODOS OS REGISTOS (expandida por defeito, sem subsecções) -->
+        <!-- SECÇÃO 1 — TODOS OS REGISTOS -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
             <details class="group-section" name="painel-accordion" id="grupo-todos-os-registos" open>
                 <summary class="group-summary">
@@ -424,22 +380,9 @@
 
         <!-- Para adicionar uma nova secção, duplicar o bloco <section class="dashboard-section">...</section> da SECÇÃO 1, atribuindo uma nova cor --accent -->
 
-
-
-
-
     </main>
 
     <script>
-        // Os dois blocos abaixo seleccionam elementos por CLASSE (não por ID nem
-        // por uma lista fixa), e o script corre no fim do <body> — por isso
-        // aplicam-se automaticamente a qualquer secção-mãe (.group-section) ou
-        // turma (.subsection) que venha a ser adicionada no futuro, desde que
-        // sigam o mesmo padrão de marcação já usado nas secções existentes.
-        // Não é necessário tocar neste script ao criar novas secções ou turmas.
-
-        // 1) Ao colapsar uma secção-mãe, as suas turmas que estivessem
-        //    expandidas voltam ao estado colapsado — não herdam o estado aberto.
         document.querySelectorAll('details.group-section').forEach(function (group) {
             group.addEventListener('toggle', function () {
                 if (!group.open) {
@@ -450,17 +393,9 @@
             });
         });
 
-        // 2) Ao expandir uma secção-mãe ou uma turma, posicionar o scroll no seu
-        //    topo usando navegação nativa por âncora (#id). Em vez de calcularmos
-        //    a posição nós próprios (scrollIntoView), delegamos essa conta ao
-        //    motor do browser, que só resolve o scroll depois de o layout estar
-        //    definitivamente assente — evitando problemas de temporização.
         document.querySelectorAll('details.group-section, details.subsection').forEach(function (el) {
             el.addEventListener('toggle', function () {
                 if (el.open && el.id) {
-                    // Limpa a âncora actual primeiro; se já estivéssemos no
-                    // mesmo #id (ex.: reabrir a mesma turma), o browser não
-                    // repetiria o scroll ao definir o mesmo valor outra vez.
                     var cleanUrl = window.location.pathname + window.location.search;
                     history.replaceState(null, '', cleanUrl);
                     requestAnimationFrame(function () {
