@@ -35,7 +35,6 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ============ Cabeçalho visual de ancoragem ============ */
         .dashboard-hero {
             max-width: 1400px;
             margin: 0 auto;
@@ -55,7 +54,6 @@
             padding-right: 2px;
         }
 
-        /* ============ Contentor principal ============ */
         .dashboard-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -89,7 +87,6 @@
             .group-chevron svg, .subsection-chevron svg { transition: none; }
         }
 
-        /* ============ Cabeçalho de secção de topo (nível 1) ============ */
         .section-header {
             display: flex;
             align-items: flex-start;
@@ -144,7 +141,6 @@
             line-height: 1.5;
         }
 
-        /* ============ Cartão de relatório ============ */
         .dashboard-card {
             position: relative;
             background-color: var(--surface);
@@ -155,7 +151,6 @@
             overflow: hidden;
         }
 
-        /* ============ Secção-mãe colapsável ============ */
         .group-section {
             position: relative;
             background-color: var(--surface);
@@ -221,7 +216,6 @@
             margin-left: 54px;
         }
 
-        /* ============ Subsecção ============ */
         .subsection {
             border: 1px solid var(--line-soft);
             border-radius: var(--radius-md);
@@ -306,7 +300,6 @@
             background-color: var(--surface);
         }
 
-        /* ============ Técnica de Iframe Crop Wrapper ============ */
         .iframe-crop-wrapper {
             width: 100%;
             position: relative;
@@ -326,7 +319,6 @@
         .crop-turma { height: 1500px; } .crop-turma iframe { height: 1536px !important; }
         .crop-turma-1050 { height: 1500px; } .crop-turma-1050 iframe { height: 1536px !important; }
 
-        /* ============ Ajustes Responsivos ============ */
         @media (max-width: 768px) {
             body { padding: 0 10px 10px; }
             .dashboard-hero { padding: 18px 2px 16px; gap: 8px; }
@@ -348,22 +340,21 @@
 </head>
 <body>
 
-    <!-- CABEÇALHO VISUAL DE ANCORAGEM -->
     <div class="dashboard-hero">
         <span class="hero-label">PAINEL OPERACIONAL · OUTROS SERVIÇOS</span>
     </div>
 
     <main class="dashboard-container">
 
-        <!-- SECÇÃO 1 — TODOS OS REGISTOS -->
+        <!-- SECÇÃO 1 — TODOS OS REGISTOS (fechada por defeito — sem atributo open) -->
         <section class="dashboard-section" style="--accent:#1E3A8A">
-            <details class="group-section" name="painel-accordion" id="grupo-todos-os-registos" open>
+            <details class="group-section" name="painel-accordion" id="grupo-todos-os-registos">
                 <summary class="group-summary">
                     <div class="section-icon">
                         <svg viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><circle cx="3.2" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="3.2" cy="18" r="1" fill="currentColor" stroke="none"/></svg>
                     </div>
                     <div class="section-heading">
-                        <h2 class="section-title">Todos os Registos</h2>
+                        <h2 class="section-title">Outros Serviços</h2>
                         <p class="section-description">Listagem completa de todos os pagamentos de serviços e emolumentos do período seleccionado. Use esta secção para consultar ou verificar rapidamente um pagamento específico.</p>
                     </div>
                     <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
