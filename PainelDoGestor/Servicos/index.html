@@ -98,6 +98,9 @@
                 transition: none;
                 transform: none;
             }
+            .group-chevron svg {
+                transition: none;
+            }
         }
 
         /* ============ Cabeçalho de secção: ícone + índice + título ============ */
@@ -135,6 +138,8 @@
             flex-direction: column;
             gap: 3px;
             padding-top: 2px;
+            flex: 1;
+            min-width: 0;
         }
 
         .section-index {
@@ -157,7 +162,50 @@
             font-weight: 400;
             color: var(--muted);
             max-width: 1080px;
-            padding-left: 54px;
+            padding-left: 0;
+            margin-top: 2px;
+        }
+
+        /* ============ Mecanismo colapsável ============ */
+        .group-summary {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .group-summary::-webkit-details-marker { display: none; }
+        .group-summary::marker { content: ""; }
+
+        .group-summary:hover .section-title { color: var(--accent); }
+
+        .group-chevron {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-left: auto;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-soft);
+        }
+
+        .group-chevron svg {
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: transform 0.25s ease;
+        }
+
+        .group-section[open] > .group-summary .group-chevron svg {
+            transform: rotate(90deg);
         }
 
         /* ============ Cartão do relatório ============ */
@@ -237,23 +285,26 @@
 
     <main class="dashboard-container">
 
-        <!-- SECÇÃO 1 -->
+        <!-- SECÇÃO 1 — colapsável, fechada por defeito (sem atributo open) -->
         <section class="dashboard-section" style="--accent:#B45309">
-            <div class="section-header">
-                <div class="section-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
-                </div>
-                <div class="section-heading">
-                    <span class="section-index">01</span>
-                    <h2 class="section-title">Outros Serviços</h2>
-                </div>
-            </div>
-            <p class="section-description">Receita arrecadada por tipo de serviço e respectivo peso percentual no total cobrado. Use esta secção para identificar os serviços com maior contribuição financeira e optimizar a oferta de serviços da escola.</p>
-            <article class="dashboard-card">
-                <div class="iframe-crop-wrapper crop-servicos-emolumentos">
-                    <iframe src="https://datastudio.google.com/embed/reporting/fc5da10b-0f7d-4bc6-9df1-b5b6cccf8a16/page/CaS0F" allowfullscreen sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
-                </div>
-            </article>
+            <details class="group-section">
+                <summary class="group-summary">
+                    <div class="section-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9h9"/></svg>
+                    </div>
+                    <div class="section-heading">
+                        <span class="section-index">01</span>
+                        <h2 class="section-title">Outros Serviços</h2>
+                        <p class="section-description">Receita arrecadada por tipo de serviço e respectivo peso percentual no total cobrado. Use esta secção para identificar os serviços com maior contribuição financeira e optimizar a oferta de serviços da escola.</p>
+                    </div>
+                    <span class="group-chevron"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </summary>
+                <article class="dashboard-card">
+                    <div class="iframe-crop-wrapper crop-servicos-emolumentos">
+                        <iframe src="https://datastudio.google.com/embed/reporting/fc5da10b-0f7d-4bc6-9df1-b5b6cccf8a16/page/CaS0F" allowfullscreen loading="lazy" sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"></iframe>
+                    </div>
+                </article>
+            </details>
         </section>
 
     </main>
