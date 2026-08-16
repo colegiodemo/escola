@@ -392,7 +392,17 @@
             color: var(--navy);
             letter-spacing: -0.01em;
             margin-bottom: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            background: none;
+            border: none;
+            padding: 0;
+            font-family: inherit;
+            text-align: left;
+            display: inline-block;
         }
+
+        .suggestions-title:hover { color: var(--navy-deep); }
 
         /* Lista de perguntas sugeridas
            ─────────────────────────────────────────────────────────
@@ -447,8 +457,7 @@
             cursor: pointer;
             text-align: left;
             font-family: inherit;
-            text-decoration: underline;
-            text-underline-offset: 3px;
+            text-decoration: none;
             align-self: flex-start;
         }
 
@@ -497,7 +506,7 @@
         <div class="intro-title">Olá — sou o Chat Gestor</div>
         <div class="intro-text">
             Sou um assistente de inteligência artificial especializado na análise do desempenho financeiro do colégio com base nos dados de cobranças, pagamentos e dívidas.
-            Coloque a sua pergunta ou seleccione uma das sugestões abaixo para começar.
+            Coloque a sua pergunta na caixa abaixo para começar.
         </div>
     </div>
 
@@ -547,7 +556,7 @@
     <!-- ④ SUGESTÕES — sempre visível, Ver mais/Ver menos a partir da 7.ª -->
     <div class="suggestions-section" id="suggestions-section">
 
-        <div class="suggestions-title">Sugestões de perguntas</div>
+        <button class="suggestions-title" id="suggestions-title" onclick="toggleSuggestions()">Ver sugestões de perguntas</button>
 
         <!--
         ═══════════════════════════════════════════════════════
@@ -574,7 +583,6 @@
         </div>
         <!-- FIM DA LISTA DE PERGUNTAS -->
 
-        <button class="suggestions-toggle" id="suggestions-toggle" onclick="toggleSuggestions()">Ver mais</button>
 
     </div>
 
@@ -701,31 +709,20 @@ TERMINOLOGIA DO SISTEMA:
     }
 
     // ============================================================
-    // SUGESTÕES — Ver mais / Ver menos (limite: primeiras 6)
+    // SUGESTÕES — ocultas por defeito, clique no título mostra/oculta
     // ============================================================
-    const SUGGESTIONS_VISIBLE = 6;
     let suggestionsExpanded = false;
 
     function initSuggestions() {
-        const btns = document.querySelectorAll('#suggestions-list .suggested-q');
-        btns.forEach((btn, i) => {
-            if (i >= SUGGESTIONS_VISIBLE) btn.style.display = 'none';
-        });
-        // Oculta o toggle se houver 6 ou menos perguntas
-        const toggle = document.getElementById('suggestions-toggle');
-        if (btns.length <= SUGGESTIONS_VISIBLE) toggle.style.display = 'none';
+        // Oculta todas as perguntas por defeito
+        document.querySelectorAll('#suggestions-list .suggested-q')
+            .forEach(btn => btn.style.display = 'none');
     }
 
     function toggleSuggestions() {
-        const btns = document.querySelectorAll('#suggestions-list .suggested-q');
-        const toggle = document.getElementById('suggestions-toggle');
         suggestionsExpanded = !suggestionsExpanded;
-        btns.forEach((btn, i) => {
-            if (i >= SUGGESTIONS_VISIBLE) {
-                btn.style.display = suggestionsExpanded ? 'flex' : 'none';
-            }
-        });
-        toggle.textContent = suggestionsExpanded ? 'Ver menos' : 'Ver mais';
+        document.querySelectorAll('#suggestions-list .suggested-q')
+            .forEach(btn => btn.style.display = suggestionsExpanded ? 'flex' : 'none');
     }
 
     function sendSuggested(btn) {
