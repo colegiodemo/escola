@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Gestor</title>
+    <title>Truta</title>
     <style>
         :root {
             --navy:      #1E3A8A;
@@ -657,10 +657,10 @@
     <!-- ① CABEÇALHO -->
     <div class="agent-header">
         <div class="agent-avatar-wrap">
-            <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Chat Gestor">
+            <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Truta">
         </div>
         <div class="agent-header-info">
-            <div class="agent-header-name">Chat Gestor</div>
+            <div class="agent-header-name">Truta</div>
             <div class="agent-header-sub">
                 <span class="status-dot" id="status-dot"></span>
                 <span id="status-text">Disponível</span>
@@ -677,7 +677,7 @@
 
     <!-- ② INTRODUÇÃO -->
     <div class="intro-card">
-        <div class="intro-title">Olá — sou o Chat Gestor</div>
+        <div class="intro-title">Olá — sou o Truta</div>
         <div class="intro-text">
             Sou um assistente de inteligência artificial especializado na análise do desempenho financeiro do colégio com base nos dados de cobranças, pagamentos e dívidas.
             Coloque a sua pergunta na caixa abaixo para começar.
@@ -693,7 +693,7 @@
         <!-- Typing indicator -->
         <div class="typing-row" id="typing-row">
             <div class="bubble-avatar agent-av">
-                <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Chat Gestor">
+                <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Truta">
             </div>
             <div class="typing-dots"><span></span><span></span><span></span></div>
         </div>
@@ -781,7 +781,7 @@
     // ============================================================
     // SYSTEM PROMPT
     // ============================================================
-    const SYSTEM_PROMPT = `És o Chat Gestor — o assistente de inteligência financeira do Colégio Demostração.
+    const SYSTEM_PROMPT = `És o Truta — o assistente de inteligência financeira do Colégio Demostração.
 
 O teu papel é ajudar a direcção e gestão do colégio a interpretar os indicadores financeiros da cobrança de propinas, transporte escolar e serviços e emolumentos.
 
@@ -818,7 +818,7 @@ TERMINOLOGIA DO SISTEMA:
     // ============================================================
     function getQuotaKey() {
         const d = new Date();
-        return `chatgestor_quota_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}`;
+        return `truta_quota_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}`;
     }
 
     function getQuotaUsed()   { return parseInt(localStorage.getItem(getQuotaKey()) || '0', 10); }
@@ -1001,7 +1001,7 @@ TERMINOLOGIA DO SISTEMA:
         row.className = `message-row ${role}`;
         row.innerHTML = `
             ${role === 'agent'
-                ? `<div class="bubble-avatar agent-av"><img src="${AVATAR_URL}" alt="Chat Gestor"></div>`
+                ? `<div class="bubble-avatar agent-av"><img src="${AVATAR_URL}" alt="Truta"></div>`
                 : `<div class="bubble-avatar user-av">G</div>`}
             <div class="bubble-wrap">
                 <div class="bubble">${fmt(text)}</div>
@@ -1015,7 +1015,7 @@ TERMINOLOGIA DO SISTEMA:
         const container = document.getElementById('chat-messages');
         const div = document.createElement('div');
         div.className = 'message-row agent';
-        div.innerHTML = `<div class="bubble-avatar agent-av"><img src="${AVATAR_URL}" alt="Chat Gestor"></div><div class="error-bubble">⚠️ ${msg}</div>`;
+        div.innerHTML = `<div class="bubble-avatar agent-av"><img src="${AVATAR_URL}" alt="Truta"></div><div class="error-bubble">⚠️ ${msg}</div>`;
         container.appendChild(div);
     }
 
@@ -1063,7 +1063,7 @@ TERMINOLOGIA DO SISTEMA:
 
         if (state === 'pin') {
             document.getElementById('modal-title').textContent     = 'Iniciar Sessão';
-            document.getElementById('modal-subtitle').textContent  = 'Introduza o seu PIN para aceder ao Chat Gestor.';
+            document.getElementById('modal-subtitle').textContent  = 'Introduza o seu PIN para aceder ao Truta.';
             document.getElementById('pin-label').textContent       = 'PIN';
             document.getElementById('pin-input').value             = '';
             document.getElementById('pin-input').classList.remove('error');
@@ -1123,7 +1123,13 @@ TERMINOLOGIA DO SISTEMA:
             const res = await fetch(PA_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'validate-pin', pin: pin })
+                body: JSON.stringify({
+                    action:      'validate-pin',
+                    pin:         pin,
+                    current_pin: '',
+                    new_pin:     '',
+                    name:        ''
+                })
             });
 
             const data = await res.json();
@@ -1269,11 +1275,11 @@ TERMINOLOGIA DO SISTEMA:
 
             <div class="modal-header">
                 <div class="modal-avatar">
-                    <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Chat Gestor">
+                    <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Truta">
                 </div>
                 <div>
                     <div class="modal-title" id="modal-title">Iniciar Sessão</div>
-                    <div class="modal-subtitle" id="modal-subtitle">Introduza o seu PIN para aceder ao Chat Gestor.</div>
+                    <div class="modal-subtitle" id="modal-subtitle">Introduza o seu PIN para aceder ao Truta.</div>
                 </div>
             </div>
 
