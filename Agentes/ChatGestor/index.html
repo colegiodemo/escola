@@ -405,6 +405,17 @@
 
         .suggestions-title:hover { color: var(--navy-deep); }
 
+        .suggestions-chevron {
+            display: inline-block;
+            margin-left: 5px;
+            vertical-align: middle;
+            transition: transform 0.25s ease;
+        }
+
+        .suggestions-chevron.open {
+            transform: rotate(90deg);
+        }
+
         /* Lista de perguntas sugeridas
            ─────────────────────────────────────────────────────────
            PARA ADICIONAR UMA PERGUNTA: duplicar um <button class="suggested-q">
@@ -504,7 +515,7 @@
 
     <!-- ② INTRODUÇÃO -->
     <div class="intro-card">
-        <div class="intro-title">Olá, António,</div>
+        <div class="intro-title">Olá — sou o Chat Gestor</div>
         <div class="intro-text">
             Sou um assistente de inteligência artificial especializado na análise do desempenho financeiro do colégio com base nos dados de cobranças, pagamentos e dívidas.
             Coloque a sua pergunta na caixa abaixo para começar.
@@ -557,7 +568,10 @@
     <!-- ④ SUGESTÕES — sempre visível, Ver mais/Ver menos a partir da 7.ª -->
     <div class="suggestions-section" id="suggestions-section">
 
-        <button class="suggestions-title" id="suggestions-title" onclick="toggleSuggestions()">Ver sugestões de perguntas</button>
+        <button class="suggestions-title" id="suggestions-title" onclick="toggleSuggestions()">
+            Ver sugestões de perguntas
+<svg class="suggestions-chevron" id="suggestions-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
 
         <!--
         ═══════════════════════════════════════════════════════
@@ -724,6 +738,8 @@ TERMINOLOGIA DO SISTEMA:
         suggestionsExpanded = !suggestionsExpanded;
         document.querySelectorAll('#suggestions-list .suggested-q')
             .forEach(btn => btn.style.display = suggestionsExpanded ? 'flex' : 'none');
+        document.getElementById('suggestions-chevron')
+            .classList.toggle('open', suggestionsExpanded);
     }
 
     function sendSuggested(btn) {
