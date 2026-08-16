@@ -1125,9 +1125,9 @@ TERMINOLOGIA DO SISTEMA:
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action:      'validate-pin',
-                    pin:         pin,
-                    current_pin: '',
-                    new_pin:     '',
+                    pin:         parseInt(pin),
+                    current_pin: null,
+                    new_pin:     null,
                     name:        ''
                 })
             });
@@ -1197,8 +1197,9 @@ TERMINOLOGIA DO SISTEMA:
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     action:      'change-pin',
-                    current_pin: currentUser.pin,
-                    new_pin:     newPin,
+                    pin:         null,
+                    current_pin: parseInt(currentUser.pin),
+                    new_pin:     parseInt(newPin),
                     name:        currentUser.name
                 })
             });
