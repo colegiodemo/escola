@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Truta</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --navy:      #1E3A8A;
@@ -124,7 +127,7 @@
         .quota-count span { color: var(--muted); font-weight: 400; }
 
         .quota-bar-track {
-            width: 72px;
+            width: 100%;
             height: 4px;
             background: var(--line);
             border-radius: 4px;
@@ -141,6 +144,36 @@
         .quota-bar-fill.medium { background: #FACC15; }
         .quota-bar-fill.low    { background: #F97316; }
         .quota-bar-fill.empty  { background: #F87171; }
+
+        /* ============ PERGUNTA DE ABERTURA ============ */
+        .agent-question {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: #242424;
+            text-align: center;
+            padding: 8px 0 4px;
+            margin-bottom: 30px;
+            letter-spacing: -0.01em;
+            min-height: 1.6em;
+        }
+
+        .agent-question::after {
+            content: '|';
+            display: inline-block;
+            margin-left: 2px;
+            color: #242424;
+            animation: blink 0.75s step-end infinite;
+        }
+
+        .agent-question.done::after {
+            display: none;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0; }
+        }
 
         /* ============ 2. INTRODUÇÃO ============ */
         .intro-card {
@@ -415,12 +448,6 @@
             transform: rotate(90deg);
         }
 
-        /* Lista de perguntas sugeridas
-           ─────────────────────────────────────────────────────────
-           PARA ADICIONAR UMA PERGUNTA: duplicar um <button class="suggested-q">
-           PARA REMOVER: apagar o <button> correspondente
-           PARA EDITAR: alterar o texto dentro do <button>
-           ───────────────────────────────────────────────────────── */
         .suggestions-list {
             display: flex;
             flex-direction: column;
@@ -457,7 +484,6 @@
 
         .suggested-q:hover::before { color: var(--navy); }
 
-        /* Controlo Ver mais / Ver menos */
         .suggestions-toggle {
             background: none;
             border: none;
@@ -478,147 +504,13 @@
         @media (max-width: 600px) {
             .agent-wrapper { padding: 16px 12px 32px; }
             .bubble { max-width: 88%; }
-            .quota-bar-track { width: 52px; }
+            .agent-question { font-size: 1.25rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
             .typing-dots span { animation: none; opacity: 0.6; }
             .quota-bar-fill { transition: none; }
         }
-
-        /* ============ MODAL DE SESSÃO ============ */
-        .session-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 25, 47, 0.45);
-            backdrop-filter: blur(2px);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .session-overlay.hidden { display: none; }
-
-        .session-modal {
-            background: #FFFFFF;
-            border-radius: 18px;
-            padding: 32px 28px 28px;
-            width: 100%;
-            max-width: 360px;
-            box-shadow: 0 20px 60px rgba(15, 25, 47, 0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .modal-header {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            text-align: center;
-        }
-
-        .modal-avatar {
-            width: 64px;
-            height: 64px;
-            border-radius: 16px;
-            overflow: hidden;
-        }
-
-        .modal-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .modal-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--navy);
-            letter-spacing: -0.01em;
-        }
-
-        .modal-subtitle {
-            font-size: 0.82rem;
-            color: var(--muted);
-            line-height: 1.5;
-        }
-
-        .pin-field { display: flex; flex-direction: column; gap: 6px; }
-
-        .pin-label {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--ink-soft);
-        }
-
-        .pin-input {
-            width: 100%;
-            padding: 11px 14px;
-            border: 1.5px solid var(--line);
-            border-radius: 10px;
-            font-size: 1.1rem;
-            letter-spacing: 0.3em;
-            color: var(--ink);
-            background: var(--canvas);
-            outline: none;
-            text-align: center;
-            font-family: inherit;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .pin-input:focus {
-            border-color: var(--navy);
-            box-shadow: 0 0 0 3px rgba(30,58,138,0.08);
-        }
-
-        .pin-input.error { border-color: #EF4444; }
-
-        .modal-error {
-            font-size: 0.78rem;
-            color: #EF4444;
-            text-align: center;
-            min-height: 18px;
-            font-weight: 500;
-        }
-
-        .modal-btn {
-            width: 100%;
-            padding: 12px;
-            background: var(--navy);
-            color: #fff;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            cursor: pointer;
-            font-family: inherit;
-            transition: background 0.2s, transform 0.1s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .modal-btn:hover { background: var(--navy-deep); }
-        .modal-btn:active { transform: scale(0.98); }
-        .modal-btn:disabled { background: var(--line); cursor: not-allowed; }
-
-        .btn-spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: none;
-        }
-
-        .btn-spinner.visible { display: block; }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
 
         .modal-cancel-btn {
             width: 100%;
@@ -677,7 +569,7 @@
 
     <!-- ② INTRODUÇÃO -->
     <div class="intro-card">
-        <div class="intro-title">Olá — sou o Truta</div>
+        <div class="intro-title" id="intro-title"></div>
         <div class="intro-text">
             Sou um assistente de inteligência artificial especializado na análise do desempenho financeiro do colégio com base nos dados de cobranças, pagamentos e dívidas.
             Coloque a sua pergunta na caixa abaixo para começar.
@@ -701,13 +593,10 @@
         <!-- Limite atingido -->
         <div class="limit-banner" id="limit-banner">
             <strong>Limite mensal atingido</strong>
-            Esgotou as 20 perguntas disponíveis para este mês. O crédito renova automaticamente no dia 1 do próximo mês.
+            Esgotou as <span id="limit-banner-max">20</span> perguntas disponíveis para este mês. O crédito renova automaticamente no dia 1 do próximo mês.
         </div>
 
-        <!-- Quota info acima do input -->
-        <div style="font-size:0.83rem;color:var(--ink-soft);text-align:center;padding:4px 0 2px;">
-            Dispõe de <strong style="color:var(--navy);">20 perguntas por mês</strong>. O crédito renova no dia 1 de cada mês.
-        </div>
+        <div class="agent-question" id="agent-question"></div>
 
         <!-- Input -->
         <div class="input-row" id="input-row">
@@ -732,20 +621,9 @@
 
         <button class="suggestions-title" id="suggestions-title" onclick="toggleSuggestions()">
             Ver sugestões de perguntas
-<svg class="suggestions-chevron" id="suggestions-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+            <svg class="suggestions-chevron" id="suggestions-chevron" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
         </button>
 
-        <!--
-        ═══════════════════════════════════════════════════════
-        LISTA DE PERGUNTAS SUGERIDAS
-        ───────────────────────────────────────────────────────
-        • ADICIONAR  → duplicar um <button class="suggested-q">
-        • REMOVER    → apagar o <button> correspondente
-        • EDITAR     → alterar o texto dentro do <button>
-        • As primeiras 6 são sempre visíveis.
-          A partir da 7.ª ficam ocultas até clicar "Ver mais".
-        ═══════════════════════════════════════════════════════
-        -->
         <div class="suggestions-list" id="suggestions-list">
 
             <button class="suggested-q" onclick="sendSuggested(this)">Qual foi a taxa de incumprimento este mês?</button>
@@ -758,8 +636,6 @@
             <button class="suggested-q" onclick="sendSuggested(this)">Qual o banco com maior volume de pagamentos?</button>
 
         </div>
-        <!-- FIM DA LISTA DE PERGUNTAS -->
-
 
     </div>
 
@@ -770,61 +646,34 @@
     // CONFIGURAÇÃO — preencher antes de publicar
     // ============================================================
     const CONFIG = {
-        apiKey:      '',
-        fileIdDados: '',
-        fileIdFAQ:   '',
+        agentId:     'gestor',
+        apiKey:      '',           // chave API Anthropic
         model:       'claude-sonnet-4-6',
         maxHistory:  10,
-        quotaMax:    20
+        quotaMax:    parseInt(localStorage.getItem('truta_quota_max') || '200'), // último valor conhecido
+        // Fontes de conhecimento — preenchidas pelo PA no início da sessão
+        fileIdDicionario: '',  // JSON com dicionário semântico (estático)
+        fileIdDados:      '',  // JSON com dados financeiros (dinâmico)
+        fileIdFAQ:        ''   // FAQ genérico — partilhado por todos os agentes
     };
+
+    // Power Automate endpoint
+    const PA_ENDPOINT = 'https://default67e1fc55c47043779ddd6922b3f149.70.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/22/workflows/66c50a8e832a43ba8d5ca55af59cc415/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_wuy25SY9TTKrNSxzvPXXqHaZ_VnJZ-8nNLmZeVhI68';
 
     // ============================================================
     // SYSTEM PROMPT
     // ============================================================
-    const SYSTEM_PROMPT = `És o Truta — o assistente de inteligência financeira do Colégio Demostração.
-
-O teu papel é ajudar a direcção e gestão do colégio a interpretar os indicadores financeiros da cobrança de propinas, transporte escolar e serviços e emolumentos.
-
-Tens acesso a duas fontes de conhecimento:
-1. Dados financeiros actualizados — KPIs, dívida, cobranças e desempenho do período actual
-2. Manual e FAQ do dashboard — conceitos, definições e respostas a perguntas frequentes
-
-REGRAS DE COMPORTAMENTO:
-- Responde sempre em português europeu (ortografia pré-1990)
-- Usa exclusivamente as fontes de conhecimento fornecidas — nunca inventes valores
-- Se não encontrares a informação, diz claramente que não tens esse dado disponível
-- Sê conciso e directo — máximo 3 parágrafos por resposta, salvo pedido explícito
-- Quando apresentares valores monetários usa o formato: 25 000,00 Kz
-- Quando apresentares percentagens usa vírgula como separador decimal: 52,83%
-- Começa sempre com o valor ou resposta directa — sem preâmbulo
-
-TERMINOLOGIA DO SISTEMA:
-- Facturado: montante emitido para cobrança
-- Arrecadado: montante efectivamente recebido em caixa
-- Em Aberto: referências dentro do prazo, ainda não pagas
-- Vencidas: referências com prazo expirado sem pagamento
-- Dívida: montante vencido e não pago, acumulado
-- Liquidadas: cobranças pagas
-- Incumprimento: situação de aluno com dívida vencida
-
-ÂMBITO:
-- Responde sobre KPIs financeiros, tendências, comparações e desempenho por ciclo e classe
-- Explica conceitos e indicadores usando o Manual e FAQ
-- Não tens acesso a dados individuais de alunos
-- Não faças recomendações jurídicas ou contabilísticas formais`;
+    // System prompt — carregado dinamicamente do SharePoint via Power Automate (get-quota)
+    // Não editar aqui — editar na lista AgentConfig do SharePoint, coluna SystemPrompt
+    let SYSTEM_PROMPT = '';
 
     // ============================================================
     // QUOTA
     // ============================================================
-    function getQuotaKey() {
-        const d = new Date();
-        return `truta_quota_${d.getFullYear()}_${String(d.getMonth()+1).padStart(2,'0')}`;
-    }
+    let _quotaRestante = CONFIG.quotaMax;
 
-    function getQuotaUsed()   { return parseInt(localStorage.getItem(getQuotaKey()) || '0', 10); }
-    function incrementQuota() { const u = getQuotaUsed()+1; localStorage.setItem(getQuotaKey(), u); return u; }
-    function quotaRemaining() { return Math.max(0, CONFIG.quotaMax - getQuotaUsed()); }
-    function isExhausted()    { return getQuotaUsed() >= CONFIG.quotaMax; }
+    function quotaRemaining() { return _quotaRestante; }
+    function isExhausted()    { return _quotaRestante <= 0; }
 
     // ============================================================
     // ESTADO
@@ -834,24 +683,10 @@ TERMINOLOGIA DO SISTEMA:
     let knowledgeInjected = false;
 
     // ============================================================
-    // INIT
-    // ============================================================
-    // DOMContentLoaded gerido pelo sistema de sessão — ver abaixo
-
-    // ============================================================
     // QUOTA UI
     // ============================================================
     function renderQuota() {
-        const remaining = quotaRemaining();
-        const pct = (remaining / CONFIG.quotaMax) * 100;
-        document.getElementById('quota-count').innerHTML =
-            `${remaining} <span>/ ${CONFIG.quotaMax}</span>`;
-        const bar = document.getElementById('quota-bar');
-        bar.style.width = pct + '%';
-        bar.className = 'quota-bar-fill';
-        if (pct <= 0)       bar.classList.add('empty');
-        else if (pct <= 20) bar.classList.add('low');
-        else if (pct <= 50) bar.classList.add('medium');
+        renderQuotaFromValue(quotaRemaining(), CONFIG.quotaMax);
     }
 
     function applyExhaustedState() {
@@ -863,9 +698,17 @@ TERMINOLOGIA DO SISTEMA:
         document.getElementById('send-btn').disabled = true;
         document.getElementById('input-row').classList.add('disabled');
         document.querySelectorAll('.suggested-q').forEach(b => b.disabled = true);
+
+        // Oculta a mensagem de abertura de typewriter
+        document.getElementById('agent-question').style.display = 'none';
+
+        // Atualiza o valor dinâmico do limite no banner
+        const limitMaxEl = document.getElementById('limit-banner-max');
+        if (limitMaxEl) limitMaxEl.textContent = CONFIG.quotaMax;
+
         document.getElementById('limit-banner').classList.add('visible');
         document.getElementById('input-hint').textContent =
-            'O crédito de 20 perguntas renova automaticamente no dia 1 do próximo mês.';
+            `O crédito de ${CONFIG.quotaMax} perguntas renova automaticamente no dia 1 do próximo mês.`;
     }
 
     // ============================================================
@@ -886,7 +729,6 @@ TERMINOLOGIA DO SISTEMA:
     let suggestionsExpanded = false;
 
     function initSuggestions() {
-        // Oculta todas as perguntas por defeito
         document.querySelectorAll('#suggestions-list .suggested-q')
             .forEach(btn => btn.style.display = 'none');
     }
@@ -933,9 +775,11 @@ TERMINOLOGIA DO SISTEMA:
             const response = await callAPI();
             appendMessage('agent', response);
             conversationHistory.push({ role: 'assistant', content: response });
-            incrementQuota();
-            renderQuota();
-            if (isExhausted()) applyExhaustedState();
+
+            updateQuota();
+            _quotaRestante = Math.max(0, _quotaRestante - 1);
+            renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
+            if (_quotaRestante <= 0) applyExhaustedState();
         } catch (err) {
             appendError(err.message);
             if (conversationHistory.length === 1) knowledgeInjected = false;
@@ -962,29 +806,141 @@ TERMINOLOGIA DO SISTEMA:
         return { role: 'user', content: parts };
     }
 
-    async function callAPI() {
-        const headers = {
-            'Content-Type': 'application/json',
-            'x-api-key': CONFIG.apiKey,
-            'anthropic-version': '2023-06-01'
-        };
-        if (CONFIG.fileIdDados || CONFIG.fileIdFAQ) {
-            headers['anthropic-beta'] = 'files-api-2025-04-14';
+    // ============================================================
+    // GUARDAR QUOTA_MAX — persiste o último valor conhecido
+    // ============================================================
+    function applyQuotaMax(value) {
+        if (!value) return;
+        CONFIG.quotaMax = value;
+        localStorage.setItem('truta_quota_max', String(value));
+    }
+
+    // ============================================================
+    // CHECK-AND-DECREMENT — verifica e decrementa quota no PA
+    // ============================================================
+    async function checkAndDecrement() {
+        const res = await fetch(PA_ENDPOINT, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action:   'check-and-decrement',
+                agent_id: CONFIG.agentId
+            })
+        });
+
+        if (!res.ok) throw new Error(`PA erro ${res.status}`);
+
+        const data = await res.json();
+        return data;
+    }
+
+    // ============================================================
+    // RESTORE-QUOTA — repõe quota se a Anthropic falhar
+    // ============================================================
+    async function restoreQuota() {
+        try {
+            const res = await fetch(PA_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action:         'restore-quota',
+                    agent_id:       CONFIG.agentId,
+                    restore_count:  '1'
+                })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (data.quota_max)      applyQuotaMax(data.quota_max);
+            if (data.quota_restante !== undefined) {
+                _quotaRestante = data.quota_restante;
+                renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
+            }
+        } catch (err) {
+            console.warn('restore-quota falhou:', err);
         }
+    }
+
+    // ============================================================
+    // CALL ANTHROPIC — chamada directa com prompt caching
+    // Os ficheiros de conhecimento são cacheados após a primeira
+    // utilização — reduz o custo de input tokens em até 90%
+    // nas perguntas seguintes da mesma sessão.
+    // ============================================================
+    async function callAnthropicAPI() {
+        const headers = {
+            'Content-Type':      'application/json',
+            'x-api-key':         CONFIG.apiKey,
+            'anthropic-version': '2023-06-01',
+            // Files API + prompt caching activados em simultâneo
+            'anthropic-beta':    'files-api-2025-04-14,prompt-caching-2024-07-31'
+        };
+
+        // Definir os 3 ficheiros de conhecimento com cache_control
+        // cache_control: { type: 'ephemeral' } → Anthropic cacheia este
+        // bloco de tokens durante 5 minutos (renovável a cada uso)
+        const knowledgeSources = [
+            { id: CONFIG.fileIdDicionario, title: 'Dicionário Semântico' },
+            { id: CONFIG.fileIdDados,      title: 'Dados Financeiros' },
+            { id: CONFIG.fileIdFAQ,        title: 'FAQ e Manual do Serviço' }
+        ].filter(f => f.id);
+
+        let messages = conversationHistory;
+
+        if (!knowledgeInjected && knowledgeSources.length > 0) {
+            const parts = [];
+
+            // Injectar cada ficheiro com cache_control
+            // O último ficheiro recebe o cache_control — o cache cobre
+            // todos os tokens anteriores a esse ponto (incluindo os ficheiros)
+            knowledgeSources.forEach((f, index) => {
+                const doc = {
+                    type: 'document',
+                    source: { type: 'file', file_id: f.id },
+                    title: f.title
+                };
+                // Aplicar cache no último ficheiro — cobre todos os anteriores
+                if (index === knowledgeSources.length - 1) {
+                    doc.cache_control = { type: 'ephemeral' };
+                }
+                parts.push(doc);
+            });
+
+            // Pergunta do utilizador
+            parts.push({
+                type: 'text',
+                text: conversationHistory[conversationHistory.length - 1].content
+            });
+
+            messages = [
+                ...conversationHistory.slice(0, -1),
+                { role: 'user', content: parts }
+            ];
+
+            knowledgeInjected = true;
+        }
+
         const res = await fetch('https://api.anthropic.com/v1/messages', {
             method: 'POST',
             headers,
             body: JSON.stringify({
-                model: CONFIG.model,
+                model:      CONFIG.model,
                 max_tokens: 1024,
-                system: SYSTEM_PROMPT,
-                messages: conversationHistory
+                system:     [
+                    {
+                        type: 'text',
+                        text: SYSTEM_PROMPT,
+                        // Cache o system prompt também — raramente muda
+                        cache_control: { type: 'ephemeral' }
+                    }
+                ],
+                messages:   messages
             })
         });
+
         if (!res.ok) {
             const err = await res.json().catch(() => ({}));
             throw new Error(err.error?.message || `Erro ${res.status} — tente novamente`);
         }
+
         const data = await res.json();
         return data.content.map(b => b.text || '').join('');
     }
@@ -1035,295 +991,100 @@ TERMINOLOGIA DO SISTEMA:
     }
 
     // ============================================================
-    // POWER AUTOMATE ENDPOINT
-    // ============================================================
-    const PA_ENDPOINT = 'https://default67e1fc55c47043779ddd6922b3f149.70.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/22/workflows/66c50a8e832a43ba8d5ca55af59cc415/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=_wuy25SY9TTKrNSxzvPXXqHaZ_VnJZ-8nNLmZeVhI68';
-
-    // ============================================================
-    // ESTADO DA SESSÃO
-    // 'unauthenticated' | 'first-login' | 'authenticated'
-    // ============================================================
-    let sessionState = 'unauthenticated';
-    let currentUser  = null;
-
-    // ============================================================
-    // SUBSTITUIR DOMContentLoaded — gerir sessão primeiro
+    // INICIALIZAÇÃO
     // ============================================================
     document.addEventListener('DOMContentLoaded', () => {
-        renderQuota();
         initSuggestions();
-        showOverlay('pin');
+
+        const luandaHora = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Africa/Luanda' })
+        ).getHours();
+        const saudacao = luandaHora < 12 ? 'bom dia'
+                       : luandaHora < 18 ? 'boa tarde'
+                       :                   'boa noite';
+        document.getElementById('intro-title').textContent = `Olá, ${saudacao}.`;
+
+        const welcomePhrases = [
+            'Em que posso ajudar ?',
+            'Faça-me perguntas. Estou aqui para ajudar.',
+            'O que queres saber sobre o desempenho financeiro da escola ?',
+            'Queres saber qual é o estado actual das propinas da escola ?',
+            'Experimente perguntar-me quais os alunos com propinas em atraso'
+        ];
+        const typewriterText = welcomePhrases[Math.floor(Math.random() * welcomePhrases.length)];
+        const typewriterEl   = document.getElementById('agent-question');
+        let twIndex = 0;
+
+        function typeWriter() {
+            if (twIndex < typewriterText.length) {
+                typewriterEl.textContent += typewriterText.charAt(twIndex);
+                twIndex++;
+                setTimeout(typeWriter, 33);
+            } else {
+                typewriterEl.classList.add('done');
+            }
+        }
+
+        setTimeout(typeWriter, 400);
+
+        initSession();
     });
 
     // ============================================================
-    // OVERLAY
+    // INIT SESSION — carrega quota e file_ids do PA
     // ============================================================
-    function showOverlay(state) {
-        document.getElementById('session-overlay').classList.remove('hidden');
-
-        if (state === 'pin') {
-            document.getElementById('modal-title').textContent     = 'Iniciar Sessão';
-            document.getElementById('modal-subtitle').textContent  = 'Introduza o seu PIN para aceder ao Truta.';
-            document.getElementById('pin-label').textContent       = 'PIN';
-            document.getElementById('pin-input').value             = '';
-            document.getElementById('pin-input').classList.remove('error');
-            document.getElementById('pin-new-field').style.display = 'none';
-            document.getElementById('modal-btn-label').textContent = 'Entrar';
-            document.getElementById('modal-error').textContent     = '';
-            document.getElementById('modal-cancel-btn').style.display  = 'block';
-            document.getElementById('modal-forgot-pin').style.display  = 'block';
-            setTimeout(() => document.getElementById('pin-input').focus(), 100);
-
-        } else if (state === 'first-login') {
-            document.getElementById('modal-title').textContent     = 'Criar PIN Pessoal';
-            document.getElementById('modal-subtitle').textContent  = 'É o seu primeiro acesso. Por segurança, defina um PIN pessoal.';
-            document.getElementById('pin-label').textContent       = 'Novo PIN';
-            document.getElementById('pin-input').value             = '';
-            document.getElementById('pin-input').classList.remove('error');
-            document.getElementById('pin-new-field').style.display = 'block';
-            document.getElementById('pin-confirm-input').value     = '';
-            document.getElementById('modal-btn-label').textContent = 'Definir PIN';
-            document.getElementById('modal-error').textContent     = '';
-            document.getElementById('modal-cancel-btn').style.display  = 'none';
-            document.getElementById('modal-forgot-pin').style.display  = 'none';
-            setTimeout(() => document.getElementById('pin-input').focus(), 100);
-        }
-    }
-
-    function hideOverlay() {
-        document.getElementById('session-overlay').classList.add('hidden');
-    }
-
-    // ============================================================
-    // TECLADO NO MODAL
-    // ============================================================
-    function handlePinKeydown(e) {
-        if (e.key === 'Enter') handleModalAction();
-    }
-
-    function handleModalAction() {
-        if (sessionState === 'unauthenticated') validatePin();
-        else if (sessionState === 'first-login') changePin();
-    }
-
-    // ============================================================
-    // VALIDAR PIN — Flow 1
-    // ============================================================
-    async function validatePin() {
-        const pin = document.getElementById('pin-input').value.trim();
-
-        if (!pin) {
-            showModalError('Introduza o seu PIN.');
-            return;
-        }
-
-        setModalLoading(true);
-
+    async function initSession() {
         try {
             const res = await fetch(PA_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    action:      'validate-pin',
-                    pin:         parseInt(pin),
-                    current_pin: null,
-                    new_pin:     null,
-                    name:        ''
+                    action:     'get-quota',
+                    agent_id:   CONFIG.agentId,
+                    used_quota: ' '
                 })
             });
 
             const data = await res.json();
 
-            if (!data.valido) {
-                showModalError(data.erro || 'PIN inválido. Tente novamente.');
-                document.getElementById('pin-input').classList.add('error');
-                return;
-            }
+            CONFIG.fileIdDados = data.file_id_dados || '';
+            CONFIG.fileIdFAQ   = data.file_id_faq   || '';
 
-            currentUser = {
-                name:           data.name,
-                pin:            pin,
-                quota_max:      data.quota_max,
-                quota_usada:    data.quota_usada,
-                quota_restante: data.quota_restante,
-                primeiro_login: data.primeiro_login,
-                file_id_dados:  data.file_id_dados,
-                file_id_faq:    data.file_id_faq
-            };
+            if (data.quota_max) applyQuotaMax(data.quota_max);
 
-            if (data.primeiro_login) {
-                sessionState = 'first-login';
-                showOverlay('first-login');
-            } else {
-                startSession();
-            }
+            const remaining = data.quota_restante !== undefined
+                ? data.quota_restante
+                : CONFIG.quotaMax;
+
+            renderQuotaFromValue(remaining, CONFIG.quotaMax);
+            _quotaRestante = remaining;
+
+            if (remaining <= 0) applyExhaustedState();
 
         } catch (err) {
-            showModalError('Erro de ligação. Tente novamente.');
-        } finally {
-            setModalLoading(false);
+            console.warn('get-quota falhou:', err);
+            renderQuota();
         }
-    }
-
-    // ============================================================
-    // ALTERAR PIN — Flow 3 (primeiro login)
-    // ============================================================
-    async function changePin() {
-        const newPin     = document.getElementById('pin-input').value.trim();
-        const confirmPin = document.getElementById('pin-confirm-input').value.trim();
-
-        if (!newPin || !confirmPin) {
-            showModalError('Preencha os dois campos.');
-            return;
-        }
-        if (newPin !== confirmPin) {
-            showModalError('Os PINs não coincidem. Tente novamente.');
-            return;
-        }
-        if (newPin === currentUser.pin) {
-            showModalError('O novo PIN não pode ser igual ao actual.');
-            return;
-        }
-        if (!/^[0-9]{4,8}$/.test(newPin)) {
-            showModalError('O PIN deve ter entre 4 e 8 dígitos numéricos.');
-            return;
-        }
-
-        setModalLoading(true);
-
-        try {
-            const res = await fetch(PA_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action:      'change-pin',
-                    pin:         null,
-                    current_pin: parseInt(currentUser.pin),
-                    new_pin:     parseInt(newPin),
-                    name:        currentUser.name
-                })
-            });
-
-            const data = await res.json();
-
-            if (!data.sucesso) {
-                showModalError(data.erro || 'Não foi possível alterar o PIN. Tente novamente.');
-                return;
-            }
-
-            currentUser.pin = newPin;
-            startSession();
-
-        } catch (err) {
-            showModalError('Erro de ligação. Tente novamente.');
-        } finally {
-            setModalLoading(false);
-        }
-    }
-
-    // ============================================================
-    // INICIAR SESSÃO
-    // ============================================================
-    function startSession() {
-        sessionState = 'authenticated';
-        hideOverlay();
-
-        // Actualizar quota com dados reais
-        CONFIG.quotaMax = currentUser.quota_max;
-        const remaining = Math.max(0, currentUser.quota_max - currentUser.quota_usada);
-        document.getElementById('quota-count').innerHTML =
-            `${remaining} <span>/ ${currentUser.quota_max}</span>`;
-        const pct = (remaining / currentUser.quota_max) * 100;
-        const bar = document.getElementById('quota-bar');
-        bar.style.width = pct + '%';
-        bar.className = 'quota-bar-fill';
-        if (pct <= 0)       bar.classList.add('empty');
-        else if (pct <= 20) bar.classList.add('low');
-        else if (pct <= 50) bar.classList.add('medium');
-
-        // Saudação personalizada por hora do dia
-        const hora = new Date().getHours();
-        const saudacao = hora < 12 ? 'bom dia' : hora < 19 ? 'boa tarde' : 'boa noite';
-        document.querySelector('.intro-title').textContent =
-            `Olá, ${saudacao}, ${currentUser.name}.`;
-
-        // Activar file_ids
-        CONFIG.fileIdDados = currentUser.file_id_dados || '';
-        CONFIG.fileIdFAQ   = currentUser.file_id_faq   || '';
 
         document.getElementById('chat-input').focus();
     }
 
     // ============================================================
-    // HELPERS DO MODAL
+    // QUOTA — render a partir de valor absoluto
     // ============================================================
-    function showModalError(msg) {
-        document.getElementById('modal-error').textContent = msg;
-    }
-
-    function setModalLoading(state) {
-        document.getElementById('modal-btn').disabled = state;
-        document.getElementById('btn-spinner').classList.toggle('visible', state);
-        document.getElementById('modal-btn-label').style.opacity = state ? '0.5' : '1';
+    function renderQuotaFromValue(remaining, max) {
+        const pct = (remaining / max) * 100;
+        document.getElementById('quota-count').innerHTML =
+            `${remaining} <span>/ ${max}</span>`;
+        const bar = document.getElementById('quota-bar');
+        bar.style.width = pct + '%';
+        bar.className = 'quota-bar-fill';
+        if (pct <= 0)        bar.classList.add('empty');
+        else if (pct <= 20) bar.classList.add('low');
+        else if (pct <= 50) bar.classList.add('medium');
     }
 
 </script>
-
-
-    <!-- ============ OVERLAY DE SESSÃO ============ -->
-    <div class="session-overlay" id="session-overlay">
-        <div class="session-modal" id="session-modal">
-
-            <div class="modal-header">
-                <div class="modal-avatar">
-                    <img src="https://colegiodemo.github.io/escola/all-images/agente.png" alt="Truta">
-                </div>
-                <div>
-                    <div class="modal-title" id="modal-title">Iniciar Sessão</div>
-                    <div class="modal-subtitle" id="modal-subtitle">Introduza o seu PIN para aceder ao Truta.</div>
-                </div>
-            </div>
-
-            <div class="pin-field">
-                <div class="pin-label" id="pin-label">PIN</div>
-                <input
-                    class="pin-input"
-                    id="pin-input"
-                    type="password"
-                    inputmode="numeric"
-                    maxlength="8"
-                    placeholder="••••"
-                    autocomplete="off"
-                    onkeydown="handlePinKeydown(event)"
-                >
-                <div id="pin-new-field" style="display:none; margin-top:10px;">
-                    <div class="pin-label">Confirmar novo PIN</div>
-                    <input
-                        class="pin-input"
-                        id="pin-confirm-input"
-                        type="password"
-                        inputmode="numeric"
-                        maxlength="8"
-                        placeholder="••••"
-                        autocomplete="off"
-                        onkeydown="handlePinKeydown(event)"
-                    >
-                </div>
-            </div>
-
-            <div class="modal-error" id="modal-error"></div>
-
-            <button class="modal-btn" id="modal-btn" onclick="handleModalAction()">
-                <span class="btn-spinner" id="btn-spinner"></span>
-                <span id="modal-btn-label">Entrar</span>
-            </button>
-
-            <button class="modal-cancel-btn" id="modal-cancel-btn" onclick="history.back()">Cancelar</button>
-
-            <button class="modal-forgot-pin" id="modal-forgot-pin" onclick="void(0)">Esqueci o meu PIN</button>
-
-        </div>
-    </div>
 
 </body>
 </html>
