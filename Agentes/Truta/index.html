@@ -942,9 +942,12 @@
     async function readStream(body) {
         const reader  = body.getReader();
         const decoder = new TextDecoder();
-        let fullText  = '';
+        let fullText     = '';  // texto completo recebido do stream
+        let displayText  = '';  // texto actualmente visível (efeito typing)
+        let typeQueue    = [];  // fila de caracteres a revelar
+        let typing       = false;
 
-        // Criar bolha de resposta vazia para preencher durante o stream
+        // Criar bolha de resposta vazia
         const container = document.getElementById('chat-messages');
         const row = document.createElement('div');
         row.className = 'message-row agent';
@@ -960,6 +963,17 @@
 
         const bubble = document.getElementById('streaming-bubble');
 
+        // Efeito de digitação — revela a fila de caracteres a 18ms/char
+        function typeNext() {
+            if (typeQueue.length === 0) { typing = false; return; }
+            typing = true;
+            displayText += typeQueue.shift();
+            bubble.innerHTML = fmt(displayText);
+            container.scrollTop = container.scrollHeight;
+            setTimeout(typeNext, 18);
+        }
+
+        // Ler chunks do stream
         while (true) {
             const { done, value } = await reader.read();
             if (done) break;
@@ -974,13 +988,22 @@
                 try {
                     const json = JSON.parse(data);
                     if (json.type === 'content_block_delta' && json.delta?.type === 'text_delta') {
+                        const newChars = json.delta.text.split('');
+                        typeQueue.push(...newChars);
                         fullText += json.delta.text;
-                        bubble.innerHTML = fmt(fullText);
-                        container.scrollTop = container.scrollHeight;
+                        if (!typing) typeNext();
                     }
                 } catch (_) {}
             }
         }
+
+        // Aguardar que a fila de digitação esvazie antes de devolver
+        await new Promise(resolve => {
+            const wait = () => typeQueue.length === 0 && !typing
+                ? resolve()
+                : setTimeout(wait, 50);
+            wait();
+        });
 
         bubble.removeAttribute('id');
         return fullText;
