@@ -646,7 +646,7 @@
     // ============================================================
     const CONFIG = {
         agentId:     'gestor',
-        apiKey:      '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', // chave API Anthropic
+        apiKey:      '',           // chave API Anthropic
         model:       'claude-sonnet-4-6',
         maxHistory:  10,
         quotaMax:    parseInt(localStorage.getItem('truta_quota_max') || '200'), // último valor conhecido
@@ -917,7 +917,7 @@
             knowledgeInjected = true;
         }
 
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
+        const res = await fetch('https://truta-proxy.propinas-online.workers.dev/', {
             method: 'POST',
             headers,
             body: JSON.stringify({
