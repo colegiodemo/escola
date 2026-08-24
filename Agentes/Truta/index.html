@@ -920,14 +920,13 @@
             body: JSON.stringify({
                 model:      CONFIG.model,
                 max_tokens: 1024,
-                system:     [
+                system:     SYSTEM_PROMPT ? [
                     {
                         type: 'text',
                         text: SYSTEM_PROMPT,
-                        // Cache o system prompt também — raramente muda
                         cache_control: { type: 'ephemeral' }
                     }
-                ],
+                ] : undefined,
                 messages:   messages
             })
         });
