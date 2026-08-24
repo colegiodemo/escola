@@ -772,10 +772,9 @@
 
         try {
             const response = await callAnthropicAPI();
-            appendMessage('agent', response);
+            // bolha já criada pelo readStream — não duplicar
             conversationHistory.push({ role: 'assistant', content: response });
 
-            updateQuota();
             _quotaRestante = Math.max(0, _quotaRestante - 1);
             renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
             if (_quotaRestante <= 0) applyExhaustedState();
@@ -920,6 +919,7 @@
             body: JSON.stringify({
                 model:      CONFIG.model,
                 max_tokens: 1024,
+                stream:     true,
                 system:     SYSTEM_PROMPT ? [
                     {
                         type: 'text',
@@ -936,8 +936,54 @@
             throw new Error(err.error?.message || `Erro ${res.status} — tente novamente`);
         }
 
-        const data = await res.json();
-        return data.content.map(b => b.text || '').join('');
+        return await readStream(res.body);
+    }
+
+    async function readStream(body) {
+        const reader  = body.getReader();
+        const decoder = new TextDecoder();
+        let fullText  = '';
+
+        // Criar bolha de resposta vazia para preencher durante o stream
+        const container = document.getElementById('chat-messages');
+        const row = document.createElement('div');
+        row.className = 'message-row agent';
+        const time = new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        row.innerHTML = `
+            <div class="bubble-avatar agent-av"><img src="${AVATAR_URL}" alt="Truta"></div>
+            <div class="bubble-wrap">
+                <div class="bubble" id="streaming-bubble"></div>
+                <div class="bubble-time">${time}</div>
+            </div>`;
+        container.appendChild(row);
+        container.scrollTop = container.scrollHeight;
+
+        const bubble = document.getElementById('streaming-bubble');
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+                if (!line.startsWith('data: ')) continue;
+                const data = line.slice(6).trim();
+                if (data === '[DONE]') continue;
+                try {
+                    const json = JSON.parse(data);
+                    if (json.type === 'content_block_delta' && json.delta?.type === 'text_delta') {
+                        fullText += json.delta.text;
+                        bubble.innerHTML = fmt(fullText);
+                        container.scrollTop = container.scrollHeight;
+                    }
+                } catch (_) {}
+            }
+        }
+
+        bubble.removeAttribute('id');
+        return fullText;
     }
 
     // ============================================================
