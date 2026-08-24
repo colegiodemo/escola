@@ -961,6 +961,9 @@
         container.appendChild(row);
         container.scrollTop = container.scrollHeight;
 
+        // Esconder typing indicator — a bolha de stream substitui-o
+        document.getElementById('typing-row').classList.remove('visible');
+
         const bubble = document.getElementById('streaming-bubble');
 
         // Efeito de digitação — revela a fila de caracteres a 18ms/char
