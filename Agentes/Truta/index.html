@@ -1117,6 +1117,9 @@
             CONFIG.fileIdDados = data.file_id_dados || '';
             CONFIG.fileIdFAQ   = data.file_id_faq   || '';
 
+            // Carregar system prompt do SharePoint via PA
+            if (data.system_prompt) SYSTEM_PROMPT = data.system_prompt;
+
             if (data.quota_max) applyQuotaMax(data.quota_max);
 
             const remaining = data.quota_restante !== undefined
