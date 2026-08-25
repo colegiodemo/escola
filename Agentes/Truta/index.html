@@ -498,6 +498,8 @@
 
         .suggestions-toggle:hover { color: var(--navy-deep); }
 
+        .suggested-q.hidden-q { display: none; }
+
         /* ============ Responsive ============ */
         @media (max-width: 600px) {
             .agent-wrapper { padding: 16px 12px 32px; }
@@ -623,18 +625,10 @@
         </button>
 
         <div class="suggestions-list" id="suggestions-list">
-
-            <button class="suggested-q" onclick="sendSuggested(this)">O que consegues fazer? Como me podes ajudar?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual foi a taxa de incumprimento este mês?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o ciclo com maior dívida acumulada?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual a projecção de receita para os próximos 30 dias?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">O que significa "Envelhecimento da Dívida"?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual a eficácia dos lembretes SMS?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o tempo médio até pagamento após a data da cobrança?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Quais os alunos com maior dívida acumulada?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o banco com maior volume de pagamentos?</button>
-
+            <!-- Perguntas carregadas dinamicamente do SharePoint via PA -->
         </div>
+
+        <button class="suggestions-toggle" id="suggestions-more" onclick="toggleMoreSuggestions()" style="display:none">Ver mais</button>
 
     </div>
 
@@ -727,17 +721,70 @@
     // ============================================================
     let suggestionsExpanded = false;
 
+    let suggestionsShowAll   = false;
+    const SUGGESTIONS_VISIBLE = 10;
+
     function initSuggestions() {
-        document.querySelectorAll('#suggestions-list .suggested-q')
-            .forEach(btn => btn.style.display = 'none');
+        // Lista vazia por defeito — preenchida pelo PA
+    }
+
+    function renderSuggestions(raw) {
+        const prompts = raw.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+        const list    = document.getElementById('suggestions-list');
+        const moreBtn = document.getElementById('suggestions-more');
+
+        list.innerHTML = '';
+
+        prompts.forEach((prompt, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'suggested-q';
+            btn.style.display = 'none'; // oculto até expandir
+            btn.textContent = prompt;
+            btn.onclick = function() { sendSuggested(this); };
+            list.appendChild(btn);
+        });
+
+        if (moreBtn) {
+            moreBtn.style.display = prompts.length > SUGGESTIONS_VISIBLE ? 'block' : 'none';
+            moreBtn.style.visibility = 'hidden';
+        }
     }
 
     function toggleSuggestions() {
         suggestionsExpanded = !suggestionsExpanded;
-        document.querySelectorAll('#suggestions-list .suggested-q')
-            .forEach(btn => btn.style.display = suggestionsExpanded ? 'flex' : 'none');
+        const allBtns = document.querySelectorAll('#suggestions-list .suggested-q');
+        const moreBtn = document.getElementById('suggestions-more');
+
+        allBtns.forEach((btn, index) => {
+            if (suggestionsExpanded) {
+                btn.style.display = (index < SUGGESTIONS_VISIBLE || suggestionsShowAll) ? 'flex' : 'none';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
+
         document.getElementById('suggestions-chevron')
             .classList.toggle('open', suggestionsExpanded);
+
+        if (moreBtn) {
+            const total = allBtns.length;
+            if (suggestionsExpanded && total > SUGGESTIONS_VISIBLE) {
+                moreBtn.style.visibility = 'visible';
+                moreBtn.textContent = suggestionsShowAll ? 'Ver menos' : 'Ver mais';
+            } else {
+                moreBtn.style.visibility = 'hidden';
+            }
+        }
+    }
+
+    function toggleMoreSuggestions() {
+        suggestionsShowAll = !suggestionsShowAll;
+        const allBtns = document.querySelectorAll('#suggestions-list .suggested-q');
+        const moreBtn = document.getElementById('suggestions-more');
+        allBtns.forEach((btn, index) => {
+            btn.style.display = (index < SUGGESTIONS_VISIBLE || suggestionsShowAll) ? 'flex' : 'none';
+        });
+        if (moreBtn) moreBtn.textContent = suggestionsShowAll ? 'Ver menos' : 'Ver mais';
     }
 
     function sendSuggested(btn) {
@@ -1045,9 +1092,18 @@
     function fmt(text) {
         return text
             .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+            // Títulos Markdown → texto em negrito com quebra de linha
+            .replace(/^#{1,3}\s+(.+)$/gm,'<strong>$1</strong>')
+            // Separadores --- → espaçamento
+            .replace(/^---$/gm,'<br>')
+            // Citações > → parágrafo normal
+            .replace(/^>\s*/gm,'')
+            // Negrito e itálico
             .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
             .replace(/\*(.*?)\*/g,'<em>$1</em>')
+            // Código inline
             .replace(/`(.*?)`/g,'<code style="background:#E2E8F0;padding:1px 4px;border-radius:3px;font-size:0.85em">$1</code>')
+            // Quebras de linha
             .replace(/\n/g,'<br>');
     }
 
@@ -1114,11 +1170,15 @@
 
             const data = await res.json();
 
-            CONFIG.fileIdDados = data.file_id_dados || '';
-            CONFIG.fileIdFAQ   = data.file_id_faq   || '';
+            CONFIG.fileIdDicionario = data.file_id_dicionario || '';
+            CONFIG.fileIdDados      = data.file_id_dados      || '';
+            CONFIG.fileIdFAQ        = data.file_id_faq        || '';
 
             // Carregar system prompt do SharePoint via PA
             if (data.system_prompt) SYSTEM_PROMPT = data.system_prompt;
+
+            // Carregar perguntas sugeridas do SharePoint via PA
+            if (data.suggested_prompts) renderSuggestions(data.suggested_prompts);
 
             if (data.quota_max) applyQuotaMax(data.quota_max);
 
