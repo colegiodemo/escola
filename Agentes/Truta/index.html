@@ -498,6 +498,8 @@
 
         .suggestions-toggle:hover { color: var(--navy-deep); }
 
+        .suggested-q.hidden-q { display: none; }
+
         /* ============ Responsive ============ */
         @media (max-width: 600px) {
             .agent-wrapper { padding: 16px 12px 32px; }
@@ -623,18 +625,10 @@
         </button>
 
         <div class="suggestions-list" id="suggestions-list">
-
-            <button class="suggested-q" onclick="sendSuggested(this)">O que consegues fazer? Como me podes ajudar?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual foi a taxa de incumprimento este mês?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o ciclo com maior dívida acumulada?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual a projecção de receita para os próximos 30 dias?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">O que significa "Envelhecimento da Dívida"?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual a eficácia dos lembretes SMS?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o tempo médio até pagamento após a data da cobrança?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Quais os alunos com maior dívida acumulada?</button>
-            <button class="suggested-q" onclick="sendSuggested(this)">Qual o banco com maior volume de pagamentos?</button>
-
+            <!-- Perguntas carregadas dinamicamente do SharePoint via PA -->
         </div>
+
+        <button class="suggestions-toggle" id="suggestions-more" onclick="toggleMoreSuggestions()" style="display:none">Ver mais</button>
 
     </div>
 
@@ -1114,11 +1108,15 @@
 
             const data = await res.json();
 
-            CONFIG.fileIdDados = data.file_id_dados || '';
-            CONFIG.fileIdFAQ   = data.file_id_faq   || '';
+            CONFIG.fileIdDicionario = data.file_id_dicionario || '';
+            CONFIG.fileIdDados      = data.file_id_dados      || '';
+            CONFIG.fileIdFAQ        = data.file_id_faq        || '';
 
             // Carregar system prompt do SharePoint via PA
             if (data.system_prompt) SYSTEM_PROMPT = data.system_prompt;
+
+            // Carregar perguntas sugeridas do SharePoint via PA
+            if (data.suggested_prompts) renderSuggestions(data.suggested_prompts);
 
             if (data.quota_max) applyQuotaMax(data.quota_max);
 
