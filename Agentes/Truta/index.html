@@ -804,6 +804,10 @@
         input.value = '';
         input.style.height = 'auto';
         appendMessage('user', text);
+
+        // Ocultar texto animado na primeira pergunta
+        const agentQuestion = document.getElementById('agent-question');
+        if (agentQuestion) agentQuestion.style.display = 'none';
         setLoading(true);
 
         const userMsg = knowledgeInjected
@@ -818,16 +822,47 @@
         }
 
         try {
-            const response = await callAnthropicAPI();
+            // 1. Verificar e decrementar quota no PA antes de chamar a Anthropic
+            const quotaCheck = await checkAndDecrement(text);
+
+            if (!quotaCheck.autorizado) {
+                conversationHistory.pop();
+                _quotaRestante = 0;
+                renderQuotaFromValue(0, CONFIG.quotaMax);
+                applyExhaustedState();
+                return;
+            }
+
+            // Actualizar contador visual com valor real do PA
+            if (quotaCheck.quota_restante !== undefined) {
+                _quotaRestante = quotaCheck.quota_restante;
+                renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
+            }
+
+            // 2. Chamar a Anthropic
+            let response;
+            try {
+                response = await callAnthropicAPI();
+            } catch (anthropicErr) {
+                // Anthropic falhou — repor quota no PA
+                await restoreQuota();
+                _quotaRestante = Math.min(_quotaRestante + 1, CONFIG.quotaMax);
+                renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
+                conversationHistory.pop();
+                appendError('Ocorreu um erro ao processar a sua pergunta. A quota foi reposta. Pode tentar novamente.');
+                return;
+            }
+
+            // 3. Sucesso — guardar resposta no histórico
             // bolha já criada pelo readStream — não duplicar
             conversationHistory.push({ role: 'assistant', content: response });
 
-            _quotaRestante = Math.max(0, _quotaRestante - 1);
-            renderQuotaFromValue(_quotaRestante, CONFIG.quotaMax);
             if (_quotaRestante <= 0) applyExhaustedState();
+
         } catch (err) {
-            appendError(err.message);
-            if (conversationHistory.length === 1) knowledgeInjected = false;
+            // Erro no check-and-decrement
+            conversationHistory.pop();
+            appendError('Erro de ligação. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -863,13 +898,14 @@
     // ============================================================
     // CHECK-AND-DECREMENT — verifica e decrementa quota no PA
     // ============================================================
-    async function checkAndDecrement() {
+    async function checkAndDecrement(userPrompt) {
         const res = await fetch(PA_ENDPOINT, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                action:   'check-and-decrement',
-                agent_id: CONFIG.agentId
+                action:      'check-and-decrement-quota',
+                agent_id:    CONFIG.agentId,
+                user_prompt: userPrompt
             })
         });
 
