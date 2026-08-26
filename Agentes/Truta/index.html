@@ -540,6 +540,149 @@
         }
 
         .modal-forgot-pin:hover { color: var(--navy); }
+
+        /* ============ MODAL DE COMPRA DE CRÉDITOS ============ */
+        .credits-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 25, 47, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .credits-overlay.hidden { display: none; }
+
+        .credits-modal {
+            background: #fff;
+            border-radius: 18px;
+            padding: 32px 28px 28px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(15, 25, 47, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .credits-modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: -0.01em;
+        }
+
+        .credits-plans {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .credits-plan-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border: 1.5px solid var(--line);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .credits-plan-option:hover {
+            border-color: var(--navy);
+            background: var(--canvas);
+        }
+
+        .credits-plan-option.selected {
+            border-color: var(--navy);
+            background: var(--canvas);
+        }
+
+        .credits-plan-option input[type="radio"] {
+            accent-color: var(--navy);
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        .credits-plan-label {
+            font-size: 0.88rem;
+            color: var(--ink);
+            font-weight: 500;
+        }
+
+        .credits-modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .credits-btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: var(--navy);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .credits-btn-primary:hover { background: var(--navy-deep); }
+        .credits-btn-primary:disabled { background: var(--line); cursor: not-allowed; }
+
+        .credits-btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            color: var(--muted);
+            border: 1.5px solid var(--line);
+            border-radius: 10px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: border-color 0.2s, color 0.2s;
+        }
+
+        .credits-btn-secondary:hover { border-color: var(--muted); color: var(--ink-soft); }
+
+        .credits-confirm-plan {
+            font-size: 0.9rem;
+            color: var(--ink);
+            background: var(--canvas);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-weight: 500;
+        }
+
+        .credits-success-msg {
+            font-size: 0.88rem;
+            color: var(--ink-soft);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .credits-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+
+        .credits-spinner.visible { display: block; }
     </style>
 </head>
 <body>
@@ -594,6 +737,14 @@
         <div class="limit-banner" id="limit-banner">
             <strong>Limite mensal atingido</strong>
             Esgotou as <span id="limit-banner-max">20</span> perguntas disponíveis para este mês. O crédito renova automaticamente no dia 1 do próximo mês.
+            <button class="credits-btn-primary" id="buy-credits-btn" onclick="openCreditsModal()" style="margin-top:12px;max-width:200px;">Comprar Créditos</button>
+        </div>
+
+        <!-- ============ MODAL DE COMPRA DE CRÉDITOS ============ -->
+        <div class="credits-overlay hidden" id="credits-overlay">
+            <div class="credits-modal" id="credits-modal">
+                <!-- Conteúdo injectado dinamicamente -->
+            </div>
         </div>
 
         <div class="agent-question" id="agent-question"></div>
@@ -1198,9 +1349,8 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    action:     'get-quota',
-                    agent_id:   CONFIG.agentId,
-                    used_quota: ' '
+                    action:   'get-quota',
+                    agent_id: CONFIG.agentId
                 })
             });
 
@@ -1215,6 +1365,9 @@
 
             // Carregar perguntas sugeridas do SharePoint via PA
             if (data.suggested_prompts) renderSuggestions(data.suggested_prompts);
+
+            // Carregar planos de crédito do SharePoint via PA
+            if (data.service_plans !== undefined) setServicePlans(data.service_plans || '');
 
             if (data.quota_max) applyQuotaMax(data.quota_max);
 
@@ -1248,6 +1401,136 @@
         if (pct <= 0)        bar.classList.add('empty');
         else if (pct <= 20) bar.classList.add('low');
         else if (pct <= 50) bar.classList.add('medium');
+    }
+
+
+    // ============================================================
+    // COMPRA DE CRÉDITOS
+    // ============================================================
+    let _servicePlans      = [];  // planos carregados do SharePoint
+    let _selectedPlan      = null;
+    let _purchaseInFlight  = false;
+
+    // Guarda os planos quando carregados via get-quota
+    function setServicePlans(raw) {
+        if (!raw || !raw.trim()) { _servicePlans = []; return; }
+        _servicePlans = raw.split('\n')
+            .map(p => p.trim())
+            .filter(p => p.length > 0);
+    }
+
+    function openCreditsModal() {
+        _selectedPlan = null;
+        document.getElementById('credits-overlay').classList.remove('hidden');
+        if (_servicePlans.length === 0) {
+            renderCreditsStep('error', 'Não existem planos de crédito disponíveis de momento. Contacte o administrador.');
+        } else {
+            renderCreditsStep('select');
+        }
+    }
+
+    function closeCreditsModal() {
+        document.getElementById('credits-overlay').classList.add('hidden');
+        _selectedPlan     = null;
+        _purchaseInFlight = false;
+    }
+
+    function renderCreditsStep(step, message) {
+        const modal = document.getElementById('credits-modal');
+
+        if (step === 'select') {
+            const plansHtml = _servicePlans.map((plan, i) => `
+                <label class="credits-plan-option" id="plan-option-${i}" onclick="selectPlan(${i})">
+                    <input type="radio" name="credits-plan" value="${i}" id="plan-radio-${i}">
+                    <span class="credits-plan-label">${plan}</span>
+                </label>`).join('');
+
+            modal.innerHTML = `
+                <div class="credits-modal-title">Comprar Créditos</div>
+                <div class="credits-plans" id="credits-plans-list">${plansHtml}</div>
+                <div class="credits-modal-actions">
+                    <button class="credits-btn-secondary" onclick="closeCreditsModal()">Cancelar</button>
+                    <button class="credits-btn-primary" id="credits-continue-btn" onclick="goToConfirm()" disabled>Continuar</button>
+                </div>`;
+
+        } else if (step === 'confirm') {
+            modal.innerHTML = `
+                <div class="credits-modal-title">Confirmar compra</div>
+                <div style="font-size:0.83rem;color:var(--muted);">Plano selecionado:</div>
+                <div class="credits-confirm-plan">${_selectedPlan}</div>
+                <div style="font-size:0.83rem;color:var(--ink-soft);">Deseja continuar?</div>
+                <div class="credits-modal-actions">
+                    <button class="credits-btn-secondary" onclick="renderCreditsStep('select'); _selectedPlan = null;">Cancelar</button>
+                    <button class="credits-btn-primary" id="credits-confirm-btn" onclick="confirmPurchase()">
+                        <span class="credits-spinner" id="credits-spinner"></span>
+                        Confirmar
+                    </button>
+                </div>`;
+
+        } else if (step === 'success') {
+            modal.innerHTML = `
+                <div class="credits-modal-title">Pedido recebido</div>
+                <div class="credits-success-msg">
+                    <strong>Obrigado!</strong><br>
+                    Enviamos os dados de Pagamento para o telemóvel da escola.
+                </div>
+                <button class="credits-btn-primary" onclick="closeCreditsModal()">OK</button>`;
+
+        } else if (step === 'error') {
+            modal.innerHTML = `
+                <div class="credits-modal-title">Erro</div>
+                <div class="credits-success-msg" style="color:#991B1B;">${message || 'Ocorreu um erro. Tente novamente.'}</div>
+                <button class="credits-btn-primary" onclick="closeCreditsModal()">OK</button>`;
+        }
+    }
+
+    function selectPlan(index) {
+        _selectedPlan = _servicePlans[index];
+        // Actualizar estilo das opções
+        document.querySelectorAll('.credits-plan-option').forEach((el, i) => {
+            el.classList.toggle('selected', i === index);
+            document.getElementById(`plan-radio-${i}`).checked = (i === index);
+        });
+        // Activar botão continuar
+        const btn = document.getElementById('credits-continue-btn');
+        if (btn) btn.disabled = false;
+    }
+
+    function goToConfirm() {
+        if (!_selectedPlan) return;
+        renderCreditsStep('confirm');
+    }
+
+    async function confirmPurchase() {
+        if (!_selectedPlan || _purchaseInFlight) return;
+        _purchaseInFlight = true;
+
+        const confirmBtn = document.getElementById('credits-confirm-btn');
+        const spinner    = document.getElementById('credits-spinner');
+        if (confirmBtn) confirmBtn.disabled = true;
+        if (spinner)    spinner.classList.add('visible');
+
+        try {
+            const res = await fetch(PA_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    action:       'add-quota',
+                    agent_id:     CONFIG.agentId,
+                    service_plan: _selectedPlan
+                })
+            });
+
+            if (!res.ok) throw new Error(`PA erro ${res.status}`);
+
+            // PA pode responder com body vazio — aceitar 200 como sucesso
+            renderCreditsStep('success');
+
+        } catch (err) {
+            renderCreditsStep('error', 'Não foi possível processar o pedido. Tente novamente.');
+        } finally {
+            _purchaseInFlight = false;
+        }
     }
 
 </script>
