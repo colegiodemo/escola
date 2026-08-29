@@ -247,16 +247,16 @@
             font-weight: 700;
         }
 
-        .bubble-wrap { display: flex; flex-direction: column; }
+        .bubble-wrap { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
         .message-row.user .bubble-wrap { align-items: flex-end; }
 
         .bubble {
-            max-width: 75%;
+            max-width: min(75vw, 620px);
             padding: 10px 14px;
             border-radius: var(--radius-md);
             font-size: 0.88rem;
             line-height: 1.55;
-            word-break: break-word;
+            overflow-wrap: break-word;
         }
 
         .message-row.agent .bubble {
@@ -503,7 +503,7 @@
         /* ============ Responsive ============ */
         @media (max-width: 600px) {
             .agent-wrapper { padding: 16px 12px 32px; }
-            .bubble { max-width: 88%; }
+            .bubble { max-width: 88vw; }
             .agent-question { font-size: 1.25rem; }
         }
 
