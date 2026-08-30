@@ -143,6 +143,13 @@
         .quota-bar-fill.low    { background: #F97316; }
         .quota-bar-fill.empty  { background: #F87171; }
 
+        .quota-reset {
+            font-size: 0.62rem;
+            color: var(--muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
         /* ============ PERGUNTA DE ABERTURA ============ */
         .agent-question {
             font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
@@ -702,11 +709,12 @@
             </div>
         </div>
         <div class="quota-widget">
-            <div class="quota-label">Crédito</div>
+            <div class="quota-label">Crédito Mensal</div>
             <div class="quota-count" id="quota-count">— <span>/ 20</span></div>
             <div class="quota-bar-track">
                 <div class="quota-bar-fill" id="quota-bar" style="width:100%"></div>
             </div>
+            <div class="quota-reset" id="quota-reset">Reinicia a 1 de <span id="quota-reset-month">—</span></div>
         </div>
     </div>
 
@@ -829,6 +837,16 @@
     // ============================================================
     // QUOTA UI
     // ============================================================
+    const MESES_PT = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+    function renderQuotaResetMonth() {
+        const luandaAgora = new Date(
+            new Date().toLocaleString('en-US', { timeZone: 'Africa/Luanda' })
+        );
+        const mesSeguinte = (luandaAgora.getMonth() + 1) % 12;
+        document.getElementById('quota-reset-month').textContent = MESES_PT[mesSeguinte];
+    }
+
     function renderQuota() {
         renderQuotaFromValue(quotaRemaining(), CONFIG.quotaMax);
     }
@@ -1401,6 +1419,7 @@
         if (pct <= 0)        bar.classList.add('empty');
         else if (pct <= 20) bar.classList.add('low');
         else if (pct <= 50) bar.classList.add('medium');
+        renderQuotaResetMonth();
     }
 
 
